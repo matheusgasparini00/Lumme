@@ -1,0 +1,36 @@
+footer {
+    background-color: rgb(161, 118, 202);   
+    color: black;
+    position: absolute;
+    width: 100%;
+    bottom: 40px;
+}
+
+#footer_items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 8% 24px 8%;
+    text-align: center;
+}
+
+#footer_items .social-media-buttons {
+    display: flex;
+    gap: 16px;
+}
+
+#footer_items .social-media-buttons a {
+    color: black;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+#footer_items .social-media-buttons a:hover {
+    color: white;
+}
+
+footer img {
+    width: 100%;
+    display: block;
+}
