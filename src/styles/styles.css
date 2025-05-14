@@ -36,7 +36,7 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: aqua;
+    background-color: rgb(255, 255, 255);
     height: 100vh;
     border-radius: 0px 18px 18px 0px;
     position: relative;
