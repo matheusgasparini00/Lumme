@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cadastro</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/cadastro.css') }}">
+</head>
+<body>
+  <div class="container">
+    <form action="{{ url_for('cadastro') }}" method="POST" onsubmit="return verificarSenhas();">
+      <img src="{{ url_for('static', filename='images/logolumme.png') }}" alt="Logo da Lumme" class="logo">
+      <h2>Cadastro</h2>
+
+      <input type="text" name="nome" placeholder="Nome" required>
+      <input type="text" name="sobrenome" placeholder="Sobrenome" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="date" name="data_nasc" required>
+
+      <input type="password" id="senha" name="senha" placeholder="Senha"
+        pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}"
+        title="A senha deve conter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos."
+        required>
+
+      <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Confirmar Senha" required>
+
+      <button type="submit">Cadastrar</button>
+    </form>
+
+    <div class="login-link">
+      Já tem uma conta? <a href="{{ url_for('login') }}">Entrar</a>
+    </div>
+  </div>
+
+  <script>
+    function verificarSenhas() {
+      const senha = document.getElementById('senha').value;
+      const confirmar = document.getElementById('confirmar_senha').value;
+
+      const regexSenhaForte = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+      if (!regexSenhaForte.test(senha)) {
+        alert('A senha deve ter no mínimo 8 caracteres e incluir letras maiúsculas, minúsculas, números e símbolos.');
+        return false;
+      }
+
+      if (senha !== confirmar) {
+        alert('As senhas não coincidem!');
+        return false;
+      }
+
+      return true;
+    }
+  </script>
+</body>
+</html>

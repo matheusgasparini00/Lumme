@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/scrollreveal"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/desafios.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <title>Desafios</title>
+</head>
+<body>
+
+<main id="content">
+
+    <h2 class="section-title">Desafios</h2>
+    
+    <div id="container">
+        <!-- Card 1 -->
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <img src="{{ url_for('static', filename='images/front-flip.jpg') }}" class="flip-card-image" alt="card front">
+                </div>
+                <div class="flip-card-back">
+                    <img src="{{ url_for('static', filename='images/black-flip.jpg') }}" class="flip-card-image" alt="card back">
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <img src="{{ url_for('static', filename='images/flipfront2.jpg') }}" class="flip-card-image" alt="card front">
+                </div>
+                <div class="flip-card-back">
+                    <img src="{{ url_for('static', filename='images/flipback2.jpg') }}" class="flip-card-image" alt="card back">
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <img src="{{ url_for('static', filename='images/flipfront3.jpg') }}" class="flip-card-image" alt="card front">
+                </div>
+                <div class="flip-card-back">
+                    <img src="{{ url_for('static', filename='images/flipback3.jpg') }}" class="flip-card-image" alt="card back">
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <img src="{{ url_for('static', filename='images/flipfront4.jpg') }}" class="flip-card-image" alt="card front">
+                </div>
+                <div class="flip-card-back">
+                    <img src="{{ url_for('static', filename='images/flipback4.jpg') }}" class="flip-card-image" alt="card back">
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <img src="{{ url_for('static', filename='images/flipfront5.jpg') }}" class="flip-card-image" alt="card front">
+                </div>
+                <div class="flip-card-back">
+                    <img src="{{ url_for('static', filename='images/flipback5.jpg') }}" class="flip-card-image" alt="card back">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="menu">
+        <div id="dishes">
+            {% for i in range(5) %}
+            <div class="dish">
+                <div class="lum-heart">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <img src="{{ url_for('static', filename='images/icon1.png') }}" class="lum-image" alt="">
+                <h3 class="dish-title">lgwfdyofgqdfvchie</h3>
+                <span class="dish-description">hydreachjn</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='javascript/script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+ * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 2.5ch;
+    }
+    .container {
+      background: white;
+      padding: 3.75ch 2.5ch;
+      border-radius: 1.5ch;
+      box-shadow: 0 0.5ch 2.5ch rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 45ch;
+      text-align: center;
+    }
+    .logo {
+      width: 125ch;
+      max-width: 37.5ch;
+      margin: 0 auto 3.125ch auto;
+      display: block;
+    }
+    .form { display: flex; flex-direction: column; gap: 1.875ch; }
+    input {
+      padding: 1.5ch;
+      border: 0.125ch solid #ccc;
+      border-radius: 0.75ch;
+      font-size: 2ch;
+    }
+    button {
+      padding: 1.5ch;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 0.75ch;
+      font-size: 2ch;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover { background-color: #2980b9; }
+    .toggle { margin-top: 1.5ch; font-size: 1.75ch; }
+    .toggle a { color: #3498db; text-decoration: none; }
+    .toggle a:hover { text-decoration: underline; }
+    @media (max-width: 50ch) {
+      .container { padding: 3.125ch 1.875ch; }
+    }
+
+  .flash-message {
+  background-color: #28a745;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  text-align: center;
+}
