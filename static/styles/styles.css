@@ -179,6 +179,35 @@ main {
     gap: 14px;
 }
 
+#navbar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    padding: 10px 20px;
+    gap: 20px;
+}
+
+#nav_logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: rgb(161, 118, 202);
+}
+
+#nav_list {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+    align-items: center;
+}
+
+/* Adicionado 
+.nav-item.active a {
+    text-decoration: underline;
+    font-weight: bold;
+}*/
 
 #user_avatar {
     width: 70px;
@@ -242,3 +271,5 @@ section{
 .section-subtitle {
     font-size: 1.563rem;
 }
+  
+    

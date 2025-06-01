@@ -14,13 +14,59 @@
     <title>Desafios</title>
 </head>
 <body>
+    <nav id="sidebar">
+        <div id="sidebar_content">
+            <div id="user">
+                <img src="{{ url_for('static', filename='images/avatar.png') }}" id="user_avatar" alt="Avatar">
+                <p id="user_infos">
+                    <span class="item-description">Fulano de Tal</span>
+                    <span>Lorem Ipsum</span>
+                </p>
+            </div>
+
+            <ul id="side_itens">
+                <li class="side-iten active">
+                    <a href="#"><i class="fa-solid fa-chart-simple"></i><span class="item_description">Dashboard</span></a>
+                </li>
+                <li class="side-iten"><a href="#"><i class="fa-solid fa-user"></i><span class="item_description">Usuário</span></a></li>
+                <li class="side-iten"><a href="#"><i class="fa-solid fa-bell"></i><span class="item_description">Notificações</span></a></li>
+                <li class="side-iten"><a href="#"><i class="fa-solid fa-image"></i><span class="item_description">Imagens</span></a></li>
+                <li class="side-iten"><a href="#"><i class="fa-solid fa-user-gear"></i><span class="item_description">Configurações</span></a></li>
+            </ul>
+
+            <button id="open_button">
+                <i id="open_button_icon" class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div id="logout">
+            <a href="{{ url_for('logout') }}">
+                <button id="logout_button">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="item_description">Logout</span>
+                </button>
+            </a>
+        </div>
+    </nav>
+
+    <header>
+<nav id="navbar">
+    <i class="fa-solid fa-feather" id="nav_logo">Lumme.</i>
+    <ul id="nav_list">
+        <li class="nav-item"><a href="{{ url_for('index') }}">Início</a></li>
+        <li class="nav-item"><a href="{{ url_for('orcamento') }}">Orçamento</a></li>
+        <li class="nav-item"><a href="{{ url_for('metas') }}">Metas</a></li>
+        <li class="nav-item"><a href="{{ url_for('desafios') }}">Desafios</a></li>
+        <li class="nav-item"><a href="{{ url_for('diario') }}">Diário Financeiro</a></li>
+    </ul>
+</nav>
+    </header>
 
 <main id="content">
 
     <h2 class="section-title">Desafios</h2>
     
     <div id="container">
-        <!-- Card 1 -->
         <div class="flip-card">
             <div class="flip-card-inner">
                 <div class="flip-card-front">
@@ -32,7 +78,6 @@
             </div>
         </div>
 
-        <!-- Card 2 -->
         <div class="flip-card">
             <div class="flip-card-inner">
                 <div class="flip-card-front">
@@ -44,7 +89,6 @@
             </div>
         </div>
 
-        <!-- Card 3 -->
         <div class="flip-card">
             <div class="flip-card-inner">
                 <div class="flip-card-front">
@@ -56,7 +100,6 @@
             </div>
         </div>
 
-        <!-- Card 4 -->
         <div class="flip-card">
             <div class="flip-card-inner">
                 <div class="flip-card-front">
@@ -68,7 +111,6 @@
             </div>
         </div>
 
-        <!-- Card 5 -->
         <div class="flip-card">
             <div class="flip-card-inner">
                 <div class="flip-card-front">
@@ -97,7 +139,23 @@
     </section>
 
 </main>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navItems = document.querySelectorAll('.nav-item');
 
+        const currentPath = window.location.pathname;
+
+        navItems.forEach(item => {
+            const link = item.querySelector('a');
+            const linkPath = link.getAttribute('href');
+
+            if (linkPath === currentPath || (currentPath === '/' && linkPath === '#home')) {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            }
+        });
+    });
+</script>
 <script src="{{ url_for('static', filename='javascript/script.js') }}"></script>
 </body>
 </html>

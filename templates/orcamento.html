@@ -1,88 +1,79 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/scrollreveal"></script>
   <title>Orçamento</title>
-
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles/orcamento.css') }}">
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </head>
-<body>    
-  </section>
-    <h2>Formulário Financeiro</h2>
-    <form id="formulario">
-      <div class="campo">
-        <label for="mes">Mês:</label>
-        <select id="mes" name="mes" required>
-          <option value="">Selecione o Mês</option>
-          <option value="Janeiro">Janeiro</option>
-          <option value="Fevereiro">Fevereiro</option>
-          <option value="Março">Março</option>
-          <option value="Abril">Abril</option>
-          <option value="Maio">Maio</option>
-          <option value="Junho">Junho</option>
-          <option value="Julho">Julho</option>
-          <option value="Agosto">Agosto</option>
-          <option value="Setembro">Setembro</option>
-          <option value="Outubro">Outubro</option>
-          <option value="Novembro">Novembro</option>
-          <option value="Dezembro">Dezembro</option>
-        </select>
-      </div>
+<body>
+  <nav id="sidebar">
+    <div id="sidebar_content">
+        <div id="user">
+            <img src="{{ url_for('static', filename='images/avatar.png') }}" id="user_avatar" alt="Avatar">
+            <p id="user_infos">
+                <span class="item-description">Fulano de Tal</span>
+                <span>Lorem Ipsum</span>
+            </p>
+        </div>
 
-      <div class="campo">
-        <label for="ano">Ano:</label>
-        <select id="ano" name="ano" required>
-          <option value="">Selecione o Ano</option>
-          <option value="2023">2023</option>
-          <option value="2024">2024</option>
-          <option value="2025">2025</option>
-          <option value="2026">2026</option>
-          <option value="2027">2027</option>
-        </select>
-      </div>
+        <ul id="side_itens">
+            <li class="side-iten active">
+                <a href="#"><i class="fa-solid fa-chart-simple"></i><span class="item_description">Dashboard</span></a>
+            </li>
+            <li class="side-iten"><a href="#"><i class="fa-solid fa-user"></i><span class="item_description">Usuário</span></a></li>
+            <li class="side-iten"><a href="#"><i class="fa-solid fa-bell"></i><span class="item_description">Notificações</span></a></li>
+            <li class="side-iten"><a href="#"><i class="fa-solid fa-image"></i><span class="item_description">Imagens</span></a></li>
+            <li class="side-iten"><a href="#"><i class="fa-solid fa-user-gear"></i><span class="item_description">Configurações</span></a></li>
+        </ul>
 
-      <div class="campo">
-        <label for="salario">Salário:</label>
-        <input type="number" id="salario" name="salario" required placeholder="Digite seu salário">
-      </div>
-
-      <div id="campos-adicionais"></div>
-
-      <button type="button" id="btn-adicionar">Adicionar Campo</button>
-      <button type="submit">Confirmar</button>
-
-      <div id="superavit">Superávit: R$ 0,00</div>
-    </form>
-
-    <div id="grafico-container">
-      <h3>Distribuição dos Gastos</h3>
-      <canvas id="graficoGastos"></canvas>
+        <button id="open_button">
+            <i id="open_button_icon" class="fa-solid fa-chevron-right"></i>
+        </button>
     </div>
 
-    <div id="historico">
-      <h3>Histórico de Gráficos</h3>
-      <div class="historico-selecao">
-        <div>
-          <label for="historico-ano">Escolha o ano:</label>
-          <select id="historico-ano" onchange="atualizarMeses()">
-            <option value="">Selecione o Ano</option>
-          </select>
-        </div>
-        <div>
-          <label for="historico-mes">Escolha o mês:</label>
-          <select id="historico-mes" onchange="mostrarGraficoHistorico()">
-            <option value="">Selecione o Mês</option>
-          </select>
-        </div>
-      </div>
-      <div id="historico-grafico"></div>
+    <div id="logout">
+        <a href="{{ url_for('logout') }}">
+            <button id="logout_button">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span class="item_description">Logout</span>
+            </button>
+        </a>
     </div>
-  </section>
+</nav>
 
-  <script src="{{ url_for('static', filename='javascript/orcamento.js') }}" defer></script>
+<header>
+<nav id="navbar">
+    <i class="fa-solid fa-feather" id="nav_logo">Lumme.</i>
+    <ul id="nav_list">
+        <li class="nav-item"><a href="{{ url_for('index') }}">Início</a></li>
+        <li class="nav-item"><a href="{{ url_for('orcamento') }}">Orçamento</a></li>
+        <li class="nav-item"><a href="{{ url_for('metas') }}">Metas</a></li>
+        <li class="nav-item"><a href="{{ url_for('desafios') }}">Desafios</a></li>
+        <li class="nav-item"><a href="{{ url_for('diario') }}">Diário Financeiro</a></li>
+    </ul>
+</nav>
+</header>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navItems = document.querySelectorAll('.nav-item');
+
+        const currentPath = window.location.pathname;
+
+        navItems.forEach(item => {
+            const link = item.querySelector('a');
+            const linkPath = link.getAttribute('href');
+
+            if (linkPath === currentPath || (currentPath === '/' && linkPath === '#home')) {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            }
+        });
+    });
+</script>
+<script src="{{ url_for('static', filename='javascript/script.js') }}"></script>
 </body>
 </html>

@@ -47,17 +47,16 @@
     </nav>
 
     <header>
-        <nav id="navbar">
-            <i class="fa-solid fa-feather" id="nav_logo">Lumme.</i>
-            <ul id="nav_list">
-                <li class="nav-item active"><a href="#home">Início</a></li>
-                <li class="nav-item"><a href="{{ url_for('orcamento') }}">Orçamento</a></li>
-                <li class="nav-item"><a href="{{ url_for('metas') }}">Metas</a></li>
-                <li class="nav-item"><a href="{{ url_for('desafios') }}">Desafios</a></li>
-                <li class="nav-item"><a href="{{ url_for('diario') }}">Diário Financeiro</a></li>
-            </ul>
-            <button class="btn-default">Meu Perfil</button>
-        </nav>
+<nav id="navbar">
+    <i class="fa-solid fa-feather" id="nav_logo">Lumme.</i>
+    <ul id="nav_list">
+        <li class="nav-item"><a href="{{ url_for('index') }}">Início</a></li>
+        <li class="nav-item"><a href="{{ url_for('orcamento') }}">Orçamento</a></li>
+        <li class="nav-item"><a href="{{ url_for('metas') }}">Metas</a></li>
+        <li class="nav-item"><a href="{{ url_for('desafios') }}">Desafios</a></li>
+        <li class="nav-item"><a href="{{ url_for('diario') }}">Diário Financeiro</a></li>
+    </ul>
+</nav>
     </header>
 
     <main id="content">
@@ -99,6 +98,34 @@
             </div>
         </div>
     </footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const navItems = document.querySelectorAll('.nav-item');
+    const currentPath = window.location.pathname;
+
+    console.log("Current path:", currentPath);
+
+    navItems.forEach(item => {
+        const link = item.querySelector('a');
+        const linkPath = link.getAttribute('href');
+        console.log("Link href:", linkPath);
+
+        // Comparar paths normalizados (sem barra no final)
+        const normalize = path => path.endsWith('/') && path.length > 1 ? path.slice(0, -1) : path;
+
+        const normCurrent = normalize(currentPath);
+        const normLink = normalize(linkPath);
+
+        const isHome = normLink === "{{ url_for('index') }}" && (normCurrent === '' || normCurrent === "{{ url_for('index') }}");
+
+        if (normCurrent === normLink || isHome) {
+            navItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+        }
+    });
+});
+</script>
+
 
     <script src="{{ url_for('static', filename='javascript/script.js') }}"></script>
 </body>
