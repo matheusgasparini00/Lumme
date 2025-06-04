@@ -52,7 +52,7 @@
 
     <header>
 <nav id="navbar">
-    <i class="fa-solid fa-feather" id="nav_logo">Lumme.</i>
+    <img src="{{ url_for('static', filename='images/navbar_lumme.png') }}" alt="Logo da Lumme" class="logo">
     <ul id="nav_list">
         <li class="nav-item"><a href="{{ url_for('index') }}">Início</a></li>
         <li class="nav-item"><a href="{{ url_for('orcamento') }}">Orçamento</a></li>

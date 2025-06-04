@@ -203,11 +203,6 @@ main {
     align-items: center;
 }
 
-/* Adicionado 
-.nav-item.active a {
-    text-decoration: underline;
-    font-weight: bold;
-}*/
 
 #user_avatar {
     width: 70px;

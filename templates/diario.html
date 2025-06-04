@@ -47,17 +47,18 @@
     </nav>
 
     <header>
-<nav id="navbar">
-    <i class="fa-solid fa-feather" id="nav_logo">Lumme.</i>
-    <ul id="nav_list">
-        <li class="nav-item"><a href="{{ url_for('index') }}">Início</a></li>
-        <li class="nav-item"><a href="{{ url_for('orcamento') }}">Orçamento</a></li>
-        <li class="nav-item"><a href="{{ url_for('metas') }}">Metas</a></li>
-        <li class="nav-item"><a href="{{ url_for('desafios') }}">Desafios</a></li>
-        <li class="nav-item"><a href="{{ url_for('diario') }}">Diário Financeiro</a></li>
-    </ul>
-</nav>
+        <nav id="navbar">
+            <img src="{{ url_for('static', filename='images/navbar_lumme.png') }}" alt="Logo da Lumme" class="logo">
+            <ul id="nav_list">
+                <li class="nav-item"><a href="{{ url_for('index') }}">Início</a></li>
+                <li class="nav-item"><a href="{{ url_for('orcamento') }}">Orçamento</a></li>
+                <li class="nav-item"><a href="{{ url_for('metas') }}">Metas</a></li>
+                <li class="nav-item"><a href="{{ url_for('desafios') }}">Desafios</a></li>
+                <li class="nav-item"><a href="{{ url_for('diario') }}">Diário Financeiro</a></li>
+            </ul>
+        </nav>
     </header>
+    
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         const navItems = document.querySelectorAll('.nav-item');
