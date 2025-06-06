@@ -57,3 +57,19 @@ $(document).ready(function(){
 document.getElementById('open_button').addEventListener('click', function() {
     document.getElementById('sidebar').classList.toggle('open-sidebar');
 })
+
+ document.addEventListener('DOMContentLoaded', function () {
+        const navItems = document.querySelectorAll('.nav-item');
+
+        const currentPath = window.location.pathname;
+
+        navItems.forEach(item => {
+            const link = item.querySelector('a');
+            const linkPath = link.getAttribute('href');
+
+            if (linkPath === currentPath || (currentPath === '/' && linkPath === '#home')) {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            }
+        });
+    });

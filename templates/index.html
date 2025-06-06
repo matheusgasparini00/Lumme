@@ -76,35 +76,6 @@
         </section>
     </main>
 
-    
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-    const navItems = document.querySelectorAll('.nav-item');
-    const currentPath = window.location.pathname;
-
-    console.log("Current path:", currentPath);
-
-    navItems.forEach(item => {
-        const link = item.querySelector('a');
-        const linkPath = link.getAttribute('href');
-        console.log("Link href:", linkPath);
-
-        const normalize = path => path.endsWith('/') && path.length > 1 ? path.slice(0, -1) : path;
-
-        const normCurrent = normalize(currentPath);
-        const normLink = normalize(linkPath);
-
-        const isHome = normLink === "{{ url_for('index') }}" && (normCurrent === '' || normCurrent === "{{ url_for('index') }}");
-
-        if (normCurrent === normLink || isHome) {
-            navItems.forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-        }
-    });
-});
-</script>
-
-
     <script src="{{ url_for('static', filename='javascript/script.js') }}"></script>
 </body>
 </html>
