@@ -210,7 +210,7 @@ main {
 
 .shape {
     position: fixed;
-    right: 5px;
+    right: 0px;
     top: 50%;
     transform: translateY(-50%);
     width: 400px;
@@ -223,7 +223,7 @@ main {
 
 #banner {
     position: fixed;
-    right: 5px;
+    right: 0px;
     top: 50%;
     transform: translateY(-50%);
     width: 400px;
@@ -235,7 +235,7 @@ main {
 }
 
 #banner img {
-    max-width: 85%;
+    max-width: 100%;
     height: auto;
 }
 
