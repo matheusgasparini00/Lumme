@@ -5,23 +5,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login</title>
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/lumme.ico') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/mensagens.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+
 </head>
 <body>
   <div class="container">
     <img src="{{ url_for('static', filename='images/logolumme.png') }}" alt="Logo da Lumme" class="logo">
-    
+
     <form class="form" action="{{ url_for('login') }}" method="POST">
       <h2>Login</h2>
 
       <input type="email" name="email" placeholder="Email" required>
-      <input type="password" name="senha" placeholder="Senha" required>
+      <input type="password" name="senha" placeholder="Senha" id="senha" required>
       <button type="submit">Entrar</button>
     </form>
-    
+
     <div class="toggle">
       Não tem uma conta? <a href="{{ url_for('cadastro') }}">Cadastre-se</a>
     </div>
   </div>
+
+<div id="mensagens-flash" style="display:none;">
+  {% with mensagens = get_flashed_messages(with_categories=true) %}
+    {% if mensagens %}
+      {% for categoria, mensagem in mensagens %}
+        <div class="flash" data-categoria="{{ categoria }}">{{ mensagem }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+<script>
+  function mostrarMensagem(texto, categoria) {
+  const div = document.createElement('div');
+  div.classList.add('flash-message');
+
+  if (categoria === 'erro') {
+    div.classList.add('erro');
+  } else if (categoria === 'alerta') {
+    div.classList.add('alerta');
+  } else if (categoria === 'sucesso') {
+    div.classList.add('sucesso');
+  } else {
+    div.classList.add(categoria);
+  }
+
+  div.textContent = texto;
+  document.body.appendChild(div);
+
+  if (categoria === 'sucesso' && document.querySelector('form[action*="cadastro"]')) {
+    const formCadastro = document.querySelector('form[action*="cadastro"]');
+    formCadastro.style.display = 'none';
+
+    setTimeout(() => div.remove(), 2000);
+  }
+  else if (categoria === 'sucesso' && document.querySelector('form[action*="login"]')) {
+    setTimeout(() => {
+      div.remove();
+      window.location.href = "/index";
+    }, 1000);
+  }
+  else {
+    setTimeout(() => div.remove(), 2000);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const mensagens = document.querySelectorAll('#mensagens-flash .flash');
+  mensagens.forEach(el => {
+    const texto = el.textContent.trim();
+    const categoria = el.dataset.categoria;
+    mostrarMensagem(texto, categoria);
+  });
+});
+</script>
+
+<script src="{{ url_for('static', filename='js/mensagens.js') }}"></script>
 </body>
 </html>

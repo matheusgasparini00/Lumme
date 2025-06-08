@@ -48,16 +48,16 @@ def cadastro():
         confirmar_senha = request.form['confirmar_senha']
 
         if not all([nome, sobrenome, email, data_nasc, senha, confirmar_senha]):
-            flash('Preencha todos os campos.')
+            flash('Preencha todos os campos.', 'alerta')
             return redirect('/cadastro')
 
         if senha != confirmar_senha:
-            flash('As senhas não coincidem.')
+            flash('As senhas não coincidem.', 'erro')
             return redirect('/cadastro')
 
         regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$"
         if not re.match(regex, senha):
-            flash('A senha deve conter maiúscula, minúscula, número e símbolo.')
+            flash('A senha deve conter maiúscula, minúscula, número e símbolo.', 'alerta')
             return redirect('/cadastro')
 
         senha_hash = generate_password_hash(senha)
@@ -67,7 +67,7 @@ def cadastro():
             cursor = conn.cursor()
             cursor.execute("SELECT id FROM usuarios WHERE email = %s", (email,))
             if cursor.fetchone():
-                flash('Email já cadastrado.')
+                flash('Email já cadastrado.', 'alerta')
                 return redirect('/cadastro')
 
             cursor.execute("""
@@ -75,11 +75,11 @@ def cadastro():
                 VALUES (%s, %s, %s, %s, %s)
             """, (nome, sobrenome, email, data_nasc, senha_hash))
             conn.commit()
-            flash('Cadastro realizado com sucesso!')
+            flash('Cadastro realizado com sucesso!', 'sucesso')
             return redirect('/login')
 
         except Exception as e:
-            flash(f"Erro ao cadastrar: {e}")
+            flash('Erro ao cadastrar: {e}', 'erro')
             return redirect('/cadastro')
 
         finally:
@@ -103,15 +103,15 @@ def login():
             if usuario and check_password_hash(usuario['senha'], senha):
                 session['usuario'] = usuario['email']
                 session['nome'] = usuario['nome']
-                flash('Login realizado com sucesso.')
-                return redirect('/index')
+                flash('Login realizado com sucesso.', 'sucesso')
+                return render_template("login.html", redirecionar_para_index=True)
             else:
-                flash('Email ou senha inválidos.')
-                return redirect('/login')
+                flash('Email ou senha inválidos.', 'erro')
+                return redirect('login')
 
         except Exception as e:
-            flash(f"Erro: {e}")
-            return redirect('/login')
+            flash(f'Erro: {e}','erro')
+            return redirect('login')
 
         finally:
             cursor.close()

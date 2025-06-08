@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cadastro</title>
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/lumme.ico') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/mensagens.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/cadastro.css') }}">
+
 </head>
 <body>
   <div class="container">
@@ -33,25 +35,61 @@
     </div>
   </div>
 
-  <script>
-    function verificarSenhas() {
-      const senha = document.getElementById('senha').value;
-      const confirmar = document.getElementById('confirmar_senha').value;
+<div id="mensagens-flash" style="display: none;">
+  {% with mensagens = get_flashed_messages(with_categories=true) %}
+    {% if mensagens %}
+      {% for categoria, mensagem in mensagens %}
+        <div class="flash" data-categoria="{{ categoria }}">{{ mensagem }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
 
-      const regexSenhaForte = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+<script>
+  function mostrarMensagem(texto, categoria) {
+  const div = document.createElement('div');
+  div.classList.add('flash-message');
 
-      if (!regexSenhaForte.test(senha)) {
-        alert('A senha deve ter no mínimo 8 caracteres e incluir letras maiúsculas, minúsculas, números e símbolos.');
-        return false;
-      }
+  if (categoria === 'erro') {
+    div.classList.add('erro');
+  } else if (categoria === 'alerta') {
+    div.classList.add('alerta');
+  } else if (categoria === 'sucesso') {
+    div.classList.add('sucesso');
+  } else {
+    div.classList.add(categoria);
+  }
 
-      if (senha !== confirmar) {
-        alert('As senhas não coincidem!');
-        return false;
-      }
+  div.textContent = texto;
+  document.body.appendChild(div);
 
-      return true;
-    }
-  </script>
+  if (categoria === 'sucesso' && document.querySelector('form[action*="cadastro"]')) {
+    const formCadastro = document.querySelector('form[action*="cadastro"]');
+    formCadastro.style.display = 'none';
+
+    setTimeout(() => div.remove(), 2000);
+  }
+  else if (categoria === 'sucesso' && document.querySelector('form[action*="login"]')) {
+    setTimeout(() => {
+      div.remove();
+      window.location.href = "/index";
+    }, 1000);
+  }
+  else {
+    setTimeout(() => div.remove(), 2000);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const mensagens = document.querySelectorAll('#mensagens-flash .flash');
+  mensagens.forEach(el => {
+    const texto = el.textContent.trim();
+    const categoria = el.dataset.categoria;
+    mostrarMensagem(texto, categoria);
+  });
+});
+</script>
+
+<script src="{{ url_for('static', filename='js/mensagens.js') }}"></script>
 </body>
 </html>

@@ -78,3 +78,23 @@ document.getElementById('open_button').addEventListener('click', function() {
     document.body.style.visibility = "visible";
     
     });
+
+        function verificarSenhas() {
+      const senha = document.getElementById('senha').value;
+      const confirmar = document.getElementById('confirmar_senha').value;
+
+      const regexSenhaForte = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+      if (!regexSenhaForte.test(senha)) {
+        alert('A senha deve ter no mínimo 8 caracteres e incluir letras maiúsculas, minúsculas, números e símbolos.');
+        return false;
+      }
+
+      if (senha !== confirmar) {
+        alert('As senhas não coincidem!');
+        return false;
+      }
+
+      return true;
+    }
+
