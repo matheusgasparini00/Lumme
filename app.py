@@ -27,10 +27,10 @@ def login_obrigatorio(f):
 def home():
     return redirect('/login')
 
-@app.route('/index')
+@app.route('/home')
 @login_obrigatorio
 def dashboard():
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/logout')
 def logout():
@@ -104,7 +104,7 @@ def login():
                 session['usuario'] = usuario['email']
                 session['nome'] = usuario['nome']
                 flash('Login realizado com sucesso.')
-                return redirect('/index')
+                return redirect('/home')
             else:
                 flash('Email ou senha inválidos.')
                 return redirect('/login')
@@ -119,10 +119,10 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/index')
+@app.route('/home')
 @login_obrigatorio
 def index():
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/desafios')
 @login_obrigatorio

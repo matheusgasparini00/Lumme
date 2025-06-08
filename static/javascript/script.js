@@ -73,3 +73,8 @@ document.getElementById('open_button').addEventListener('click', function() {
             }
         });
     });
+
+    window.addEventListener("load", function () {
+    document.body.style.visibility = "visible";
+    
+    });

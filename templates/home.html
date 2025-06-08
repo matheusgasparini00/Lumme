@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+    
+<style>
+  html, body {
+    background-color: #99cae7;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  #navbar {
+    background-color: #99cae7;
+  }
+
+  body {
+    visibility: hidden;
+  }
+</style>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/scrollreveal"></script>
@@ -52,7 +70,7 @@
         <nav id="navbar">
             <img src="{{ url_for('static', filename='images/navbar_lumme.png') }}" alt="Logo da Lumme" class="logo">
             <ul id="nav_list">
-                <li class="nav-item"><a href="{{ url_for('index') }}">Início</a></li>
+                <li class="nav-item"><a href="{{ url_for('home') }}">Início</a></li>
                 <li class="nav-item"><a href="{{ url_for('orcamento') }}">Orçamento</a></li>
                 <li class="nav-item"><a href="{{ url_for('metas') }}">Metas</a></li>
                 <li class="nav-item"><a href="{{ url_for('desafios') }}">Desafios</a></li>
@@ -71,7 +89,7 @@
                 </div>
             </div>
             <div id="banner">
-                <img src="{{ url_for('static', filename='images/lumme_site.png') }}">
+                <img src="{{ url_for('static', filename='images/lumme_site.png') }}" alt="cofrinho">
             </div>
         </section>
     </main>

@@ -7,6 +7,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/scrollreveal"></script>
 
+<style>
+  html, body {
+    background-color: #99cae7;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  #navbar {
+    background-color: #99cae7;
+  }
+
+  body {
+    visibility: hidden;
+  }
+</style>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/desafios.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -54,7 +71,7 @@
 <nav id="navbar">
     <img src="{{ url_for('static', filename='images/navbar_lumme.png') }}" alt="Logo da Lumme" class="logo">
     <ul id="nav_list">
-        <li class="nav-item"><a href="{{ url_for('index') }}">Início</a></li>
+        <li class="nav-item"><a href="{{ url_for('home') }}">Início</a></li>
         <li class="nav-item"><a href="{{ url_for('orcamento') }}">Orçamento</a></li>
         <li class="nav-item"><a href="{{ url_for('metas') }}">Metas</a></li>
         <li class="nav-item"><a href="{{ url_for('desafios') }}">Desafios</a></li>
