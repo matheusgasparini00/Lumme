@@ -16,8 +16,8 @@ h2 {
     flex-wrap: wrap;  
     align-items: center;
     justify-content: center;
-    gap: 20px; /* espaçamento entre os cards */
-    padding: 20px; /* espaçamento interno do container */
+    gap: 20px; 
+    padding: 20px; 
 }
 
 .flip-card {

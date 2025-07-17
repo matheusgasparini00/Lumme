@@ -1,8 +1,9 @@
 $(document).ready(function(){
 
-    const sections = $('section');
-    const navItems = $('.nav-item');
+const sections = $('section');
+const navItems = $('.nav-item');
 
+if (sections.length > 0) {
     $(window).on('scroll', function() {
         const header = $('header');
         const scrollPosition = $(window).scrollTop() - header.outerHeight();
@@ -23,11 +24,13 @@ $(document).ready(function(){
                 activeSectionIndex = i;
                 return false;
             }
-        })
+        });
 
         navItems.removeClass('active');
         $(navItems[activeSectionIndex]).addClass('active');
     });
+}
+
 
     ScrollReveal().reveal('#cta', {
         origin: 'left',
