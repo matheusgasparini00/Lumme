@@ -101,3 +101,38 @@ document.getElementById('open_button').addEventListener('click', function() {
       return true;
     }
 
+document.addEventListener('DOMContentLoaded', () => {
+  const botaoDicas = document.getElementById('botaoDicas');
+  const carrossel = document.getElementById('carrosselDicas');
+
+  // Oculta/mostra o carrossel ao clicar no botão
+  botaoDicas.addEventListener('click', () => {
+    if (carrossel.style.display === 'none') {
+      carrossel.style.display = 'block';
+    } else {
+      carrossel.style.display = 'none';
+    }
+  });
+
+  // Carrossel funcional
+  const slider = document.getElementById('slider');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const items = document.querySelectorAll('.slider-item');
+  let index = 0;
+
+  function showSlide(i) {
+    slider.style.transform = `translateX(-${i * 100}%)`;
+  }
+
+  prevBtn.addEventListener('click', () => {
+    index = (index - 1 + items.length) % items.length;
+    showSlide(index);
+  });
+
+  nextBtn.addEventListener('click', () => {
+    index = (index + 1) % items.length;
+    showSlide(index);
+  });
+});
+

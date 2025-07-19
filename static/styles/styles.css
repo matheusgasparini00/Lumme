@@ -8,7 +8,7 @@
 }
 
 html, body {
-    background-color: #00c3ff;
+    background-color: #c5cbda;
     min-height: 100vh;
     visibility: visible;
 }
@@ -19,7 +19,7 @@ header {
     left: 0;
     width: 100%;
     height: 80px;
-    background-color: #8e3fd0 !important;
+    background-color: #4f46e5 !important;
     z-index: 999;
 }
 
@@ -28,14 +28,18 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #8e3fd0 !important;
+    background-color: #4f46e5 !important;
     padding: 0 20px;
 }
 
-#nav_logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: rgb(161, 118, 202);
+.logo {
+    height: 70px;
+    transform: translateX(-600px); 
+}
+
+#nav_image {
+    height: 50px;
+    margin-right: 20px;
 }
 
 #nav_list {
@@ -47,13 +51,12 @@ header {
 
 .nav-item a {
     text-decoration: none;
-    color: rgb(204, 154, 250);
-    font-weight: 600;
+    color: #ffffff
 }
 
 .nav-item.active a {
-    color: rgb(204, 154, 250);
-    border-bottom: 3px solid #ffe100;
+    color: #ffffff !important;
+    border-bottom: 3px solid #ffe100 !important;
 }
 
 #sidebar {
@@ -106,7 +109,7 @@ header {
 }
 
 .side-iten.active {
-    background-color: #e9a209;
+    background-color: #4f46e5;
 }
 
 .side-iten:hover:not(.active),
@@ -118,7 +121,7 @@ header {
     text-decoration: none;
     display: flex;
     align-items: center;
-    color: blue;
+    color: rgb(0, 0, 0);
     justify-content: center;
 }
 
@@ -156,7 +159,7 @@ header {
     position: absolute;
     top: 30px;
     right: -10px;
-    background-color: #e9a209;
+    background-color: #4f46e5;
     color: azure;
     border-radius: 100%;
     width: 25px;
@@ -255,8 +258,8 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgb(161, 118, 202);
-    border-radius: 12px;
+    background-color: #4f46e5;
+    border-radius: 12px; 
     padding: 10px 14px;
     font-weight: 600;
     box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
@@ -265,7 +268,7 @@ section {
 }
 
 .btn-default:hover {
-    background-color: rgb(111, 28, 189);
+    background-color: rgb(103, 66, 138);
 }
 
 .social-media-buttons {
@@ -302,27 +305,83 @@ section {
 }
 
 main#content {
-    margin-left: 100px; /* 82px da sidebar + 18px folga */
+    margin-left: 100px; 
     padding: 20px;
 }
 
-/* 2. Organizar o #cta para coluna, texto em cima do botão */
 #cta {
     display: flex;
-    flex-direction: column; /* coluna: título acima do botão */
-    gap: 15px;               /* espaço entre título e botão */
-    max-width: 400px;        /* largura máxima confortável */
+    flex-direction: column; 
+    gap: 15px;               
+    max-width: 400px;       
 }
 
-/* 3. Botão centralizado ou alinhado à esquerda (ajuste se quiser) */
 #cta_buttons {
-    align-self: flex-start; /* botão alinhado à esquerda, abaixo do título */
+    align-self: flex-start; 
 }
 
-/* Opcional: deixar o título maior e com margem inferior */
 #cta .title {
-    margin: 0;
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #8e3fd0;
+    margin-top: 50px;
+    font-size: 45px;
+    color: #4f46e5;
 }
+
+#cta .title span {
+    background-color: #4f46e5;
+    color: #e6d556;
+    border-radius: 8px;
+    padding: 5px 10px; 
+}
+
+.slider-container {
+  position: relative;
+  width: 600px;
+  margin: 50px auto;
+  overflow: hidden;
+}
+
+.slider-wrapper {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.slider-item {
+  min-width: 100%;
+  height: 180px;
+  background-color: #ffe100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(142, 63, 208, 0.8);
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  padding: 10px 15px;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 6px;
+}
+
+.slider-arrow.left {
+  left: 10px;
+}
+
+.slider-arrow.right {
+  right: 10px;
+}
+
+.slider-arrow:hover {
+  background: #8e3fd0;
+}
+

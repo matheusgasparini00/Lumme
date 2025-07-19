@@ -29,8 +29,9 @@ def home():
 
 @app.route('/index')
 @login_obrigatorio
-def dashboard():
-    return render_template('index.html')
+def index():
+    nome = session.get('nome')
+    return render_template('index.html', nome=nome)
 
 @app.route('/logout')
 def logout():
@@ -118,11 +119,6 @@ def login():
             conn.close()
 
     return render_template('login.html')
-
-@app.route('/index')
-@login_obrigatorio
-def index():
-    return render_template('index.html')
 
 @app.route('/desafios')
 @login_obrigatorio

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/scrollreveal"></script>
     <title>Lumme - Home</title>
@@ -48,7 +49,7 @@
     </nav>
 
 
-    <header>
+<header>
         <nav id="navbar">
             <img src="{{ url_for('static', filename='images/navbar_lumme.png') }}" alt="Logo da Lumme" class="logo">
             <ul id="nav_list">
@@ -59,22 +60,34 @@
                 <li class="nav-item"><a href="{{ url_for('diario') }}">Diário Financeiro</a></li>
             </ul>
         </nav>
-    </header>
+</header>
 
-    <main id="content">
+<main id="content">
         <section id="pagina_home">
             <div class="shape"></div>
-            <div id="cta">
-                <h1 class="title">Seja bem-vindo ao <span>Lumme.</span></h1>
-                <div id="cta_buttons">
-                    <a href="#" class="btn-default">Dicas</a>
-                </div>
-            </div>
-            <div id="banner">
-                <img src="{{ url_for('static', filename='images/lumme_site.png') }}" alt="cofrinho">
-            </div>
-        </section>
-    </main>
+      <div id="cta">
+    <h1 class="title">Seja bem-vindo, <span>{{ nome }}!</span></h1>
+
+    <div id="btn-dicas">
+    <button class="btn-default">Dicas</button>
+    </div>
+    
+    <div class="slider-container">
+    <button class="slider-arrow left" id="prevBtn">◀</button>
+
+    <div class="slider-wrapper" id="slider">
+    <div class="slider-item">Dica 1: Defina metas financeiras mensais.</div>
+    <div class="slider-item">Dica 2: Registre seus gastos diários.</div>
+    <div class="slider-item">Dica 3: Evite compras por impulso.</div>
+    <div class="slider-item">Dica 4: Economize antes de gastar.</div>
+    </div>
+
+    <button class="slider-arrow right" id="nextBtn">▶</button>
+    </div>
+    </div>
+
+    </section>
+</main>
 
  <div id="mensagens-flash">
   {% with mensagens = get_flashed_messages(with_categories=true) %}

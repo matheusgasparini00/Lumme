@@ -1,6 +1,6 @@
  body {
       font-family: Arial, sans-serif;
-      background: #f0f0f0;
+      background: #c5cbda;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -9,8 +9,12 @@
       padding: 2.5ch;
     }
 
+    h2 {
+      color: #000000;
+    }
+
     .container {
-      background: white;
+      background: #ffffff;
       padding: 3.75ch 2.5ch;
       border-radius: 1.5ch;
       box-shadow: 0 0.5ch 2.5ch rgba(0,0,0,0.1);
@@ -39,7 +43,7 @@
       padding: 1.25ch;
       margin-bottom: 1.875ch;
       border-radius: 0.625ch;
-      background-color: #3498db;
+      background-color: #4f46e5;
       color: white;
       border: none;
       cursor: pointer;
