@@ -1,0 +1,75 @@
+.wrapper {  
+  margin: 80px 0 0 0;
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  overflow: hidden;
+  max-width: 76%;
+  transform: translateX(-90px);
+}
+
+
+.card-carousel {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  gap: 10px;
+}
+
+
+.carousel-btn {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+
+.carousel-track-container {
+  overflow: hidden;
+  width: 65%;
+  margin: 0 10px;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease;
+  gap: 20px;
+}
+
+.card {
+  min-width: 190px;
+  max-width: 190px;         
+  height: 230px;           
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+.card h3 {
+  color: #4f46e5;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.card p {
+  color: #333;
+  font-size: 14px;
+}

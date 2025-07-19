@@ -101,38 +101,38 @@ document.getElementById('open_button').addEventListener('click', function() {
       return true;
     }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const botaoDicas = document.getElementById('botaoDicas');
-  const carrossel = document.getElementById('carrosselDicas');
-
-  // Oculta/mostra o carrossel ao clicar no botão
-  botaoDicas.addEventListener('click', () => {
-    if (carrossel.style.display === 'none') {
-      carrossel.style.display = 'block';
-    } else {
-      carrossel.style.display = 'none';
+      window.addEventListener('load', function () {
+    const lumina = document.querySelector('.lumina-container');
+    if (lumina) {
+      lumina.style.visibility = 'visible';
+      lumina.style.opacity = '1';
     }
   });
 
-  // Carrossel funcional
-  const slider = document.getElementById('slider');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const items = document.querySelectorAll('.slider-item');
-  let index = 0;
+    // === Carrossel com botões: avançar e voltar ===
+    window.addEventListener('DOMContentLoaded', function () {
+    const track = document.querySelector('.carousel-track');
+    const cards = Array.from(track.children);
+    const btnLeft = document.querySelector('.carousel-btn-left');
+    const btnRight = document.querySelector('.carousel-btn-right');
 
-  function showSlide(i) {
-    slider.style.transform = `translateX(-${i * 100}%)`;
-  }
+    const cardWidth = cards[0].getBoundingClientRect().width + 20; // largura + gap
+    let currentIndex = 0;
 
-  prevBtn.addEventListener('click', () => {
-    index = (index - 1 + items.length) % items.length;
-    showSlide(index);
-  });
+    btnRight.addEventListener('click', () => {
+        const visibleCards = Math.floor(document.querySelector('.carousel-track-container').offsetWidth / cardWidth);
+        const maxIndex = cards.length - visibleCards;
+        if (currentIndex < maxIndex) {
+            currentIndex++;
+            track.style.transform = `translateX(-${cardWidth * currentIndex}px)`;
+        }
+    });
 
-  nextBtn.addEventListener('click', () => {
-    index = (index + 1) % items.length;
-    showSlide(index);
-  });
+    btnLeft.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            track.style.transform = `translateX(-${cardWidth * currentIndex}px)`;
+        }
+    });
 });
 

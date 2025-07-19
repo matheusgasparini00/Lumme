@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/carrossel.css') }}">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/scrollreveal"></script>
@@ -25,11 +26,9 @@
 
             <ul id="side_itens">
                 <li class="side-iten active">
-                    <a href="#"><i class="fa-solid fa-chart-simple"></i><span class="item_description">Dashboard</span></a>
+                    <a href="#"><i class="fa-solid fa-user"></i><span class="item_description">Usuário</span></a>
                 </li>
-                <li class="side-iten"><a href="#"><i class="fa-solid fa-user"></i><span class="item_description">Usuário</span></a></li>
                 <li class="side-iten"><a href="#"><i class="fa-solid fa-bell"></i><span class="item_description">Notificações</span></a></li>
-                <li class="side-iten"><a href="#"><i class="fa-solid fa-image"></i><span class="item_description">Imagens</span></a></li>
                 <li class="side-iten"><a href="#"><i class="fa-solid fa-user-gear"></i><span class="item_description">Configurações</span></a></li>
             </ul>
 
@@ -65,29 +64,56 @@
 <main id="content">
         <section id="pagina_home">
             <div class="shape"></div>
-      <div id="cta">
-    <h1 class="title">Seja bem-vindo, <span>{{ nome }}!</span></h1>
+    <div id="cta" style="display: flex; align-items: center; justify-content: space-between;">
+    <div class="text-content">
+    <h1 class="title">Seja bem-vindo(a),</h1>
+    <h1 class="title"><span>{{ nome }}!</span></h1>
 
-    <div id="btn-dicas">
-    <button class="btn-default">Dicas</button>
-    </div>
-    
-    <div class="slider-container">
-    <button class="slider-arrow left" id="prevBtn">◀</button>
-
-    <div class="slider-wrapper" id="slider">
-    <div class="slider-item">Dica 1: Defina metas financeiras mensais.</div>
-    <div class="slider-item">Dica 2: Registre seus gastos diários.</div>
-    <div class="slider-item">Dica 3: Evite compras por impulso.</div>
-    <div class="slider-item">Dica 4: Economize antes de gastar.</div>
-    </div>
-
-    <button class="slider-arrow right" id="nextBtn">▶</button>
     </div>
     </div>
+            <div class="wrapper">
+                <section class="card-carousel">
+                
+                    <button class="carousel-btn carousel-btn-left">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
 
-    </section>
+                    <div class="carousel-track-container">
+                        <ul class="carousel-track">
+                        <li class="card">
+                            <h3>Orçamento Mensal</h3>
+                            <p>Defina e acompanhe seus gastos e ganhos mensais.</p>
+                        </li>
+                        <li class="card">
+                            <h3>Reserva de Emergência</h3>
+                            <p>Guarde 6 meses de despesas para imprevistos.</p>
+                        </li>
+                        <li class="card">
+                            <h3>Metas Financeiras</h3>
+                            <p>Estabeleça metas claras e acompanhe o progresso.</p>
+                        </li>
+                        <li class="card">
+                            <h3>Controle de Dívidas</h3>
+                            <p>Evite juros e organize seu pagamento de dívidas.</p>
+                        </li>
+                        <li class="card">
+                            <h3>Investimentos</h3>
+                            <p>Comece a investir pensando no longo prazo.</p>
+                        </li>
+                        </ul>
+                    </div>
+
+                    <button class="carousel-btn carousel-btn-right">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+            
+                </section>
+            </div>
+
 </main>
+            <div class="lumina-container">
+                <img src="{{ url_for('static', filename='images/porco.png') }}" alt="Imagem de fundo">
+            </div>
 
  <div id="mensagens-flash">
   {% with mensagens = get_flashed_messages(with_categories=true) %}
