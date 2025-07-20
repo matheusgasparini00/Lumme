@@ -1,0 +1,151 @@
+#sidebar {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 82px;
+    height: calc(100vh - 80px);
+    background-color: #fff;
+    border-radius: 0px 18px 18px 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all .5s;
+    z-index: 10;
+}
+
+#sidebar_content {
+    padding: 12px;
+}
+
+#user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+#user_infos {
+    display: none;
+    flex-direction: column;
+}
+
+#user_infos span:last-child {
+    color: blanchedalmond;
+    font-size: 10px;
+}
+
+#side_itens {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+}
+
+.side-iten {
+    padding: 14px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.side-iten.active {
+    background-color: #4f46e5;
+}
+
+.side-iten:hover:not(.active),
+#logout_button:hover {
+    background-color: #ffffff;
+}
+
+.side-iten a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    color: rgb(0, 0, 0);
+    justify-content: center;
+}
+
+.side-iten.active a {
+    color: beige;
+}
+
+.side-iten a i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+#logout {
+    border-top: 1px solid #ffffff;
+    padding: 12px;
+}
+
+#logout_button {
+    border: none;
+    padding: 12px;
+    font-size: 14px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    border-radius: 8px;
+    text-align: start;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+#open_button {
+    position: absolute;
+    top: 30px;
+    right: -10px;
+    background-color: #4f46e5;
+    color: azure;
+    border-radius: 100%;
+    width: 25px;
+    height: 25px;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#open_button_icon {
+    transition: transform .3s ease;
+}
+
+.open-sidebar #open_button_icon {
+    transform: rotate(180deg);
+}
+
+.item_description {
+    width: 0px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    transition: width .6s;
+    height: 0px;
+}
+
+#sidebar.open-sidebar {
+    width: 220px;
+}
+
+#sidebar.open-sidebar .item_description {
+    width: 110px;
+    height: auto;
+}
+
+#sidebar.open-sidebar .side-iten a {
+    justify-content: flex-start;
+    gap: 14px;
+}
+
+#user_avatar {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 20px;
+}

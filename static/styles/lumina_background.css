@@ -1,0 +1,23 @@
+.lumina-container {
+  position: fixed;  
+  top: 100px;          
+  right: 0;            
+  width: 450px;
+  height: 450px;
+  background-color: #4f46e5;
+  border-radius: 135px 0px 10px 50px;
+  padding: 20px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;          
+}
+
+
+.lumina-container img {
+  width: 80%;       
+  height: auto;     
+  max-height: 90%; 
+  object-fit: contain;
+}
