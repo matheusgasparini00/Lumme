@@ -39,16 +39,16 @@
     button {
       padding: 1.5ch;
       background-color: #4f46e5;
-      color: white;
+      color: #e6d556;
       border: none;
       border-radius: 0.75ch;
       font-size: 2ch;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-    button:hover { background-color: #2980b9; }
+    button:hover { background-color: #4f46e5; }
     .toggle { margin-top: 1.5ch; font-size: 1.75ch; }
-    .toggle a { color: #3498db; text-decoration: none; }
+    .toggle a { color: #4f46e5; text-decoration: none; }
     .toggle a:hover { text-decoration: underline; }
     @media (max-width: 50ch) {
       .container { padding: 3.125ch 1.875ch; }

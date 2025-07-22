@@ -20,18 +20,16 @@
             <div id="user">
                 <img src="{{ url_for('static', filename='images/avatar.png') }}" id="user_avatar" alt="Avatar">
                 <p id="user_infos">
-                    <span class="item-description">Fulano de Tal</span>
-                    <span>Lorem Ipsum</span>
+                <span class="item-nome">{{ nome }}</span>
+                <span class="item-sobrenome">{{ sobrenome }}</span>
                 </p>
             </div>
 
             <ul id="side_itens">
                 <li class="side-iten active">
-                    <a href="#"><i class="fa-solid fa-chart-simple"></i><span class="item_description">Dashboard</span></a>
+                    <a href="#"><i class="fa-solid fa-user"></i><span class="item_description">Usuário</span></a>
                 </li>
-                <li class="side-iten"><a href="#"><i class="fa-solid fa-user"></i><span class="item_description">Usuário</span></a></li>
                 <li class="side-iten"><a href="#"><i class="fa-solid fa-bell"></i><span class="item_description">Notificações</span></a></li>
-                <li class="side-iten"><a href="#"><i class="fa-solid fa-image"></i><span class="item_description">Imagens</span></a></li>
                 <li class="side-iten"><a href="#"><i class="fa-solid fa-user-gear"></i><span class="item_description">Configurações</span></a></li>
             </ul>
 
