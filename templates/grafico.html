@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro</title>
+    <meta name="description" content="Gerencie suas finanças pessoais com facilidade">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/grafico.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="financial-container">
+        <div class="main-wrapper">
+            <h1 class="main-title">Controle Financeiro</h1>
+
+            <div class="circular-grid">
+                <div class="circular-card">
+                    <h2 class="circular-title">Salário</h2>
+                    <div class="circular-field">
+                        <div class="circular-border salary-border"></div>
+                        <div class="circular-inner salary-inner">
+                            <input 
+                                type="number" 
+                                id="salary-input"
+                                class="salary-input"
+                                placeholder="0,00"
+                                min="0"
+                                step="0.01"
+                            />
+                        </div>
+                    </div>
+                    <p id="salary-display" class="salary-value">R$ 0,00</p>
+                </div>
+
+                <div class="circular-card">
+                    <h2 class="circular-title">Despesas</h2>
+                    <div class="circular-field">
+                        <div class="circular-border expenses-border"></div>
+                        <div class="circular-inner expenses-inner">
+                            <span id="expenses-display" class="expenses-value">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <p id="progress-text" class="progress-text">0.0% do salário</p>
+                </div>
+
+                <div class="circular-card">
+                    <h2 class="circular-title">Superávit</h2>
+                    <div class="circular-field">
+                        <div class="circular-border surplus-border"></div>
+                        <div class="circular-inner surplus-inner">
+                            <span id="surplus-display" class="surplus-value surplus-positive">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <p id="surplus-status" class="surplus-status status-positive">Economia</p>
+                </div>
+            </div>
+
+            <div class="form-list-grid">
+                <div class="form-card">
+                    <h2 class="form-title">Adicionar Despesa</h2>
+                    <div class="form-group">
+                        <input
+                            type="text"
+                            id="expense-name"
+                            class="form-input expense-input"
+                            placeholder="Nome da despesa"
+                            maxlength="50"
+                        />
+                        <input
+                            type="number"
+                            id="expense-amount"
+                            class="form-input expense-input"
+                            placeholder="Valor"
+                            min="0"
+                            step="0.01"
+                        />
+                        <button 
+                            id="add-expense-btn"
+                            class="form-button"
+                            disabled
+                        >
+                            Adicionar Despesa
+                        </button>
+                    </div>
+                </div>
+
+                <div class="expense-list">
+                    <h2 id="list-title" class="list-title">Lista de Despesas (0)</h2>
+                    <div class="scroll-area">
+                        <div id="expense-container">
+                            <p class="empty-state">Nenhuma despesa cadastrada</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <h2 class="summary-title">Resumo Financeiro</h2>
+                <div class="summary-grid">
+                    <div class="summary-item summary-salary">
+                        <p class="summary-label">Salário Total</p>
+                        <p id="salary-total" class="summary-value">R$ 0,00</p>
+                    </div>
+                    <div class="summary-item summary-expenses">
+                        <p class="summary-label">Total Despesas</p>
+                        <p id="expenses-total" class="summary-value">R$ 0,00</p>
+                    </div>
+                    <div id="balance-item" class="summary-item summary-balance">
+                        <p class="summary-label">Saldo Final</p>
+                        <p id="balance-total" class="summary-value">R$ 0,00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='javascript/grafico.js') }}"></script>
+</body>
+</html>
