@@ -31,7 +31,15 @@ def home():
 @login_obrigatorio
 def index():
     nome = session.get('nome')
+    sobrenome = session.get('sobrenome')
     return render_template('index.html', nome=nome)
+
+@app.context_processor
+def inject_user_info():
+    return dict(
+        nome=session.get('nome'),
+        sobrenome=session.get('sobrenome')
+)
 
 @app.route('/logout')
 def logout():
@@ -104,6 +112,7 @@ def login():
             if usuario and check_password_hash(usuario['senha'], senha):
                 session['usuario'] = usuario['email']
                 session['nome'] = usuario['nome']
+                session['sobrenome'] = usuario['sobrenome']
                 flash('Login realizado com sucesso.', 'sucesso')
                 return render_template("login.html", redirecionar_para_index=True)
             else:

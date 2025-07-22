@@ -25,13 +25,23 @@
 }
 
 #user_infos {
-    display: none;
+    display: flex;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    align-items: flex-start;
+    gap: 4px;
+    transition: opacity 0.4s ease, max-height 0.4s ease;
     flex-direction: column;
+    width: 100%;
 }
 
-#user_infos span:last-child {
-    color: blanchedalmond;
-    font-size: 10px;
+#user_infos span {
+  display: block; 
+  white-space: nowrap; 
+  overflow: hidden;
+  text-overflow: ellipsis; 
+  max-width: 100%; 
 }
 
 #side_itens {
@@ -148,4 +158,20 @@
     height: 70px;
     object-fit: cover;
     border-radius: 20px;
+}
+
+#sidebar.open-sidebar #user_infos {
+    opacity: 1;
+    max-height: 100px;
+}
+
+.item-nome {
+    font-weight: bold;
+    color: #000000;
+    font-size: 20px;
+}
+
+.item-sobrenome {
+    font-size: 15px;
+    color: #000000;
 }
