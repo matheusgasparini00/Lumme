@@ -147,25 +147,6 @@ class FinancialTracker {
     }
   }
 
-  updateSummary() {
-    const salaryTotal = document.getElementById('salary-total');
-    if (salaryTotal) {
-      salaryTotal.textContent = this.formatCurrency(this.salary);
-    }
-
-    const expensesTotal = document.getElementById('expenses-total');
-    if (expensesTotal) {
-      expensesTotal.textContent = this.formatCurrency(this.totalExpenses);
-    }
-
-    const balanceTotal = document.getElementById('balance-total');
-    const balanceItem = document.getElementById('balance-item');
-    if (balanceTotal && balanceItem) {
-      balanceTotal.textContent = this.formatCurrency(this.surplus);
-      balanceItem.className = `summary-item summary-balance ${this.surplus < 0 ? 'negative' : ''}`;
-    }
-  }
-
   updateAddButtonState() {
     const nameInput = document.getElementById('expense-name');
     const amountInput = document.getElementById('expense-amount');

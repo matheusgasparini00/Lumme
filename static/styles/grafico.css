@@ -1,4 +1,9 @@
-/* Financial Tracker Styles */
+:root {
+  --cor-roxo: #4f46e5;
+  --cor-amarelo: #e6d556;
+  --cor-fundo: #c5cbda;
+}
+
 .financial-container {
   min-height: 100vh;
   background-color: #f9fafb;
@@ -18,7 +23,6 @@
   color: #1f2937;
 }
 
-/* Circular Fields Grid */
 .circular-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -47,7 +51,6 @@
   margin-bottom: 1rem;
 }
 
-/* Circular Field Styles */
 .circular-field {
   position: relative;
   width: 8rem;
@@ -71,7 +74,6 @@
   justify-content: center;
 }
 
-/* Salary Field */
 .salary-border {
   border-color: #bbf7d0;
 }
@@ -96,7 +98,6 @@
   color: #059669;
 }
 
-/* Expenses Field */
 .expenses-border {
   border-color: #fecaca;
 }
@@ -132,7 +133,6 @@
   margin-top: 0.5rem;
 }
 
-/* Surplus Field */
 .surplus-border {
   border-color: #bfdbfe;
 }
@@ -168,7 +168,6 @@
   color: #dc2626;
 }
 
-/* Form and List Grid */
 .form-list-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -182,7 +181,6 @@
   }
 }
 
-/* Form Styles */
 .form-card {
   background: white;
   border-radius: 0.5rem;
@@ -236,7 +234,6 @@
   cursor: not-allowed;
 }
 
-/* Expense List */
 .expense-list {
   background: white;
   border-radius: 0.5rem;
@@ -310,79 +307,4 @@
 
 .delete-button:hover {
   color: #b91c1c;
-}
-
-/* Summary Section */
-.summary-card {
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-}
-
-.summary-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.summary-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  text-align: center;
-}
-
-@media (min-width: 768px) {
-  .summary-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.summary-item {
-  padding: 1rem;
-  border-radius: 0.5rem;
-}
-
-.summary-salary {
-  background-color: #f0fdf4;
-}
-
-.summary-expenses {
-  background-color: #fef2f2;
-}
-
-.summary-balance {
-  background-color: #eff6ff;
-}
-
-.summary-balance.negative {
-  background-color: #fff7ed;
-}
-
-.summary-label {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 0.25rem;
-}
-
-.summary-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.summary-salary .summary-value {
-  color: #059669;
-}
-
-.summary-expenses .summary-value {
-  color: #dc2626;
-}
-
-.summary-balance .summary-value {
-  color: #2563eb;
-}
-
-.summary-balance.negative .summary-value {
-  color: #ea580c;
 }

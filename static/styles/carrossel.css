@@ -1,3 +1,9 @@
+:root {
+  --cor-roxo: #4f46e5;
+  --cor-amarelo: #e6d556;
+  --cor-fundo: #c5cbda;
+}
+
 .wrapper {  
   margin: 80px 0 0 0;
   position: relative;
