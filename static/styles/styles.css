@@ -14,7 +14,7 @@
 }
 
 html, body {
-    background-color: #c5cbda;
+    background-color: var(--cor-fundo);
     min-height: 100vh;
     visibility: visible;
 }
@@ -34,7 +34,7 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #4f46e5;
+    background-color: var(--cor-roxo);
     border-radius: 12px; 
     padding: 10px 14px;
     font-weight: 600;
@@ -98,7 +98,7 @@ main#content {
 }
 
 #cta .title {
-    color: #4f46e5;
+    color: var(--cor-roxo);
     font-size: 45px;
     margin-top: 0;
     white-space: nowrap;
@@ -108,7 +108,7 @@ main#content {
 
 #cta .title span {
   display: inline-block;
-  background-color: #4f46e5;
+  background-color: var(--cor-roxo);
   color: #e6d556;
   padding: 4px 8px;
   border-radius: 6px;
