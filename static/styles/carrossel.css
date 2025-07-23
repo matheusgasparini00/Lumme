@@ -27,7 +27,7 @@
 
 
 .carousel-btn {
-  background-color: #4f46e5;
+  background-color: var(--cor-roxo);
   color: white;
   border: none;
   border-radius: 50%;

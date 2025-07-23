@@ -64,7 +64,7 @@
 }
 
 .side-iten.active {
-    background-color: #4f46e5;
+    background-color: var(--cor-roxo);
 }
 
 .side-iten:hover:not(.active),
@@ -114,7 +114,7 @@
     position: absolute;
     top: 30px;
     right: -10px;
-    background-color: #4f46e5;
+    background-color: var(--cor-roxo);
     color: azure;
     border-radius: 100%;
     width: 25px;

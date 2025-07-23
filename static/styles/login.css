@@ -44,7 +44,7 @@
     }
     button {
       padding: 1.5ch;
-      background-color: #4f46e5;
+      background-color: var(--cor-roxo);
       color: #e6d556;
       border: none;
       border-radius: 0.75ch;
@@ -52,7 +52,7 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-    button:hover { background-color: #4f46e5; }
+    button:hover { background-color: var(--cor-roxo); }
     .toggle { margin-top: 1.5ch; font-size: 1.75ch; }
     .toggle a { color: #4f46e5; text-decoration: none; }
     .toggle a:hover { text-decoration: underline; }

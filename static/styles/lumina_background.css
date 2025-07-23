@@ -10,7 +10,7 @@
   right: 0;            
   width: 450px;
   height: 450px;
-  background-color: #4f46e5;
+  background-color: var(--cor-roxo);
   border-radius: 135px 0px 10px 50px;
   padding: 20px;
   color: white;

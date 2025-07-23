@@ -5,7 +5,7 @@
 }
 
 #main-footer {
-    background-color: #4f46e5;
+    background-color: var(--cor-roxo);
     color: white;
     text-align: center;
     padding: 20px 10px;
