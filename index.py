@@ -21,6 +21,33 @@ TABLES = {
             senha VARCHAR(255)
         )
         """
+    ),
+
+    "orcamentos": (
+        """
+        CREATE TABLE orcamentos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            usuario_id INT NOT NULL,
+            salario DECIMAL(10,2),
+            despesa_total DECIMAL(10,2),
+            superavit DECIMAL(10,2),
+            data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+        )
+        """
+    ),
+
+      "orcamento_despesas": (
+        """
+        CREATE TABLE orcamento_despesas (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            usuario_id INT NOT NULL,
+            nome VARCHAR(255) NOT NULL,
+            valor DECIMAL(10,2) NOT NULL,
+            data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+        )
+        """
     )
 }
 

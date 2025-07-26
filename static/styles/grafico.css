@@ -1,12 +1,12 @@
 :root {
   --cor-roxo: #4f46e5;
   --cor-amarelo: #e6d556;
-  --cor-fundo: #c5cbda;
+  --cor-fundo1: #c5cbda;
+  --cor-verde: #bbf7d0;
 }
 
 .financial-container {
   min-height: 100vh;
-  background-color: var(--cor-fundo);
   padding: 1rem;
 }
 
@@ -74,12 +74,13 @@
   justify-content: center;
 }
 
+
 .salary-border {
-  border-color: #bbf7d0;
+  border-color: #4e46e571;
 }
 
 .salary-inner {
-  background-color: #dcfce7;
+  background-color: #4e46e571;
 }
 
 .salary-input {
@@ -95,7 +96,7 @@
 .salary-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #059669;
+  color: var(--cor-roxo);
 }
 
 .expenses-border {
@@ -123,7 +124,7 @@
 
 .progress-fill {
   height: 100%;
-  background-color: #3b82f6;
+  background-color: var(--cor-roxo);
   transition: width 0.3s ease;
 }
 
@@ -134,11 +135,11 @@
 }
 
 .surplus-border {
-  border-color: #bfdbfe;
+  border-color: #53e787;
 }
 
 .surplus-inner {
-  background-color: #dbeafe;
+  background-color: #bef3d0fd;
 }
 
 .surplus-value {
@@ -147,7 +148,7 @@
 }
 
 .surplus-positive {
-  color: #2563eb;
+  color: #1eff00;
 }
 
 .surplus-negative {
@@ -161,7 +162,7 @@
 }
 
 .status-positive {
-  color: #059669;
+  color: #1eff00;
 }
 
 .status-negative {
@@ -209,14 +210,14 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--cor-roxo);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .form-button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #1f2937;
+  background-color: var(--cor-roxo);
   color: white;
   border: none;
   border-radius: 0.375rem;
@@ -230,7 +231,7 @@
 }
 
 .form-button:disabled {
-  background-color: #9ca3af;
+  background-color: var(--cor-roxo);
   cursor: not-allowed;
 }
 
@@ -292,7 +293,7 @@
 
 .expense-amount {
   font-weight: 600;
-  color: #dc2626;
+  color: var(--cor-roxo);
 }
 
 .delete-button {
@@ -306,5 +307,53 @@
 }
 
 .delete-button:hover {
-  color: #b91c1c;
+  color: var(--cor-roxo);
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.delete-button i {
+  color: #e74c3c;         
+  font-size: 1.2rem; 
+  transition: color 0.2s;
+}
+
+.delete-button i:hover {
+  color: #c0392b;
+}
+
+.form-card {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+
+.form-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--cor-roxo);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+#expense-chart {
+  max-width: 100%;
+  height: auto;
 }

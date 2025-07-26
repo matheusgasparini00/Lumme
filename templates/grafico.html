@@ -7,6 +7,8 @@
     <meta name="description" content="Gerencie suas finanças pessoais com facilidade">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/grafico.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -39,7 +41,7 @@
                     <p id="salary-display" class="salary-value">R$ 0,00</p>
                 </div>
                 <div class="circular-card">
-                    <h2 class="circular-title">Despesas</h2>
+                    <h3 class="circular-title">Despesas</h3>
                     <div class="circular-field">
                         <div class="circular-border expenses-border"></div>
                         <div class="circular-inner expenses-inner">
@@ -53,7 +55,7 @@
                 </div>
 
                 <div class="circular-card">
-                    <h2 class="circular-title">Superávit</h2>
+                    <h4 class="circular-title">Superávit</h4>
                     <div class="circular-field">
                         <div class="circular-border surplus-border"></div>
                         <div class="circular-inner surplus-inner">
@@ -101,8 +103,13 @@
                 </div>
             </div>
                 </div>
+                    <div class="form-card chart-card">
+                        <h2 class="form-title">Gráfico de Despesas</h2>
+                        <canvas id="expense-chart" width="400" height="400"></canvas>
+                    </div>
             </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', filename='javascript/grafico.js') }}"></script>
 </body>
 </html>

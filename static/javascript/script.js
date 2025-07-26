@@ -112,6 +112,7 @@ document.getElementById('open_button').addEventListener('click', function() {
     // === Carrossel com botões: avançar e voltar ===
     window.addEventListener('DOMContentLoaded', function () {
     const track = document.querySelector('.carousel-track');
+    if (track) {
     const cards = Array.from(track.children);
     const btnLeft = document.querySelector('.carousel-btn-left');
     const btnRight = document.querySelector('.carousel-btn-right');
@@ -119,7 +120,7 @@ document.getElementById('open_button').addEventListener('click', function() {
     const cardWidth = cards[0].getBoundingClientRect().width + 20; // largura + gap
     let currentIndex = 0;
 
-    btnRight.addEventListener('click', () => {
+    btnRight?.addEventListener('click', () => {
         const visibleCards = Math.floor(document.querySelector('.carousel-track-container').offsetWidth / cardWidth);
         const maxIndex = cards.length - visibleCards;
         if (currentIndex < maxIndex) {
@@ -128,11 +129,13 @@ document.getElementById('open_button').addEventListener('click', function() {
         }
     });
 
-    btnLeft.addEventListener('click', () => {
+    btnLeft?.addEventListener('click', () => {
         if (currentIndex > 0) {
             currentIndex--;
             track.style.transform = `translateX(-${cardWidth * currentIndex}px)`;
         }
+     
     });
+}
 });
 

@@ -8,20 +8,12 @@ class FinancialTracker {
   }
 
   init() {
+    this.fetchSavedBudget();
     this.bindEvents();
     this.updateDisplay();
   }
 
   bindEvents() {
-    const salaryInput = document.getElementById('salary-input');
-    if (salaryInput) {
-      salaryInput.addEventListener('input', (e) => {
-        this.salary = parseFloat(e.target.value) || 0;
-        this.calculateTotals();
-        this.updateDisplay();
-      });
-    }
-
     const addExpenseBtn = document.getElementById('add-expense-btn');
     if (addExpenseBtn) {
       addExpenseBtn.addEventListener('click', () => {
@@ -37,12 +29,48 @@ class FinancialTracker {
         }
       });
     });
+
+    const salaryInput = document.getElementById('salary-input');
+    if (salaryInput) {
+      salaryInput.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        if (!isNaN(value) && value >= 0) {
+          this.salary = value;
+          this.calculateTotals();
+          this.updateDisplay();
+        }
+      });
+    }
+  }
+
+  fetchSavedBudget() {
+   fetch('/obter_orcamentos')
+  .then(res => res.json())
+  .then(data => {
+    this.salary = parseFloat(data.salario) || 0;
+
+    // Corrigindo os dados das despesas
+    this.expenses = (data.despesas || []).map((d, index) => ({
+      id: Date.now().toString() + index, // Garante um ID mesmo vindo do banco
+      name: d.name,
+      amount: parseFloat(d.amount),
+      date: this.formatDate(new Date()) // OU use uma data vinda do backend, se quiser salvar a real
+    }));
+
+    this.calculateTotals();
+    this.updateDisplay();
+
+    const salaryInput = document.getElementById('salary-input');
+    if (salaryInput) salaryInput.value = this.salary.toFixed(2);
+  })
+  .catch(err => console.error('Erro ao carregar orçamento salvo:', err));
+  
   }
 
   addExpense() {
     const nameInput = document.getElementById('expense-name');
     const amountInput = document.getElementById('expense-amount');
-    
+
     const name = nameInput.value.trim();
     const amount = parseFloat(amountInput.value) || 0;
 
@@ -57,10 +85,10 @@ class FinancialTracker {
       this.expenses.push(expense);
       this.calculateTotals();
       this.updateDisplay();
-      
+
       nameInput.value = '';
       amountInput.value = '';
-      
+
       this.updateAddButtonState();
     }
   }
@@ -74,6 +102,21 @@ class FinancialTracker {
   calculateTotals() {
     this.totalExpenses = this.expenses.reduce((sum, expense) => sum + expense.amount, 0);
     this.surplus = this.salary - this.totalExpenses;
+
+    this.salvarNoServidor(this.salary, this.totalExpenses, this.surplus);
+  }
+
+  salvarNoServidor(salario, despesa_total, superavit) {
+    fetch('/salvar_orcamentos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ salario, despesa_total, superavit, despesas: this.expenses })
+    })
+      .then(res => res.json())
+      .then(data => console.log('Resposta do servidor:', data))
+      .catch(err => console.error('Erro ao salvar orçamento:', err));
   }
 
   updateDisplay() {
@@ -81,6 +124,7 @@ class FinancialTracker {
     this.updateExpenseList();
     this.updateSummary();
     this.updateAddButtonState();
+    atualizarGrafico(this.expenses);
   }
 
   updateCircularFields() {
@@ -107,7 +151,7 @@ class FinancialTracker {
     if (surplusDisplay && surplusStatus) {
       surplusDisplay.textContent = this.formatCurrency(Math.abs(this.surplus));
       surplusDisplay.className = `surplus-value ${this.surplus >= 0 ? 'surplus-positive' : 'surplus-negative'}`;
-      
+
       surplusStatus.textContent = this.surplus >= 0 ? 'Economia' : 'Déficit';
       surplusStatus.className = `surplus-status ${this.surplus >= 0 ? 'status-positive' : 'status-negative'}`;
     }
@@ -116,7 +160,7 @@ class FinancialTracker {
   updateExpenseList() {
     const listTitle = document.getElementById('list-title');
     const expenseContainer = document.getElementById('expense-container');
-    
+
     if (listTitle) {
       listTitle.textContent = `Lista de Despesas (${this.expenses.length})`;
     }
@@ -136,8 +180,9 @@ class FinancialTracker {
                 <div class="expense-actions">
                   <span class="expense-amount">${this.formatCurrency(expense.amount)}</span>
                   <button class="delete-button" onclick="tracker.removeExpense('${expense.id}')">
-                    🗑️
+                  <i class="fas fa-trash-alt"></i>
                   </button>
+
                 </div>
               </div>
             `).join('')}
@@ -170,7 +215,7 @@ class FinancialTracker {
     const nameInput = document.getElementById('expense-name');
     const amountInput = document.getElementById('expense-amount');
     const addBtn = document.getElementById('add-expense-btn');
-    
+
     if (nameInput && amountInput && addBtn) {
       const hasName = nameInput.value.trim().length > 0;
       const hasAmount = parseFloat(amountInput.value) > 0;
@@ -192,10 +237,10 @@ class FinancialTracker {
 
 document.addEventListener('DOMContentLoaded', () => {
   window.tracker = new FinancialTracker();
-  
+
   const nameInput = document.getElementById('expense-name');
   const amountInput = document.getElementById('expense-amount');
-  
+
   if (nameInput && amountInput) {
     [nameInput, amountInput].forEach(input => {
       input.addEventListener('input', () => {
@@ -204,3 +249,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+class ExpenseChart {
+  constructor(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    this.ctx = canvas ? canvas.getContext('2d') : null;
+    this.chart = null;
+  }
+
+  updateChart(expenses) {
+    if (!this.ctx) return;
+
+    const labels = expenses.map(item => item.name);
+    const data = expenses.map(item => item.amount);
+
+  }
+}
+
+let chart = null;
+
+function atualizarGrafico(despesas) {
+  const canvas = document.getElementById('expense-chart');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const labels = despesas.map(e => e.name);
+  const valores = despesas.map(e => parseFloat(e.amount));
+
+  if (chart) {
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = valores;
+    chart.update();
+  } else {
+    chart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Despesas',
+          data: valores,
+          backgroundColor: [
+            '#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff',
+            '#ff9f40', '#4f46e5', '#e6d556', '#6c757d', '#20c997'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  }
+}
