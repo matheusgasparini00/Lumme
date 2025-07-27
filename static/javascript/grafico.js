@@ -289,8 +289,10 @@ function atualizarGrafico(despesas) {
           label: 'Despesas',
           data: valores,
           backgroundColor: [
-            '#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff',
-            '#ff9f40', '#4f46e5', '#e6d556', '#6c757d', '#20c997'
+              '#A339FA','#7A2BBA','#4f46e5','#501C7A','#3e046dff',
+              '#025A9D','#0386E9','#0261AA','#024B83','#01355D',
+              '#FFA90A','#FF8F1C', '#FF671C','#FF3F1C','#FF0D1D',
+              '#FF0A40','#FC4D88','#FF1CD6','#CB1CFF','#811CFF',
           ],
           borderWidth: 1
         }]

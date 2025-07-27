@@ -74,13 +74,12 @@
   justify-content: center;
 }
 
-
 .salary-border {
   border-color: #4e46e571;
 }
 
 .salary-inner {
-  background-color: #4e46e571;
+  background-color: #615aec3d;
 }
 
 .salary-input {
@@ -135,11 +134,11 @@
 }
 
 .surplus-border {
-  border-color: #53e787;
+  border-color: #ade4c0;
 }
 
 .surplus-inner {
-  background-color: #bef3d0fd;
+  background-color: #dcfce7fd;
 }
 
 .surplus-value {
@@ -148,7 +147,7 @@
 }
 
 .surplus-positive {
-  color: #1eff00;
+  color: #059669;
 }
 
 .surplus-negative {
@@ -162,7 +161,7 @@
 }
 
 .status-positive {
-  color: #1eff00;
+  color: #059669;
 }
 
 .status-negative {
