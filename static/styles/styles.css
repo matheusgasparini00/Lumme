@@ -99,8 +99,8 @@ main#content {
 
 #cta .title {
     color: var(--cor-roxo);
-    font-size: 45px;
-    margin-top: 0;
+    font-size: 60px;
+    margin-top: 50px;
     white-space: nowrap;
     text-align: left;
 
@@ -110,7 +110,7 @@ main#content {
   display: inline-block;
   background-color: var(--cor-roxo);
   color: #e6d556;
-  padding: 4px 8px;
+  padding: 6px 10px;
   border-radius: 6px;
   margin-top: 6px;
 }
