@@ -168,8 +168,6 @@ function deleteGoal(e) {
     }
 }
 
-
-// Inicialização
 document.addEventListener('DOMContentLoaded', () => {
     fetchSurplus();
     const savedGoals = localStorage.getItem('financialGoals');

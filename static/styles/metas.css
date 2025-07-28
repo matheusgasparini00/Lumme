@@ -1,3 +1,11 @@
+:root {
+  --cor-roxo: #4f46e5;
+  --cor-amarelo: #e6d556;
+  --cor-fundo1: #c5cbda;
+  --cor-money: #059669; 
+  --cor-roxo_fundo: #312aa7;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,8 +14,8 @@
 }
 
 body {
-    background-color: #f5f7fa;
-    color: #4f46e5;
+    background-color: var(--cor-fundo1);
+    color: var(--cor-roxo);
     line-height: 1.6;
     padding: 20px;
 }
@@ -22,7 +30,7 @@ body {
 }
 
 h1 {
-    color: #312aa7;
+    color: var(--cor-roxo_fundo);
     text-align: center;
     margin-bottom: 30px;
     font-weight: 600;
@@ -41,11 +49,11 @@ h1 {
 .surplus-value {
     font-size: 24px;
     font-weight: bold;
-    color: #059669;
+    color: var(--cor-money)
 }
 
 .add-goal-btn {
-    background-color: #4f46e5;
+    background-color: var(--cor-roxo);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -56,7 +64,7 @@ h1 {
 }
 
 .add-goal-btn:hover {
-    background-color: #312aa7;
+    background-color: var(--cor-roxo_fundo);
 }
 
 .goal-form {
@@ -87,7 +95,7 @@ input[type="text"],
 input[type="number"] {
     width: 40%;
     padding: 10px;
-    border: 1px solid #4f46e5;
+    border: 1px solid --cor-roxo;
     border-radius: 5px;
     font-size: 16px;
 }
@@ -118,7 +126,7 @@ input[type="number"] {
 
 .goal-item {
     background: white;
-    border: 1px solid #4f46e5;
+    border: 1px solid --cor-roxo;
     border-radius: 8px;
     padding: 15px;
     transition: all 0.3s;
@@ -127,7 +135,7 @@ input[type="number"] {
 
 .goal-item.completed {
     background: #4e46e524;
-    border-color: #4f46e5;
+    border-color: var(--cor-roxo);
     order: 1;
 }
 
@@ -146,7 +154,7 @@ input[type="number"] {
 
 .goal-amount {
     font-weight: bold;
-    color: #059669;
+    color: var(--cor-money)
 }
 
 .progress-container {
@@ -164,7 +172,7 @@ input[type="number"] {
 
 .progress-fill {
     height: 100%;
-    background: #4f46e5;
+    background: var(--cor-roxo);
     border-radius: 5px;
     transition: width 0.5s ease;
 }
@@ -182,7 +190,7 @@ input[type="number"] {
 }
 
 .add-funds-btn {
-    background-color: #4f46e5;
+    background-color: var(--cor-roxo);
     color: white;
     border: none;
     padding: 8px 15px;
@@ -192,7 +200,7 @@ input[type="number"] {
 }
 
 .add-funds-btn:hover {
-    background-color: #312aa7;
+    background-color: var(--cor-roxo_fundo);
 }
 
 .delete-btn {
@@ -213,7 +221,7 @@ input[type="number"] {
 }
 
 .complete-btn {
-    background-color: #4f46e5;
+    background-color: var(--cor-roxo);
     color: white;
     border: none;
     padding: 8px 15px;
@@ -223,7 +231,7 @@ input[type="number"] {
 }
 
 .complete-btn:hover {
-    background-color: #312aa7;
+    background-color: var(--cor-roxo_fundo);
 }
 
 .funds-input {
