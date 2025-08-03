@@ -159,11 +159,31 @@ function addFundsToGoal(e) {
         goal.completed = true;
     }
 
+    fetch('/atualizar_meta', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+            id: goal.id,
+            valor_atual: goal.currentAmount
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status !== 'sucesso') {
+            console.error('Erro ao atualizar meta no banco:', data.mensagem);
+        }
+    })
+    .catch(err => {
+        console.error('Erro na rede ao atualizar meta:', err);
+    });
+
+    salvarSuperavitNoBanco();
     updateSurplusDisplay();
     renderGoals();
     inputEl.value = '';
-
-    salvarSuperavitNoBanco();
 }
 
 function completeGoal(e) {
@@ -180,7 +200,10 @@ function deleteGoal(e) {
     if (!confirm('Tem certeza que deseja excluir esta meta?')) return;
 
     const goalId = parseInt(button.dataset.id);
+    const goal = goals.find(g => g.id === goalId);
 
+    const valorRestaurar = goal ? goal.currentAmount : 0;
+    
     fetch(`/deletar_meta/${goalId}`, {
         method: 'DELETE',
         credentials: 'same-origin'
@@ -188,6 +211,10 @@ function deleteGoal(e) {
     .then(res => res.json())
     .then(data => {
         if (data.status === 'sucesso') {
+            currentSurplus += valorRestaurar;
+            updateSurplusDisplay();
+            salvarSuperavitNoBanco();
+
             carregarMetas(); 
         } else {
             console.error('Erro ao deletar meta:', data.mensagem);
@@ -220,12 +247,7 @@ function carregarMetas() {
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchSurplus();
-
-    const savedGoals = localStorage.getItem('financialGoals');
-    if (savedGoals) {
-        goals = JSON.parse(savedGoals);
-        renderGoals();
-    }
+    carregarMetas();
 
     window.addEventListener('beforeunload', () => {
         localStorage.setItem('financialGoals', JSON.stringify(goals));
@@ -251,3 +273,4 @@ function salvarSuperavitNoBanco() {
         console.error('Erro na rede ao salvar superavit:', err);
     });
 }
+

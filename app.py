@@ -316,14 +316,29 @@ def deletar_meta(meta_id):
     try:
         conexao = conectar_banco()
         cursor = conexao.cursor()
-        cursor.execute("DELETE FROM metas WHERE id = %s AND usuario_id = %s", (meta_id, usuario_id))
-        conexao.commit()
+
+        cursor.execute("SELECT valor_atual FROM metas WHERE id = %s AND usuario_id = %s", (meta_id, usuario_id))
+        resultado = cursor.fetchone()
+
+        if resultado:
+            valor_meta = resultado[0] or 0.0
+
+            cursor.execute("""
+                UPDATE orcamentos
+                SET superavit = superavit + %s, data_registro = NOW()
+                WHERE usuario_id = %s
+            """, (valor_meta, usuario_id))
+
+            cursor.execute("DELETE FROM metas WHERE id = %s AND usuario_id = %s", (meta_id, usuario_id))
+            conexao.commit()
+
         cursor.close()
         conexao.close()
         return jsonify({'status': 'sucesso'})
     except Exception as e:
         print("Erro ao deletar meta:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+
     
 @app.route('/atualizar_meta', methods=['POST'])
 @login_obrigatorio
