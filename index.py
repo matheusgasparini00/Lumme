@@ -48,7 +48,22 @@ TABLES = {
             FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
         )
         """
+    ),
+
+    "metas": (
+    """
+    CREATE TABLE metas (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        titulo VARCHAR(255) NOT NULL,
+        valor_objetivo DECIMAL(10,2) NOT NULL,
+        valor_atual DECIMAL(10,2) DEFAULT 0.00,
+        data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     )
+    """
+)
+
 }
 
 def criar_banco(cursor):

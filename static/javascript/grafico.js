@@ -43,29 +43,30 @@ class FinancialTracker {
     }
   }
 
-  fetchSavedBudget() {
-   fetch('/obter_orcamentos')
-  .then(res => res.json())
-  .then(data => {
-    this.salary = parseFloat(data.salario) || 0;
+fetchSavedBudget() {
+  fetch('/obter_orcamentos')
+    .then(res => res.json())
+    .then(data => {
+      this.salary = parseFloat(data.salario) || 0;
+      this.expenses = (data.despesas || []).map((d, index) => ({
+        id: Date.now().toString() + index,
+        name: d.name,
+        amount: parseFloat(d.amount),
+        date: this.formatDate(new Date())
+      }));
 
-    // Corrigindo os dados das despesas
-    this.expenses = (data.despesas || []).map((d, index) => ({
-      id: Date.now().toString() + index, // Garante um ID mesmo vindo do banco
-      name: d.name,
-      amount: parseFloat(d.amount),
-      date: this.formatDate(new Date()) // OU use uma data vinda do backend, se quiser salvar a real
-    }));
+      this.surplus = parseFloat(data.superavit) || 0;
 
-    this.calculateTotals();
-    this.updateDisplay();
+      this.calculateTotals(false);
 
-    const salaryInput = document.getElementById('salary-input');
-    if (salaryInput) salaryInput.value = this.salary.toFixed(2);
-  })
-  .catch(err => console.error('Erro ao carregar orçamento salvo:', err));
-  
-  }
+      this.updateDisplay();
+
+      const salaryInput = document.getElementById('salary-input');
+      if (salaryInput) salaryInput.value = this.salary.toFixed(2);
+    })
+    .catch(err => console.error('Erro ao carregar orçamento salvo:', err));
+}
+
 
   addExpense() {
     const nameInput = document.getElementById('expense-name');
@@ -99,12 +100,13 @@ class FinancialTracker {
     this.updateDisplay();
   }
 
-  calculateTotals() {
-    this.totalExpenses = this.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+ calculateTotals(updateSurplus = true) {
+  this.totalExpenses = this.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  if (updateSurplus) {
     this.surplus = this.salary - this.totalExpenses;
-
-    this.salvarNoServidor(this.salary, this.totalExpenses, this.surplus);
   }
+  this.salvarNoServidor(this.salary, this.totalExpenses, this.surplus);
+}
 
   salvarNoServidor(salario, despesa_total, superavit) {
     fetch('/salvar_orcamentos', {
@@ -306,3 +308,14 @@ function atualizarGrafico(despesas) {
     });
   }
 }
+
+window.addEventListener('storage', (event) => {
+  if (event.key === 'superavitAtualizado') {
+    if (window.tracker && typeof window.tracker.fetchSavedBudget === 'function') {
+      console.log('Superavit atualizado detectado. Recarregando orçamento...');
+      window.tracker.fetchSavedBudget();
+    }
+  }
+});
+
+

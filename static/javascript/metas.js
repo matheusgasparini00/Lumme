@@ -11,12 +11,23 @@ const cancelBtn = document.getElementById('cancelBtn');
 const goalsList = document.getElementById('goalsList');
 
 function fetchSurplus() {
-    currentSurplus = 5000.00;
-    updateSurplusDisplay();
+    fetch('/obter_orcamentos', { credentials: 'same-origin'})
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            currentSurplus = parseFloat(data.superavit) || 0;
+            updateSurplusDisplay();
+        })    
+        .catch(err => {
+            console.error('Erro ao carregar superavit:', err);
+        });
 }
 
+
 function updateSurplusDisplay() {
-    surplusValueEl.textContent = `R$ ${currentSurplus.toFixed(2).replace('.', ',')}`;
+    surplusValueEl.textContent = `R$ ${Number(currentSurplus).toFixed(2).replace('.', ',')}`;
 }
 
 addGoalBtn.addEventListener('click', () => {
@@ -39,16 +50,28 @@ saveGoalBtn.addEventListener('click', () => {
         return;
     }
 
-    const newGoal = {
-        id: Date.now(),
-        name,
-        targetAmount: amount,
-        currentAmount: 0,
-        completed: false
-    };
-
-    goals.push(newGoal);
-    renderGoals();
+    fetch('/salvar_meta', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+            titulo: name,
+            valor_objetivo: amount
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'sucesso') {
+            carregarMetas(); // Recarrega metas após salvar
+        } else {
+            console.error('Erro ao salvar meta no banco:', data.mensagem);
+        }
+    })
+    .catch(err => {
+        console.error('Erro de rede ao salvar meta:', err);
+    });
 
     goalNameInput.value = '';
     goalAmountInput.value = '';
@@ -89,7 +112,7 @@ function renderGoals() {
                     <button class="complete-btn" data-id="${goal.id}">Concluir</button>
                 ` : ''}
                 <button class="delete-button" data-id="${goal.id}">
-                <i class="fas fa-trash-alt"></i>
+                    <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
         `;
@@ -139,12 +162,13 @@ function addFundsToGoal(e) {
     updateSurplusDisplay();
     renderGoals();
     inputEl.value = '';
+
+    salvarSuperavitNoBanco();
 }
 
 function completeGoal(e) {
     const goalId = parseInt(e.target.dataset.id);
     const goal = goals.find(g => g.id === goalId);
-
     goal.completed = true;
     renderGoals();
 }
@@ -153,23 +177,50 @@ function deleteGoal(e) {
     const button = e.target.closest('button[data-id]');
     if (!button) return;
 
-    if (!confirm('Tem certeza que deseja excluir esta meta?')) {
-        return;
-    }
+    if (!confirm('Tem certeza que deseja excluir esta meta?')) return;
 
     const goalId = parseInt(button.dataset.id);
-    const goalIndex = goals.findIndex(g => g.id === goalId);
 
-    if (goalIndex !== -1) {
-        currentSurplus += goals[goalIndex].currentAmount;
-        goals.splice(goalIndex, 1);
-        updateSurplusDisplay();
-        renderGoals();
-    }
+    fetch(`/deletar_meta/${goalId}`, {
+        method: 'DELETE',
+        credentials: 'same-origin'
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'sucesso') {
+            carregarMetas(); 
+        } else {
+            console.error('Erro ao deletar meta:', data.mensagem);
+        }
+    })
+    .catch(err => {
+        console.error('Erro de rede ao deletar meta:', err);
+    });
+}
+
+function carregarMetas() {
+    fetch('/obter_metas', { credentials: 'same-origin' })
+        .then(res => res.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                goals = data.map(m => ({
+                    id: m.id,
+                    name: m.name,
+                    targetAmount: parseFloat(m.targetAmount),
+                    currentAmount: parseFloat(m.currentAmount),
+                    completed: parseFloat(m.currentAmount) >= parseFloat(m.targetAmount)
+                }));
+                renderGoals();
+            } else {
+                console.error('Erro ao carregar metas:', data.mensagem);
+            }
+        })
+        .catch(err => console.error('Erro ao buscar metas:', err));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchSurplus();
+
     const savedGoals = localStorage.getItem('financialGoals');
     if (savedGoals) {
         goals = JSON.parse(savedGoals);
@@ -180,3 +231,23 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('financialGoals', JSON.stringify(goals));
     });
 });
+
+function salvarSuperavitNoBanco() {
+    fetch('/atualizar_superavit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ superavit: currentSurplus })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status !== 'sucesso') {
+            console.error('Erro ao salvar superavit no banco:', data.mensagem);
+        } else {
+            localStorage.setItem('superavitAtualizado', Date.now());
+        }
+    })
+    .catch(err => {
+        console.error('Erro na rede ao salvar superavit:', err);
+    });
+}

@@ -240,7 +240,144 @@ def orcamento():
 @app.route('/metas')
 @login_obrigatorio
 def metas():
-    return render_template('metas.html')
+    usuario_id = session.get('usuario_id')
+
+    try:
+        conexao = conectar_banco()
+        cursor = conexao.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT superavit
+            FROM orcamentos
+            WHERE usuario_id = %s
+            ORDER BY data_registro DESC
+            LIMIT 1
+        """, (usuario_id,))
+        resultado = cursor.fetchone()
+        superavit = resultado['superavit'] if resultado else 0.00
+        cursor.close()
+        conexao.close()
+    except Exception as e:
+        print("Erro ao obter superavit:", e)
+        superavit = 0.00
+
+    return render_template('metas.html', superavit=superavit)
+
+@app.route('/salvar_meta', methods=['POST'])
+@login_obrigatorio
+def salvar_meta():
+    usuario_id = session.get('usuario_id')
+    dados = request.get_json()
+    titulo = dados.get('titulo')
+    valor_objetivo = dados.get('valor_objetivo')
+
+    if not titulo or not valor_objetivo:
+        return jsonify({'status': 'erro', 'mensagem': 'Dados incompletos'}), 400
+
+    try:
+        conexao = conectar_banco()
+        cursor = conexao.cursor()
+        cursor.execute("""
+            INSERT INTO metas (usuario_id, titulo, valor_objetivo)
+            VALUES (%s, %s, %s)
+        """, (usuario_id, titulo, valor_objetivo))
+        conexao.commit()
+        cursor.close()
+        conexao.close()
+        return jsonify({'status': 'sucesso'})
+    except Exception as e:
+        print("Erro ao salvar meta:", e)
+        return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+
+@app.route('/obter_metas')
+@login_obrigatorio
+def obter_metas():
+    usuario_id = session.get('usuario_id')
+    try:
+        conexao = conectar_banco()
+        cursor = conexao.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT id, titulo AS name, valor_objetivo AS targetAmount, valor_atual AS currentAmount
+            FROM metas
+            WHERE usuario_id = %s
+        """, (usuario_id,))
+        metas = cursor.fetchall()
+        cursor.close()
+        conexao.close()
+        return jsonify(metas)
+    except Exception as e:
+        print("Erro ao obter metas:", e)
+        return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+    
+@app.route('/deletar_meta/<int:meta_id>', methods=['POST','DELETE'])
+@login_obrigatorio
+def deletar_meta(meta_id):
+    usuario_id = session.get('usuario_id')
+
+    try:
+        conexao = conectar_banco()
+        cursor = conexao.cursor()
+        cursor.execute("DELETE FROM metas WHERE id = %s AND usuario_id = %s", (meta_id, usuario_id))
+        conexao.commit()
+        cursor.close()
+        conexao.close()
+        return jsonify({'status': 'sucesso'})
+    except Exception as e:
+        print("Erro ao deletar meta:", e)
+        return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+    
+@app.route('/atualizar_meta', methods=['POST'])
+@login_obrigatorio
+def atualizar_meta():
+    usuario_id = session.get('usuario_id')
+    dados = request.get_json()
+    meta_id = dados.get('id')
+    valor_atual = dados.get('valor_atual')
+
+    if meta_id is None or valor_atual is None:
+        return jsonify({'status': 'erro', 'mensagem': 'Dados incompletos'}), 400
+
+    try:
+        conexao = conectar_banco()
+        cursor = conexao.cursor()
+        cursor.execute("""
+            UPDATE metas
+            SET valor_atual = %s
+            WHERE id = %s AND usuario_id = %s
+        """, (valor_atual, meta_id, usuario_id))
+        conexao.commit()
+        cursor.close()
+        conexao.close()
+        return jsonify({'status': 'sucesso'})
+    except Exception as e:
+        return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+
+@app.route('/atualizar_superavit',  methods=['POST','DELETE'])
+@login_obrigatorio
+def atualizar_superavit():
+    usuario_id = session.get('usuario_id')
+    data = request.get_json()
+    superavit = data.get('superavit')
+
+    print("Novo superavit recebido:", superavit)
+    print("Usuário logado:", usuario_id)
+
+    try:
+        conexao = conectar_banco()
+        cursor = conexao.cursor()
+        cursor.execute("""
+            UPDATE orcamentos
+            SET superavit = %s, data_registro = NOW()
+            WHERE usuario_id = %s
+        """, (superavit, usuario_id))
+        conexao.commit()
+
+        print("Superavit salvo com sucesso no banco:", superavit)
+
+        cursor.close()
+        conexao.close()
+        return jsonify({'status': 'sucesso'})
+    except Exception as e:
+        return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
 @app.route('/diario')
 @login_obrigatorio
