@@ -1,0 +1,247 @@
+/* Estilos Gerais */
+.main-content {
+  padding: 100px 40px 40px 120px;
+  background-color: #cdd2e0;
+  font-family: 'Segoe UI', sans-serif;
+  min-height: calc(100vh - 160px);
+}
+
+/* Área de Notas */
+.note-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.note-editor {
+  background: #fff;
+  flex: 1;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  max-width: 45%;
+}
+
+.note-editor h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.note-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.note-form input,
+.note-form textarea {
+  font-size: 1.2rem;
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  width: 100%;
+}
+
+.note-form textarea {
+  resize: none;
+  min-height: 150px;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.note-form button {
+  background-color: #5e42d7;
+  color: #fff;
+  padding: 15px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.note-form button:hover {
+  background-color: #4732b5;
+}
+
+.notes-list {
+  flex: 1;
+  background: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  max-height: 70vh;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.notes-list h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Categorias - Atualizado para quebra de linha */
+.category-section {
+  margin-bottom: 30px;
+}
+
+.category-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #5e42d7;
+  border-bottom: 2px solid #5e42d7;
+  padding-bottom: 5px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  hyphens: auto;
+  max-width: 100%;
+}
+
+/* Itens de Nota */
+.note-item {
+  background: #f3f3f3;
+  border-left: 6px solid #5e42d7;
+  padding: 15px 80px 15px 20px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  position: relative;
+  overflow: hidden;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.note-item h4 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+  color: #2c3e50;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: calc(100% - 60px);
+  hyphens: auto;
+}
+
+.note-item p {
+  margin: 0;
+  font-size: 1rem;
+  color: #444;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  overflow: hidden;
+  padding-right: 60px;
+}
+
+/* Botões */
+.note-item button.edit-btn {
+  position: absolute;
+  top: 15px;
+  right: 45px;
+  background-color: #5e42d7;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.note-item button.edit-btn:hover {
+  background-color: #3f2ea1;
+}
+
+/*Botão delete */
+
+.delete-btn {
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Rodapé */
+footer {
+  background-color: #4a3de3;
+  color: white;
+  padding: 20px 0;
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.copyright {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-links a {
+  color: #f1c40f;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: opacity 0.3s;
+}
+
+.footer-links a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 80px 20px 20px 20px;
+  }
+  
+  .note-wrapper {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .note-editor {
+    max-width: 100%;
+  }
+  
+  @media (max-width: 480px) {
+    .footer-links {
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+  }
+}

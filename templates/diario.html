@@ -1,21 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/navside.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/financial.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumme - Diário Financeiro</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/lumme.ico') }}">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/scrollreveal"></script>
-    <title>Lumme - Diário Financeiro</title>
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/lumme.ico') }}">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/navside.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/diario.css') }}">
 </head>
 <body>
-       {% include 'navside.html' %}
-    
-    <script src="{{ url_for('static', filename='javascript/script.js') }}"></script>
+  {% include 'navside.html' %}
+
+  <main class="main-content">
+    <div class="note-wrapper">
+      <!-- Formulário -->
+      <div class="note-editor">
+        <h2>Nova Anotação</h2>
+        <div class="note-form">
+          <input type="text" id="noteCategory" placeholder="Categoria (ex: Trabalho, Pessoal)">
+          <input type="text" id="noteTitle" placeholder="Título da anotação">
+          <textarea id="noteContent" placeholder="Digite sua anotação..."></textarea>
+          <button id="addNoteBtn">Adicionar</button>
+        </div>
+      </div>
+
+      <!-- Lista -->
+      <div class="notes-list" id="notesList">
+        <h2>Minhas Anotações</h2>
+      </div>
+    </div>
+  </main>
+
+  <!-- Rodapé -->
+  <footer>
+    <div class="footer-content">
+      <p class="copyright">© 2025 Lumme. Todos os direitos reservados.</p>
+      <div class="footer-links">
+        <a href="#">Política de Privacidade</a>
+        <a href="#">Termos de Uso</a>
+        <a href="#">Contato</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='javascript/diario.js') }}"></script>
 </body>
 </html>
