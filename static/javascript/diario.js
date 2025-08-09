@@ -1,4 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+  const botoes = document.querySelectorAll("#botoes-categorias button");
+  const inputCategoria = document.getElementById("noteCategory");
+
+  botoes.forEach(botao => {
+    botao.addEventListener("click", () => {
+      // Remove seleção anterior
+      botoes.forEach(b => b.classList.remove("selecionado"));
+
+      // Marca o botão atual
+      botao.classList.add("selecionado");
+
+      // Salva no campo oculto
+      inputCategoria.value = botao.dataset.cat;
+    });
+  });
+
   const addBtn = document.getElementById("addNoteBtn");
 
   addBtn.addEventListener("click", () => {
@@ -12,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Verificar se já existe seção para esta categoria
-    let categorySection = document.querySelector(.category-section[data-category="${category}"]);
+    let categorySection = document.querySelector(`.category-section[data-category="${category}"]`);
     
     if (!categorySection) {
       categorySection = document.createElement("div");
@@ -70,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Botão excluir (estilo igual ao metas.js)
 const deleteBtn = document.createElement("button");
-deleteBtn.className = "delete-button"; // mesma classe usada em metas.js
+deleteBtn.className = "delete-btn"; // mesma classe usada em metas.js
 deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
 deleteBtn.addEventListener("click", () => {
   if (confirm("Deseja realmente excluir esta anotação?")) {
@@ -82,13 +99,25 @@ deleteBtn.addEventListener("click", () => {
   }
 });
 
-    // Adicionar elementos
-    note.appendChild(noteTitle);
-    note.appendChild(noteContent);
-    note.appendChild(editBtn);
-    note.appendChild(deleteBtn);
+// Criar container para os botões
+const btnContainer = document.createElement("div");
+btnContainer.style.position = "static";    // remove posicionamento absoluto
+btnContainer.style.display = "flex";
+btnContainer.style.flexDirection = "row";  // botões lado a lado
+btnContainer.style.gap = "10px";
+btnContainer.style.marginTop = "10px";     // distância do título/conteúdo
 
-    categorySection.appendChild(note);
+
+// Adicionar os botões ao container
+btnContainer.appendChild(editBtn);
+btnContainer.appendChild(deleteBtn);
+
+// Adicionar elementos na nota
+note.appendChild(noteTitle);
+note.appendChild(noteContent);
+note.appendChild(btnContainer);
+
+categorySection.appendChild(note);
 
     // Limpar campos
     document.getElementById("noteCategory").value = "";

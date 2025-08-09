@@ -7,7 +7,7 @@
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/lumme.ico') }}">
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- CSS -->
@@ -24,7 +24,18 @@
       <div class="note-editor">
         <h2>Nova Anotação</h2>
         <div class="note-form">
-          <input type="text" id="noteCategory" placeholder="Categoria (ex: Trabalho, Pessoal)">
+          <div id="botoes-categorias">
+            <button type="button" data-cat="Alimentação">Alimentação</button>
+            <button type="button" data-cat="Transporte">Transporte</button>
+            <button type="button" data-cat="Lazer">Lazer</button>
+            <button type="button" data-cat="Saúde">Saúde</button>
+            <button type="button" data-cat="Educação">Educação</button>
+            <button type="button" data-cat="Outros">Outros</button>
+          </div>
+
+          <!-- Campo oculto para guardar a categoria -->
+          <input type="hidden" id="noteCategory" name="categoria">
+
           <input type="text" id="noteTitle" placeholder="Título da anotação">
           <textarea id="noteContent" placeholder="Digite sua anotação..."></textarea>
           <button id="addNoteBtn">Adicionar</button>

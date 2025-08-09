@@ -1,3 +1,9 @@
+:root {
+  --cor-roxo: #4f46e5;
+  --cor-amarelo: #e6d556;
+  --cor-fundo1: #c5cbda;
+}
+
 /* Estilos Gerais */
 .main-content {
   padding: 100px 40px 40px 120px;
@@ -40,8 +46,35 @@
   font-size: 1.2rem;
   padding: 15px;
   border-radius: 10px;
-  border: 2px solid #ccc;
+  border: 2px solid var(--cor-roxo);
   width: 100%;
+}
+
+#botoes-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#botoes-categorias button {
+  color: #000000;
+  padding: 10px 15px;
+  border: 2px solid #000000;
+  border-radius: 8px;
+  background-color: #ffffff;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: 0.2s;
+}
+
+#botoes-categorias button:hover {
+  background-color: var(--cor-roxo);
+}
+
+#botoes-categorias button.selecionado {
+  background-color: var(--cor-roxo);
+  color: #ffffff;
+  border-color: var(--cor-roxo);
 }
 
 .note-form textarea {
@@ -54,7 +87,7 @@
 }
 
 .note-form button {
-  background-color: #5e42d7;
+  background-color: var(--cor-roxo);
   color: #fff;
   padding: 15px;
   font-size: 1.1rem;
@@ -66,7 +99,7 @@
 }
 
 .note-form button:hover {
-  background-color: #4732b5;
+  background-color: var(--cor-roxo);
 }
 
 .notes-list {
@@ -94,8 +127,8 @@
 .category-section h3 {
   font-size: 1.5rem;
   margin-bottom: 15px;
-  color: #5e42d7;
-  border-bottom: 2px solid #5e42d7;
+  color: var(--cor-roxo);
+  border-bottom: 2px solid var(--cor-roxo);
   padding-bottom: 5px;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -107,8 +140,8 @@
 /* Itens de Nota */
 .note-item {
   background: #f3f3f3;
-  border-left: 6px solid #5e42d7;
-  padding: 15px 80px 15px 20px;
+  border-left: 6px solid var(--cor-roxo);
+  padding: 15px 20px;
   border-radius: 10px;
   margin-bottom: 15px;
   position: relative;
@@ -142,11 +175,11 @@
 }
 
 /* Botões */
-.note-item button.edit-btn {
-  position: absolute;
-  top: 15px;
-  right: 45px;
-  background-color: #5e42d7;
+.note-item button.edit-btn,
+.note-item button.delete-btn {
+  position: static;
+  margin: 0;
+  background-color: var(--cor-roxo);
   color: #fff;
   border: none;
   padding: 5px 10px;
@@ -154,30 +187,40 @@
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
-  z-index: 1;
+  transition: background-color 0.3s ease;
 }
 
-.note-item button.edit-btn:hover {
-  background-color: #3f2ea1;
+.note-item button.edit-btn:hover,
+.note-item button.delete-btn:hover {
+  background-color: var(--cor-roxo);
 }
 
-/*Botão delete */
+
+.note-item button.edit-btn {
+  position: static; /* ou remova position absoluta */
+  margin: 0;
+}
 
 .delete-btn {
-    color: white;
-    border: none;
-    border-radius: 5px;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
+  position: static; /* mantém o posicionamento normal */
+  margin: 0;
+  background-color: transparent !important; /* remove fundo */
+  color: #c0392b !important;                 /* cor vermelha para o ícone */
+  border: none;                  /* sem borda */
+  border-radius: 5px;              /* sem arredondamento */
+  width: 30px !important;                   /* ajuste natural */
+  height: 30px !important;
+  padding: 0;                   /* sem padding extra */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
 }
 
 .delete-btn:hover {
-    background-color: #c0392b;
+  color: #c0392b !important; /* muda a cor da lixeira no hover, sem fundo */
+  background-color: transparent !important;
 }
 
 /* Rodapé */
