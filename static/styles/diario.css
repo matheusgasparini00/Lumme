@@ -4,15 +4,13 @@
   --cor-fundo1: #c5cbda;
 }
 
-/* Estilos Gerais */
 .main-content {
   padding: 100px 40px 40px 120px;
   background-color: #cdd2e0;
   font-family: 'Segoe UI', sans-serif;
-  min-height: calc(100vh - 160px);
+  min-height: 100vh;
 }
 
-/* Área de Notas */
 .note-wrapper {
   display: flex;
   justify-content: space-between;
@@ -119,7 +117,7 @@
   color: #333;
 }
 
-/* Categorias - Atualizado para quebra de linha */
+
 .category-section {
   margin-bottom: 30px;
 }
@@ -137,7 +135,7 @@
   max-width: 100%;
 }
 
-/* Itens de Nota */
+
 .note-item {
   background: #f3f3f3;
   border-left: 6px solid var(--cor-roxo);
@@ -174,9 +172,9 @@
   padding-right: 60px;
 }
 
-/* Botões */
-.note-item button.edit-btn,
-.note-item button.delete-btn {
+
+
+.note-item button.edit-btn {
   position: static;
   margin: 0;
   background-color: var(--cor-roxo);
@@ -190,82 +188,29 @@
   transition: background-color 0.3s ease;
 }
 
-.note-item button.edit-btn:hover,
-.note-item button.delete-btn:hover {
-  background-color: var(--cor-roxo);
-}
-
-
-.note-item button.edit-btn {
-  position: static; /* ou remova position absoluta */
-  margin: 0;
-}
-
-.delete-btn {
-  position: static; /* mantém o posicionamento normal */
-  margin: 0;
-  background-color: transparent !important; /* remove fundo */
-  color: #c0392b !important;                 /* cor vermelha para o ícone */
-  border: none;                  /* sem borda */
-  border-radius: 5px;              /* sem arredondamento */
-  width: 30px !important;                   /* ajuste natural */
-  height: 30px !important;
-  padding: 0;                   /* sem padding extra */
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-}
-
-.delete-btn:hover {
-  color: #c0392b !important; /* muda a cor da lixeira no hover, sem fundo */
+.note-item button.delete-btn {
   background-color: transparent !important;
+  border: none;
+  padding: 0; 
+  color: #c0392b;
+  font-size: 1.2rem; 
+  cursor: pointer;
 }
 
-/* Rodapé */
-footer {
-  background-color: #4a3de3;
-  color: white;
-  padding: 20px 0;
-  margin-top: auto;
+.note-item button.delete-btn i {
+  font-size: 1.2rem; 
+  color: #c0392b;
 }
 
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+
+.delete-btn i {
+  font-size: 20px !important;
+  color: #c0392b !important; 
+  line-height: 1; 
 }
 
-.copyright {
-  margin: 0;
-  font-size: 0.9rem;
-}
+/*Responsividade*/
 
-.footer-links {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.footer-links a {
-  color: #f1c40f;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: opacity 0.3s;
-}
-
-.footer-links a:hover {
-  opacity: 0.8;
-  text-decoration: underline;
-}
-
-/* Responsividade */
 @media (max-width: 768px) {
   .main-content {
     padding: 80px 20px 20px 20px;
