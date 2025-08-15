@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +18,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="financial-container">
         <div class="main-wrapper">
@@ -28,12 +30,7 @@
                     <div class="circular-field">
                         <div class="circular-border salary-border"></div>
                         <div class="circular-inner salary-inner">
-                            <input 
-                                type="text" 
-                                id="salary-input"
-                                class="salary-input"
-                                placeholder="0,00"
-                            />
+                            <input type="text" id="salary-input" class="salary-input" placeholder="0,00" />
                         </div>
                     </div>
                     <p id="salary-display" class="salary-value">R$ 0,00</p>
@@ -68,46 +65,32 @@
                 <div class="form-card">
                     <h2 class="form-title">Adicionar Despesa</h2>
                     <div class="form-group" style="width: 100%; max-width: 600px; margin: 0 auto;">
-                        <input
-                            type="text"
-                            id="expense-name"
-                            class="form-input expense-input"
-                            placeholder="Nome da despesa"
-                            maxlength="50"
-                        />
-                        <input
-                            type="number"
-                            id="expense-amount"
-                            class="form-input expense-input"
-                            placeholder="Valor"
-                            min="0"
-                            step="0.01"
-                        />
-                        <button 
-                            id="add-expense-btn"
-                            class="form-button"
-                            disabled
-                        >
+                        <input type="text" id="expense-name" class="form-input expense-input"
+                            placeholder="Nome da despesa" maxlength="50" />
+                        <input type="number" id="expense-amount" class="form-input expense-input" placeholder="Valor"
+                            min="0" step="0.01" />
+                        <button id="add-expense-btn" class="form-button" disabled>
                             Adicionar
                         </button>
 
-                <div class="expense-list">
-                    <h2 id="list-title" class="list-title">Lista de Despesas (0)</h2>
-                    <div class="scroll-area">
-                        <div id="expense-container">
-                            <p class="empty-state">Nenhuma despesa cadastrada</p>
+                        <div class="expense-list">
+                            <h2 id="list-title" class="list-title">Lista de Despesas (0)</h2>
+                            <div class="scroll-area">
+                                <div id="expense-container">
+                                    <p class="empty-state">Nenhuma despesa cadastrada</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="form-card chart-card">
+                    <h2 class="form-title">Gráfico de Despesas</h2>
+                    <canvas id="expense-chart" width="400" height="400"></canvas>
                 </div>
-                    <div class="form-card chart-card">
-                        <h2 class="form-title">Gráfico de Despesas</h2>
-                        <canvas id="expense-chart" width="400" height="400"></canvas>
-                    </div>
             </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ url_for('static', filename='javascript/grafico.js') }}"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="{{ url_for('static', filename='javascript/grafico.js') }}"></script>
 </body>
+
 </html>

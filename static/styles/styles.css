@@ -3,7 +3,7 @@
 :root {
   --cor-roxo: #4f46e5;
   --cor-amarelo: #e6d556;
-  --cor-fundo: #c5cbda;
+  --cor-fundo1: #c5cbda;
 }
 
 * {
@@ -13,8 +13,8 @@
     box-sizing: border-box;
 }
 
-html, body {
-    background-color: var(--cor-fundo);
+html, body , main#content {
+    background-color: var(--cor-fundo1) !important;
     min-height: 100vh;
     visibility: visible;
 }
@@ -114,3 +114,28 @@ main#content {
   border-radius: 6px;
   margin-top: 6px;
 }
+
+.card {
+  background-color: var(--cor-amarelo);
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  height: 250px;           /* altura fixa */
+  display: flex;
+  padding: 20px;
+  box-sizing: border-box;  /* garante padding dentro da altura */
+}
+
+.carousel-inner .row {
+  align-items: stretch; /* força as colunas a terem a mesma altura */
+}
+
+.carousel-item .col-12.col-md-4 {
+  display: flex;         /* faz a coluna ser flex container */
+  align-items: stretch;  /* força o card dentro a se esticar */
+}
+
+.carousel-item .card {
+  flex-grow: 1;          /* faz o card preencher toda altura da coluna */
+}
+
+
