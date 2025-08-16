@@ -1,13 +1,13 @@
  :root {
   --cor-roxo: #4f46e5;
   --cor-amarelo: #e6d556;
-  --cor-fundo1: #c5cbda;
+  --bs-body-bg: #c5cbda;
 }
  
  * { box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
-      background: #c5cbda;
+      background: var(--bs-body-bg);
       display: flex;
       justify-content: center;
       align-items: center;

@@ -62,7 +62,24 @@ TABLES = {
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     )
     """
-)
+),
+
+    "diario_anotacoes": (
+        """
+        CREATE TABLE diario_anotacoes (
+          id BIGINT AUTO_INCREMENT PRIMARY KEY,
+          usuario_id INT NOT NULL,
+          categoria VARCHAR(60) NOT NULL,
+          titulo VARCHAR(120) NOT NULL,
+          texto TEXT NOT NULL,
+          created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          deleted_at TIMESTAMP NULL DEFAULT NULL,
+          INDEX idx_user_cat (usuario_id, categoria),
+          FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+        """
+    )
 
 }
 

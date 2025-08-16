@@ -393,6 +393,106 @@ def atualizar_superavit():
         return jsonify({'status': 'sucesso'})
     except Exception as e:
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+    
+@app.route('/api/diario/notes', methods=['GET'])
+@login_obrigatorio
+def api_listar_notas():
+    usuario_id = session.get('usuario_id')
+    q = (request.args.get('q') or '').strip()
+    categoria = (request.args.get('categoria') or '').strip()
+
+    cnx = conectar_banco()
+    cur = cnx.cursor(dictionary=True)
+
+    sql = """
+        SELECT id, categoria, titulo, texto, created_at, updated_at
+          FROM diario_anotacoes
+         WHERE usuario_id = %s AND deleted_at IS NULL
+    """
+    params = [usuario_id]
+
+    if categoria:
+        sql += " AND categoria = %s"
+        params.append(categoria)
+
+    if q:
+        sql += " AND (titulo LIKE %s OR texto LIKE %s)"
+        like = f"%{q}%"
+        params.extend([like, like])
+
+    sql += " ORDER BY categoria ASC, id DESC LIMIT 1000"
+
+    cur.execute(sql, tuple(params))
+    rows = cur.fetchall()
+    cur.close(); cnx.close()
+    return jsonify(rows)
+
+
+@app.route('/api/diario/notes', methods=['POST'])
+@login_obrigatorio
+def api_criar_nota():
+    usuario_id = session.get('usuario_id')
+    data = request.get_json(silent=True) or {}
+
+    categoria = (data.get('categoria') or '').strip()
+    titulo = (data.get('titulo') or '').strip()
+    texto = (data.get('texto') or '').strip()
+
+    if not categoria or not titulo or not texto:
+        return jsonify({'status': 'erro', 'mensagem': 'categoria, titulo e texto são obrigatórios.'}), 400
+
+    cnx = conectar_banco()
+    cur = cnx.cursor()
+    cur.execute("""
+        INSERT INTO diario_anotacoes (usuario_id, categoria, titulo, texto)
+        VALUES (%s, %s, %s, %s)
+    """, (usuario_id, categoria, titulo, texto))
+    cnx.commit()
+    new_id = cur.lastrowid
+    cur.close(); cnx.close()
+
+    return jsonify({'status': 'sucesso', 'id': new_id})
+
+
+@app.route('/api/diario/notes/<int:note_id>', methods=['PUT'])
+@login_obrigatorio
+def api_editar_nota(note_id):
+    usuario_id = session.get('usuario_id')
+    data = request.get_json(silent=True) or {}
+
+    categoria = (data.get('categoria') or '').strip()
+    titulo = (data.get('titulo') or '').strip()
+    texto = (data.get('texto') or '').strip()
+
+    if not categoria or not titulo or not texto:
+        return jsonify({'status': 'erro', 'mensagem': 'categoria, titulo e texto são obrigatórios.'}), 400
+
+    cnx = conectar_banco()
+    cur = cnx.cursor()
+    cur.execute("""
+        UPDATE diario_anotacoes
+           SET categoria=%s, titulo=%s, texto=%s
+         WHERE id=%s AND usuario_id=%s AND deleted_at IS NULL
+    """, (categoria, titulo, texto, note_id, usuario_id))
+    cnx.commit()
+    cur.close(); cnx.close()
+    return jsonify({'status': 'sucesso'})
+
+
+@app.route('/api/diario/notes/<int:note_id>', methods=['DELETE'])
+@login_obrigatorio
+def api_excluir_nota(note_id):
+    usuario_id = session.get('usuario_id')
+    cnx = conectar_banco()
+    cur = cnx.cursor()
+    cur.execute("""
+        UPDATE diario_anotacoes
+           SET deleted_at = CURRENT_TIMESTAMP
+         WHERE id=%s AND usuario_id=%s AND deleted_at IS NULL
+    """, (note_id, usuario_id))
+    cnx.commit()
+    cur.close(); cnx.close()
+    return jsonify({'status': 'sucesso'})
 
 @app.route('/diario')
 @login_obrigatorio

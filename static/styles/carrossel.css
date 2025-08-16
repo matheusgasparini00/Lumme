@@ -1,7 +1,7 @@
 :root {
   --cor-roxo: #4f46e5;
   --cor-amarelo: #e6d556;
-  --cor-fundo1: #c5cbda;
+  --bs-body-bg: #c5cbda;
 }
 
 .wrapper {  
@@ -54,26 +54,20 @@
   gap: 20px;
 }
 
-.card {
-  min-width: 300px;
-  max-width: 300px;         
-  height: 300px;           
-  border-radius: 16px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+/* Ajustes específicos para os cards do carrossel */
+#multiCardCarousel .card {
+  background-color: #ffffff;   /* fundo dos cards do carrossel */
+  color: var(--cor-roxo);      /* cor do texto padrão dentro dos cards */
+  border: 0;
 }
 
-.card h3 {
-  color: #4f46e5;
+/* Garante que o texto dentro dos cards do carrossel siga a cor herdada */
+#multiCardCarousel .card h3 {
   font-size: 30px;
   margin-bottom: 10px;
-}
 
-.card p {
+}
+#multiCardCarousel .card p {
   font-size: 20px;
   color: #333;
 }
