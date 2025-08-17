@@ -9,9 +9,8 @@ app = Flask(__name__)
 # Use SECRET_KEY do ambiente em produção; fallback simples para dev local
 app.secret_key = os.environ.get('FLASK_SECRET', 'sua_chave_secreta_aqui')
 
-# ---- Banco de dados ----
-# Em produção (Render), configure estas variáveis em: Service → Environment
 DB_HOST = os.environ.get("DB_HOST", "localhost")
+DB_PORT = int(os.environ.get("DB_PORT", "3306"))   # importante: porta vem como string
 DB_USER = os.environ.get("DB_USER", "root")
 DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
 DB_NAME = os.environ.get("DB_NAME", "lumme")
@@ -19,6 +18,7 @@ DB_NAME = os.environ.get("DB_NAME", "lumme")
 def conectar_banco():
     return mysql.connector.connect(
         host=DB_HOST,
+        port=DB_PORT,
         user=DB_USER,
         password=DB_PASSWORD,
         database=DB_NAME
