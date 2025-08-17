@@ -1,6 +1,8 @@
 import os
+import time
 from flask import Flask, request, render_template, redirect, session, url_for, flash, jsonify
 import mysql.connector
+from mysql.connector import pooling, Error as MySQLError
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import re
@@ -9,21 +11,47 @@ app = Flask(__name__)
 # Use SECRET_KEY do ambiente em produção; fallback simples para dev local
 app.secret_key = os.environ.get('FLASK_SECRET', 'sua_chave_secreta_aqui')
 
+# ----------------- Config DB (via env) -----------------
 DB_HOST = os.environ.get("DB_HOST", "localhost")
 DB_PORT = int(os.environ.get("DB_PORT", "3306"))
 DB_USER = os.environ.get("DB_USER", "root")
 DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
 DB_NAME = os.environ.get("DB_NAME", "lumme")
 
-def conectar_banco():
-    return mysql.connector.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME
-    )
+_db_config = {
+    "host": DB_HOST,
+    "port": DB_PORT,
+    "user": DB_USER,
+    "password": DB_PASSWORD,
+    "database": DB_NAME,
+    "charset": "utf8mb4",
+    "collation": "utf8mb4_unicode_ci",
+    "use_pure": True,
+    "connection_timeout": 10,  # evita travar por muito tempo abrindo conexão
+}
 
+# Pool com até 5 conexões (ajuste conforme necessidade)
+_db_pool = pooling.MySQLConnectionPool(
+    pool_name="lumme_pool",
+    pool_size=5,
+    **_db_config
+)
+
+def conectar_banco():
+    """Obtém conexão do pool e garante que está viva."""
+    conn = _db_pool.get_connection()
+    try:
+        conn.ping(reconnect=True, attempts=1, delay=0)
+    except MySQLError:
+        try:
+            conn.close()
+        except Exception:
+            pass
+        conn = _db_pool.get_connection()
+        conn.ping(reconnect=True, attempts=1, delay=0)
+    return conn
+
+# ----------------- Auth decorator -----------------
 def login_obrigatorio(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -32,6 +60,7 @@ def login_obrigatorio(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# ----------------- Rotas básicas -----------------
 @app.route('/')
 def home():
     return redirect('/login')
@@ -42,10 +71,6 @@ def index():
     nome = session.get('nome')
     sobrenome = session.get('sobrenome')
     return render_template('index.html', nome=nome)
-
-@app.route("/health")
-def health():
-    return {"status": "ok"}, 200
 
 @app.context_processor
 def inject_user_info():
@@ -59,6 +84,39 @@ def logout():
     session.clear()
     return redirect('/login')
 
+# ----------------- Health/Diagnóstico -----------------
+@app.route("/health")
+def health():
+    return {"status": "ok"}, 200
+
+@app.route("/dbping")
+def dbping():
+    t0 = time.perf_counter()
+    try:
+        cnx = conectar_banco()
+        cur = cnx.cursor()
+        cur.execute("SELECT 1")
+        cur.fetchone()
+        cur.close(); cnx.close()
+        ms = (time.perf_counter() - t0) * 1000
+        return {"ok": True, "ms": round(ms, 1)}, 200
+    except Exception as e:
+        ms = (time.perf_counter() - t0) * 1000
+        return {"ok": False, "ms": round(ms, 1), "error": str(e)}, 500
+
+@app.route("/dbcheck")
+def dbcheck():
+    try:
+        cnx = conectar_banco()
+        cur = cnx.cursor()
+        cur.execute("SHOW TABLES")
+        tables = [r[0] for r in cur.fetchall()]
+        cur.close(); cnx.close()
+        return {"ok": True, "tables": tables}, 200
+    except Exception as e:
+        return {"ok": False, "error": str(e)}, 500
+
+# ----------------- Cadastro/Login -----------------
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
@@ -149,6 +207,7 @@ def login():
 
     return render_template('login.html')
 
+# ----------------- Orçamentos -----------------
 @app.route('/salvar_orcamentos', methods=['POST'])
 def salvar_orcamentos():
     if 'usuario_id' not in session:
@@ -244,6 +303,7 @@ def obter_orcamentos():
         print("Erro ao obter orçamento:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
+# ----------------- Páginas -----------------
 @app.route('/desafios')
 @login_obrigatorio
 def desafios():
@@ -279,6 +339,7 @@ def metas():
 
     return render_template('metas.html', superavit=superavit)
 
+# ----------------- Metas (CRUD) -----------------
 @app.route('/salvar_meta', methods=['POST'])
 @login_obrigatorio
 def salvar_meta():
@@ -410,6 +471,7 @@ def atualizar_superavit():
     except Exception as e:
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
+# ----------------- Diário (CRUD) -----------------
 @app.route('/api/diario/notes', methods=['GET'])
 @login_obrigatorio
 def api_listar_notas():
