@@ -1,19 +1,27 @@
-from flask import Flask, request, render_template, redirect, session, url_for, flash
+import os
+from flask import Flask, request, render_template, redirect, session, url_for, flash, jsonify
 import mysql.connector
-from flask import jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import re
 
 app = Flask(__name__)
-app.secret_key = 'sua_chave_secreta_aqui'
+# Use SECRET_KEY do ambiente em produção; fallback simples para dev local
+app.secret_key = os.environ.get('FLASK_SECRET', 'sua_chave_secreta_aqui')
+
+# ---- Banco de dados ----
+# Em produção (Render), configure estas variáveis em: Service → Environment
+DB_HOST = os.environ.get("DB_HOST", "localhost")
+DB_USER = os.environ.get("DB_USER", "root")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
+DB_NAME = os.environ.get("DB_NAME", "lumme")
 
 def conectar_banco():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="lumme"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
 
 def login_obrigatorio(f):
@@ -93,8 +101,11 @@ def cadastro():
             return redirect('/cadastro')
 
         finally:
-            cursor.close()
-            conn.close()
+            try:
+                cursor.close()
+                conn.close()
+            except:
+                pass
 
     return render_template('cadastro.html')
 
@@ -126,8 +137,11 @@ def login():
             return redirect('login')
 
         finally:
-            cursor.close()
-            conn.close()
+            try:
+                cursor.close()
+                conn.close()
+            except:
+                pass
 
     return render_template('login.html')
 
@@ -183,7 +197,6 @@ def salvar_orcamentos():
         print("Erro ao salvar orçamento:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
-  
 @app.route('/obter_orcamentos', methods=['GET'])
 def obter_orcamentos():
     if 'usuario_id' not in session:
@@ -307,7 +320,7 @@ def obter_metas():
     except Exception as e:
         print("Erro ao obter metas:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
-    
+
 @app.route('/deletar_meta/<int:meta_id>', methods=['POST','DELETE'])
 @login_obrigatorio
 def deletar_meta(meta_id):
@@ -339,7 +352,6 @@ def deletar_meta(meta_id):
         print("Erro ao deletar meta:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
-    
 @app.route('/atualizar_meta', methods=['POST'])
 @login_obrigatorio
 def atualizar_meta():
@@ -393,7 +405,7 @@ def atualizar_superavit():
         return jsonify({'status': 'sucesso'})
     except Exception as e:
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
-    
+
 @app.route('/api/diario/notes', methods=['GET'])
 @login_obrigatorio
 def api_listar_notas():
@@ -427,7 +439,6 @@ def api_listar_notas():
     cur.close(); cnx.close()
     return jsonify(rows)
 
-
 @app.route('/api/diario/notes', methods=['POST'])
 @login_obrigatorio
 def api_criar_nota():
@@ -453,7 +464,6 @@ def api_criar_nota():
 
     return jsonify({'status': 'sucesso', 'id': new_id})
 
-
 @app.route('/api/diario/notes/<int:note_id>', methods=['PUT'])
 @login_obrigatorio
 def api_editar_nota(note_id):
@@ -478,7 +488,6 @@ def api_editar_nota(note_id):
     cur.close(); cnx.close()
     return jsonify({'status': 'sucesso'})
 
-
 @app.route('/api/diario/notes/<int:note_id>', methods=['DELETE'])
 @login_obrigatorio
 def api_excluir_nota(note_id):
@@ -499,5 +508,10 @@ def api_excluir_nota(note_id):
 def diario():
     return render_template('diario.html')
 
+# ---- Execução local vs Render ----
 if __name__ == '__main__':
-    app.run(debug=True, port=5500)
+    # No Render, o servidor de produção é o Gunicorn (via Procfile).
+    # Este bloco é apenas para rodar localmente.
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_DEBUG") == "1"
+    app.run(host="0.0.0.0", port=port, debug=debug)
