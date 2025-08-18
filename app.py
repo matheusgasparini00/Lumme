@@ -11,33 +11,6 @@ app = Flask(__name__)
 # Use SECRET_KEY do ambiente em produção; fallback simples para dev local
 app.secret_key = os.environ.get('FLASK_SECRET', 'sua_chave_secreta_aqui')
 
-# >>> AUTO-RELOAD DE TEMPLATES E SEM CACHE EM DEV
-app.config["TEMPLATES_AUTO_RELOAD"] = True           # recarrega templates sem reiniciar o servidor
-app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0          # desativa cache de arquivos estáticos (CSS/JS) em DEV
-
-# >>> Cabeçalhos para evitar cache no navegador (apenas DEV)
-@app.after_request
-def add_no_cache_headers(resp):
-    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-    resp.headers["Pragma"] = "no-cache"
-    resp.headers["Expires"] = "0"
-    return resp
-
-# >>> “Bust” de cache para estáticos: adiciona ?v=<mtime> em url_for('static', ...)
-import os as _os
-@app.context_processor
-def override_url_for():
-    def dated_url_for(endpoint, **values):
-        if endpoint == "static":
-            filename = values.get("filename")
-            if filename:
-                file_path = _os.path.join(app.static_folder, filename)
-                if _os.path.exists(file_path):
-                    values["v"] = int(_os.stat(file_path).st_mtime)
-        return url_for(endpoint, **values)
-    return dict(url_for=dated_url_for)
-# <<< FIM DAS ADIÇÕES DE RECARGA/CACHE
-
 # ----------------- Config DB (via env) -----------------
 DB_HOST = os.environ.get("DB_HOST", "localhost")
 DB_PORT = int(os.environ.get("DB_PORT", "3306"))
@@ -200,7 +173,7 @@ def cadastro():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == ['POST']:
+    if request.method == 'POST':
         email = request.form['email']
         senha = request.form['senha']
 
@@ -605,11 +578,6 @@ def diario():
 if __name__ == '__main__':
     # No Render, o servidor de produção é o Gunicorn (via Procfile).
     # Este bloco é apenas para rodar localmente.
-
-    # >>> Força debug + reloader por padrão em DEV
     port = int(os.environ.get("PORT", 5000))
-    debug_env = os.environ.get("FLASK_DEBUG")
-    debug = True if debug_env is None else (debug_env == "1")
-
-    # use_reloader=True garante recarregamento ao salvar .py
-    app.run(host="0.0.0.0", port=port, debug=debug, use_reloader=True)
+    debug = os.environ.get("FLASK_DEBUG") == "1"
+    app.run(host="0.0.0.0", port=port, debug=debug)
