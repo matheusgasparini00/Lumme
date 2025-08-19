@@ -574,10 +574,17 @@ def api_excluir_nota(note_id):
 def diario():
     return render_template('diario.html')
 
-# ---- Execução local vs Render ----
 if __name__ == '__main__':
-    # No Render, o servidor de produção é o Gunicorn (via Procfile).
-    # Este bloco é apenas para rodar localmente.
     port = int(os.environ.get("PORT", 5000))
-    debug = os.environ.get("FLASK_DEBUG") == "1"
-    app.run(host="0.0.0.0", port=port, debug=debug)
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
+    app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
+
+    @app.after_request
+    def add_header(response):
+        response.cache_control.no_store = True
+        return response
+
+    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)
+
+
+    
