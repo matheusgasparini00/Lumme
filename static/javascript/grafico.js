@@ -30,43 +30,62 @@ class FinancialTracker {
       });
     });
 
-    const salaryInput = document.getElementById('salary-input');
-    if (salaryInput) {
-      salaryInput.addEventListener('input', (e) => {
-        const value = parseFloat(e.target.value);
-        if (!isNaN(value) && value >= 0) {
-          this.salary = value;
-          this.calculateTotals();
-          this.updateDisplay();
-        }
-      });
+const salaryEdit = document.getElementById('salary-display');
+if (salaryEdit) {
+  salaryEdit.addEventListener('input', (e) => {
+    const raw = e.target.value
+      .replace(/\s/g, '')
+      .replace(/R\$/i, '')
+      .replace(/\./g, '')
+      .replace(',', '.');
+
+    if (raw === '') {
+      this.salary = 0;
+      return;
     }
-  }
 
-fetchSavedBudget() {
-  fetch('/obter_orcamentos')
-    .then(res => res.json())
-    .then(data => {
-      this.salary = parseFloat(data.salario) || 0;
-      this.expenses = (data.despesas || []).map((d, index) => ({
-        id: Date.now().toString() + index,
-        name: d.name,
-        amount: parseFloat(d.amount),
-        date: this.formatDate(new Date())
-      }));
+    const value = parseFloat(raw);
+    if (!isNaN(value) && value >= 0) {
+      this.salary = value;
+      this.calculateTotals(false); // só calcula, sem formatar ainda
+    }
+  });
 
-      this.surplus = parseFloat(data.superavit) || 0;
-
-      this.calculateTotals(false);
-
-      this.updateDisplay();
-
-      const salaryInput = document.getElementById('salary-input');
-      if (salaryInput) salaryInput.value = this.salary.toFixed(2);
-    })
-    .catch(err => console.error('Erro ao carregar orçamento salvo:', err));
+  salaryEdit.addEventListener('blur', () => {
+    salaryEdit.value = this.formatCurrency(this.salary);
+    this.calculateTotals();
+    this.updateDisplay();
+  });
 }
 
+  }
+
+  fetchSavedBudget() {
+    fetch('/obter_orcamentos')
+      .then(res => res.json())
+      .then(data => {
+        this.salary = parseFloat(data.salario) || 0;
+        this.expenses = (data.despesas || []).map((d, index) => ({
+          id: Date.now().toString() + index,
+          name: d.name,
+          amount: parseFloat(d.amount),
+          date: this.formatDate(new Date())
+        }));
+
+        this.surplus = parseFloat(data.superavit) || 0;
+
+        this.calculateTotals(false);
+        this.updateDisplay();
+
+const salaryOutput = document.getElementById('salary-input');
+if (salaryOutput) salaryOutput.textContent = this.formatCurrency(this.salary);
+
+const salaryEdit = document.getElementById('salary-display');
+if (salaryEdit) salaryEdit.value = this.formatCurrency(this.salary);
+
+      })
+      .catch(err => console.error('Erro ao carregar orçamento salvo:', err));
+  }
 
   addExpense() {
     const nameInput = document.getElementById('expense-name');
@@ -100,13 +119,13 @@ fetchSavedBudget() {
     this.updateDisplay();
   }
 
- calculateTotals(updateSurplus = true) {
-  this.totalExpenses = this.expenses.reduce((sum, expense) => sum + expense.amount, 0);
-  if (updateSurplus) {
-    this.surplus = this.salary - this.totalExpenses;
+  calculateTotals(updateSurplus = true) {
+    this.totalExpenses = this.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    if (updateSurplus) {
+      this.surplus = this.salary - this.totalExpenses;
+    }
+    this.salvarNoServidor(this.salary, this.totalExpenses, this.surplus);
   }
-  this.salvarNoServidor(this.salary, this.totalExpenses, this.surplus);
-}
 
   salvarNoServidor(salario, despesa_total, superavit) {
     fetch('/salvar_orcamentos', {
@@ -130,10 +149,11 @@ fetchSavedBudget() {
   }
 
   updateCircularFields() {
-    const salaryDisplay = document.getElementById('salary-display');
-    if (salaryDisplay) {
-      salaryDisplay.textContent = this.formatCurrency(this.salary);
-    }
+ const salaryDisplay = document.getElementById('salary-input');
+if (salaryDisplay) {
+  salaryDisplay.textContent = this.formatCurrency(this.salary);
+}
+
 
     const expensesDisplay = document.getElementById('expenses-display');
     if (expensesDisplay) {
@@ -184,7 +204,6 @@ fetchSavedBudget() {
                   <button class="delete-button" onclick="tracker.removeExpense('${expense.id}')">
                   <i class="fas fa-trash-alt"></i>
                   </button>
-
                 </div>
               </div>
             `).join('')}
@@ -264,7 +283,6 @@ class ExpenseChart {
 
     const labels = expenses.map(item => item.name);
     const data = expenses.map(item => item.amount);
-
   }
 }
 
@@ -291,10 +309,10 @@ function atualizarGrafico(despesas) {
           label: 'Despesas',
           data: valores,
           backgroundColor: [
-              '#A339FA','#7A2BBA','#4f46e5','#501C7A','#3e046dff',
-              '#025A9D','#0386E9','#0261AA','#024B83','#01355D',
-              '#FFA90A','#FF8F1C', '#FF671C','#FF3F1C','#FF0D1D',
-              '#FF0A40','#FC4D88','#FF1CD6','#CB1CFF','#811CFF',
+            '#A339FA','#7A2BBA','#4f46e5','#501C7A','#3e046dff',
+            '#025A9D','#0386E9','#0261AA','#024B83','#01355D',
+            '#FFA90A','#FF8F1C', '#FF671C','#FF3F1C','#FF0D1D',
+            '#FF0A40','#FC4D88','#FF1CD6','#CB1CFF','#811CFF',
           ],
           borderWidth: 1
         }]
@@ -317,5 +335,3 @@ window.addEventListener('storage', (event) => {
     }
   }
 });
-
-

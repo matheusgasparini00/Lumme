@@ -98,6 +98,24 @@
   color: var(--cor-roxo);
 }
 
+.salary-box {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: 2px solid var(--cor-roxo, #4f46e5);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  width: 150px;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.salary-box:focus {
+  border-color: var(--cor-amarelo, #e6d556);
+}
+
+
 .expenses-border {
   border-color: #fecaca;
 }

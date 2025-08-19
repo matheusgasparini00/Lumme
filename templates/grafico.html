@@ -28,14 +28,21 @@
             <div class="circular-grid">
                 <div class="circular-card">
                     <h2 class="circular-title">Salário</h2>
-                    <div class="circular-field">
-                        <div class="circular-border salary-border"></div>
-                        <div class="circular-inner salary-inner">
-                            <input type="text" id="salary-input" class="salary-input" placeholder="0,00" />
-                        </div>
-                    </div>
-                    <p id="salary-display" class="salary-value">R$ 0,00</p>
-                </div>
+<div class="circular-field">
+  <div class="circular-border salary-border"></div>
+  <div class="circular-inner salary-inner">
+    <!-- dentro do círculo → apenas exibe formatado -->
+    <span id="salary-input" class="salary-value">R$ 0,00</span>
+  </div>
+</div>
+     <!-- Aqui vira um input editável com borda -->
+    <input 
+      type="text" 
+      id="salary-display" 
+      class="salary-box" 
+      placeholder="Digite seu salário" 
+    />
+  </div>
                 <div class="circular-card">
                     <h3 class="circular-title">Despesas</h3>
                     <div class="circular-field">
