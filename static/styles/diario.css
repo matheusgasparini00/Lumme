@@ -65,8 +65,28 @@
   transition: 0.2s;
 }
 
-#botoes-categorias button:hover {
-  background-color: var(--cor-roxo);
+#botoes-categorias button:hover.aliment {
+  background-color: #D1FA58;
+}
+
+#botoes-categorias button:hover.transp {
+  background-color: #FA953C;
+}
+
+#botoes-categorias button:hover.laz {
+  background-color: #FAD847;
+}
+
+#botoes-categorias button:hover.sau {
+  background-color: #ff4d3c;
+}
+
+#botoes-categorias button:hover.edu {
+  background-color: #57BFEE;
+}
+
+#botoes-categorias button:hover.out {
+  background-color: #686763;
 }
 
 #botoes-categorias button.selecionado {
@@ -74,6 +94,44 @@
   color: #ffffff;
   border-color: var(--cor-roxo);
 }
+
+/* ===== Botões de categoria ===== */
+#botoes-categorias button.selecionado.aliment { 
+  background-color: #D1FA58; 
+  border-color: #000000; 
+  color: #fff; /* contraste melhor */
+}
+
+#botoes-categorias button.selecionado.transp { 
+  background-color: #FA953C; 
+  border-color: #000000; 
+  color: #fff; 
+}
+
+#botoes-categorias button.selecionado.laz { 
+  background-color: #FAD847; 
+  border-color: #000000; 
+  color: #fff; 
+}
+
+#botoes-categorias button.selecionado.sau { 
+  background-color: #FF4D3C; 
+  border-color: #000000; 
+  color: #fff; 
+}
+
+#botoes-categorias button.selecionado.edu { 
+  background-color: #57BFEE; 
+  border-color: #000000; 
+  color: #fff; 
+}
+
+#botoes-categorias button.selecionado.out { 
+  background-color: #686763; 
+  border-color: #000000; 
+  color: #fff; 
+}
+
 
 .note-form textarea {
   resize: none;
@@ -135,6 +193,36 @@
   max-width: 100%;
 }
 
+/* ===== Cabeçalho da seção por categoria ===== */
+.category-section[data-category="Alimentação"] h3 {
+  color: #D1FA58;
+  border-bottom-color: #D1FA58;
+}
+
+.category-section[data-category="Transporte"] h3 {
+  color: #FA953C;
+  border-bottom-color: #FA953C;
+}
+
+.category-section[data-category="Lazer"] h3 {
+  color: #FAD847;
+  border-bottom-color: #FAD847;
+}
+
+.category-section[data-category="Saúde"] h3 {
+  color: #FF4D3C;
+  border-bottom-color: #FF4D3C;
+}
+
+.category-section[data-category="Educação"] h3 {
+  color: #57BFEE;
+  border-bottom-color: #57BFEE;
+}
+
+.category-section[data-category="Outros"] h3 {
+  color: #686763;
+  border-bottom-color: #686763;
+}
 
 .note-item {
   background: #f3f3f3;
@@ -171,7 +259,6 @@
   overflow: hidden;
   padding-right: 60px;
 }
-
 
 
 .note-item button.edit-btn {

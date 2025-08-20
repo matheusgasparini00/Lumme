@@ -9,6 +9,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // estado simples pra edição
   let editId = null;
 
+  function slugFromCategory(cat) {
+  const map = {
+    "Alimentação": "cat-alimentacao",
+    "Transporte": "cat-transporte",
+    "Lazer": "cat-lazer",
+    "Saúde": "cat-saude",
+    "Educação": "cat-educacao",
+    "Outros": "cat-outros"
+  };
+  return map[cat] || "cat-outros";
+}
+
+
   // Seleção de categoria via botões
   botoes.forEach(botao => {
     botao.addEventListener("click", () => {
@@ -40,7 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       grupos[cat].forEach(n => {
         const note = document.createElement("div");
-        note.className = "note-item";
+        note.className = `note-item ${slugFromCategory(n.categoria)}`;
+
 
         const noteTitle = document.createElement("h4");
         noteTitle.textContent = n.titulo;
