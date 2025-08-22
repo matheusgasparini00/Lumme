@@ -95,11 +95,10 @@
   border-color: var(--cor-roxo);
 }
 
-/* ===== Botões de categoria ===== */
 #botoes-categorias button.selecionado.aliment { 
   background-color: #D1FA58; 
   border-color: #000000; 
-  color: #fff; /* contraste melhor */
+  color: #fff;
 }
 
 #botoes-categorias button.selecionado.transp { 
@@ -193,7 +192,6 @@
   max-width: 100%;
 }
 
-/* ===== Cabeçalho da seção por categoria ===== */
 .category-section[data-category="Alimentação"] h3 {
   color: #D1FA58;
   border-bottom-color: #D1FA58;
@@ -295,8 +293,6 @@
   color: #c0392b !important; 
   line-height: 1; 
 }
-
-/*Responsividade*/
 
 @media (max-width: 768px) {
   .main-content {

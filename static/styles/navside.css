@@ -7,7 +7,6 @@
   --sidebar-expanded: 220px;
 }
 
-/* ===== Header / Navbar ===== */
 header {
   position: fixed;
   top: 0;
@@ -16,8 +15,7 @@ header {
   height: var(--header-h);
   background-color: var(--cor-roxo);
   z-index: 999;
-  /* quando a sidebar está presente (md+), o padding-left é ajustado via combinador com #sidebar */
-  padding-left: 0; /* mobile: sem sidebar visível */
+  padding-left: 0;
 }
 
 #navbar {
@@ -30,12 +28,11 @@ header {
 }
 
 .logo {
-  height: 56px;        /* tamanho seguro p/ navbar */
+  height: 56px;        
   width: auto;
   display: block;
 }
 
-/* centralização dos links + cores */
 #nav_list {
   display: flex;
   list-style: none;
@@ -55,7 +52,6 @@ header {
   border-bottom: 3px solid var(--cor-amarelo);
 }
 
-/* ===== Sidebar ===== */
 #sidebar {
   position: fixed;
   top: var(--header-h);
@@ -139,8 +135,6 @@ header {
   background-color: var(--cor-roxo);
 }
 
-/* zera o padding do LI e coloca o padding no link,
-   assim o ícone começa na mesma coluna do avatar */
 #side_itens { padding: 0; }
 .side-iten { padding: 0; }
 
@@ -148,19 +142,19 @@ header {
   text-decoration: none;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* <-- chave */
+  justify-content: flex-start; 
   gap: 12px;
   color: #000;
-  padding: 12px;              /* igual ao padding do #sidebar_content */
+  padding: 12px;             
   width: 100%;
 }
 .side-iten.active a {
   color: #fff;
 }
 .side-iten a i {
-  min-width: 24px;      /* fixa a coluna do ícone */
+  min-width: 24px;      
   text-align: center;
-  font-size: 18px;      /* ajuste fino opcional */
+  font-size: 18px;      
 }
 
 #logout {
@@ -182,7 +176,6 @@ header {
   color: #000;
 }
 
-/* Botão flutuante para abrir/fechar */
 #open_button {
   position: absolute;
   top: 30px;
@@ -203,7 +196,6 @@ header {
   transition: transform .3s ease;
 }
 
-/* Estados "aberta" da sidebar */
 #sidebar.open-sidebar {
   width: var(--sidebar-expanded);
 }
@@ -225,7 +217,6 @@ header {
   transform: rotate(180deg);
 }
 
-/* Texto colapsado/expandido */
 .item_description {
   width: 0;
   overflow: hidden;
@@ -236,14 +227,12 @@ header {
   height: 0;
 }
 
-/* ===== Mobile: sidebar some e header ocupa 100% ===== */
 @media (max-width: 767.98px) {
   header {
     padding-left: 0;
   }
 }
 
-/* ===== Offcanvas (se decidir usar no futuro) ===== */
 .offcanvas {
   width: 250px;
   background-color: #fff;

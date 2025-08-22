@@ -8,10 +8,8 @@ from functools import wraps
 import re
 
 app = Flask(__name__)
-# Use SECRET_KEY do ambiente em produção; fallback simples para dev local
 app.secret_key = os.environ.get('FLASK_SECRET', 'sua_chave_secreta_aqui')
 
-# ----------------- Config DB (via env) -----------------
 DB_HOST = os.environ.get("DB_HOST", "localhost")
 DB_PORT = int(os.environ.get("DB_PORT", "3306"))
 DB_USER = os.environ.get("DB_USER", "root")
@@ -27,10 +25,9 @@ _db_config = {
     "charset": "utf8mb4",
     "collation": "utf8mb4_unicode_ci",
     "use_pure": True,
-    "connection_timeout": 10,  # evita travar por muito tempo abrindo conexão
+    "connection_timeout": 10,
 }
 
-# Pool com até 5 conexões (ajuste conforme necessidade)
 _db_pool = pooling.MySQLConnectionPool(
     pool_name="lumme_pool",
     pool_size=5,
@@ -51,7 +48,6 @@ def conectar_banco():
         conn.ping(reconnect=True, attempts=1, delay=0)
     return conn
 
-# ----------------- Auth decorator -----------------
 def login_obrigatorio(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -60,7 +56,6 @@ def login_obrigatorio(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# ----------------- Rotas básicas -----------------
 @app.route('/')
 def home():
     return redirect('/login')
@@ -84,7 +79,6 @@ def logout():
     session.clear()
     return redirect('/login')
 
-# ----------------- Health/Diagnóstico -----------------
 @app.route("/health")
 def health():
     return {"status": "ok"}, 200
@@ -116,7 +110,6 @@ def dbcheck():
     except Exception as e:
         return {"ok": False, "error": str(e)}, 500
 
-# ----------------- Cadastro/Login -----------------
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
@@ -207,7 +200,6 @@ def login():
 
     return render_template('login.html')
 
-# ----------------- Orçamentos -----------------
 @app.route('/salvar_orcamentos', methods=['POST'])
 def salvar_orcamentos():
     if 'usuario_id' not in session:
@@ -303,7 +295,6 @@ def obter_orcamentos():
         print("Erro ao obter orçamento:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
-# ----------------- Páginas -----------------
 @app.route('/desafios')
 @login_obrigatorio
 def desafios():
@@ -339,7 +330,6 @@ def metas():
 
     return render_template('metas.html', superavit=superavit)
 
-# ----------------- Metas (CRUD) -----------------
 @app.route('/salvar_meta', methods=['POST'])
 @login_obrigatorio
 def salvar_meta():
@@ -471,7 +461,6 @@ def atualizar_superavit():
     except Exception as e:
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
-# ----------------- Diário (CRUD) -----------------
 @app.route('/api/diario/notes', methods=['GET'])
 @login_obrigatorio
 def api_listar_notas():

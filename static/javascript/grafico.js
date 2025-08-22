@@ -47,7 +47,7 @@ if (salaryEdit) {
     const value = parseFloat(raw);
     if (!isNaN(value) && value >= 0) {
       this.salary = value;
-      this.calculateTotals(false); // só calcula, sem formatar ainda
+      this.calculateTotals(false); 
     }
   });
 

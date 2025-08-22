@@ -6,9 +6,9 @@
 
 .lumina-container {
   position: fixed;
-  top: calc(var(--header-h) + 16px); /* mascote logo abaixo do header */
-  right: 16px;                       /* encostado à direita */
-  width: clamp(220px, 28vw, 550px);  /* responsivo */
+  top: calc(var(--header-h) + 16px); 
+  right: 16px;                      
+  width: clamp(220px, 28vw, 550px);  
   aspect-ratio: 1 / 1;               
   height: auto;
   background-color: var(--cor-roxo);
@@ -28,7 +28,7 @@
   width: 80%;
   height: auto;
   max-height: 90%;
-  object-fit: contain; /* ← sem caractere “quebrado” */
+  object-fit: contain; 
 }
 
 @media (max-width: 576px) {
@@ -37,6 +37,6 @@
     bottom: 8px;
     width: clamp(180px, 40vw, 260px);
     border-radius: 80px 0 10px 32px;
-    opacity: 0.95; /* leve suavizada; ajuste a gosto */
+    opacity: 0.95; 
   }
 }

@@ -22,16 +22,16 @@
     list-style: none;
     display: flex;
     justify-content: center;
-    gap: 16px 24px;   /* row-gap 16, column-gap 24 */
+    gap: 16px 24px; 
     padding: 10px 0 0 0;
     margin: 0;
     flex-wrap: wrap;
 }
 
 .footer-links li a {
-    display: inline-block;     /* dá caixa ao link */
-    padding: 8px 10px;         /* aumenta área de toque no mobile */
-    line-height: 1.2;          /* melhora leitura */
+    display: inline-block;     
+    padding: 8px 10px;        
+    line-height: 1.2;         
     color: #e6d556;
     text-decoration: none;
     font-weight: 500;
@@ -42,6 +42,6 @@
 }
 
 @media (max-width: 576px) {
-  #main-footer { font-size: 15px; }     /* sobe 1px no mobile */
+  #main-footer { font-size: 15px; }     
   .footer-links li a { padding: 10px 12px; }
 }

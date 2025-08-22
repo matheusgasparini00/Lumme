@@ -119,23 +119,23 @@ main#content {
   background-color: var(--cor-amarelo);
   border-radius: 15px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  height: 250px;           /* altura fixa */
+  height: 250px;          
   display: flex;
   padding: 20px;
-  box-sizing: border-box;  /* garante padding dentro da altura */
+  box-sizing: border-box;  
 }
 
 .carousel-inner .row {
-  align-items: stretch; /* força as colunas a terem a mesma altura */
+  align-items: stretch;
 }
 
 .carousel-item .col-12.col-md-4 {
-  display: flex;         /* faz a coluna ser flex container */
-  align-items: stretch;  /* força o card dentro a se esticar */
+  display: flex;         
+  align-items: stretch;  
 }
 
 .carousel-item .card {
-  flex-grow: 1;          /* faz o card preencher toda altura da coluna */
+  flex-grow: 1;          
 }
 
 

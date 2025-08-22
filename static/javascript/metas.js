@@ -64,7 +64,7 @@ saveGoalBtn.addEventListener('click', () => {
     .then(res => res.json())
     .then(data => {
         if (data.status === 'sucesso') {
-            carregarMetas(); // Recarrega metas após salvar
+            carregarMetas();
         } else {
             console.error('Erro ao salvar meta no banco:', data.mensagem);
         }

@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const titleInput = document.getElementById("noteTitle");
   const contentInput = document.getElementById("noteContent");
 
-  // estado simples pra edição
   let editId = null;
 
   function slugFromCategory(cat) {
@@ -21,8 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
   return map[cat] || "cat-outros";
 }
 
-
-  // Seleção de categoria via botões
   botoes.forEach(botao => {
     botao.addEventListener("click", () => {
       botoes.forEach(b => b.classList.remove("selecionado"));
@@ -31,11 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Renderização agrupada por categoria
   function renderNotas(notas) {
     notesList.innerHTML = "<h2>Minhas Anotações</h2>";
 
-    // group by categoria
     const grupos = {};
     notas.forEach(n => {
       grupos[n.categoria] = grupos[n.categoria] || [];
@@ -63,16 +58,13 @@ document.addEventListener("DOMContentLoaded", () => {
         noteContent.textContent = n.texto;
         noteContent.style.whiteSpace = "pre-wrap";
 
-        // Botões
         const editBtn = document.createElement("button");
         editBtn.textContent = "Editar";
         editBtn.className = "edit-btn";
         editBtn.addEventListener("click", () => {
-          // carrega dados no formulário para editar
           inputCategoria.value = n.categoria;
           titleInput.value = n.titulo;
           contentInput.value = n.texto;
-          // seleciona visualmente o botão da categoria
           botoes.forEach(b => {
             if (b.dataset.cat === n.categoria) b.classList.add("selecionado");
             else b.classList.remove("selecionado");
@@ -168,7 +160,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (ok) {
-      // limpa formulário e estado
       document.getElementById("noteCategory").value = "";
       document.getElementById("noteTitle").value = "";
       document.getElementById("noteContent").value = "";

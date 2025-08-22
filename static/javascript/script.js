@@ -1,6 +1,3 @@
-// =====================
-// Bloco jQuery (seções + sombra do header + ScrollReveal)
-// =====================
 $(document).ready(function () {
   const sections = $('section');
   const navItems = $('.nav-item');
@@ -33,7 +30,6 @@ $(document).ready(function () {
     });
   }
 
-  // ScrollReveal protegido
   try {
     if (window.ScrollReveal) {
       ScrollReveal().reveal('#cta', {
@@ -65,9 +61,6 @@ $(document).ready(function () {
   }
 });
 
-// =====================
-// Sidebar toggle (protegido)
-// =====================
 document.addEventListener('DOMContentLoaded', function () {
   const openBtn = document.getElementById('open_button');
   if (openBtn) {
@@ -78,14 +71,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-// =====================
-// Destaque do item ativo na navbar (robusto)
-// =====================
 document.addEventListener('DOMContentLoaded', function () {
-  // normaliza caminho atual (remove barras finais)
   const currentPath = new URL(location.href).pathname.replace(/\/+$/, '') || '/';
 
-  // cobre variações de classes usadas no menu
   const links = document.querySelectorAll('.nav-item > a, .side-item > a, .side-iten > a');
   let matched = false;
 
@@ -96,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const linkPath = new URL(href, location.origin).pathname.replace(/\/+$/, '') || '/';
     const li = a.closest('.nav-item, .side-item, .side-iten');
 
-    // match exato ou prefixo (para subrotas /diario/…)
     if (currentPath === linkPath || (linkPath !== '/' && currentPath.startsWith(linkPath))) {
       document.querySelectorAll('.nav-item.active, .side-item.active, .side-iten.active')
         .forEach(i => i.classList.remove('active'));
@@ -105,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // fallback para home
   if (!matched && (currentPath === '/' || currentPath === '/index')) {
     const home = document.querySelector(
       '.nav-item > a[href="/"], .nav-item > a[href="/index"], ' +
@@ -116,16 +102,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-// =====================
-// Força visibilidade do body ao carregar
-// =====================
 window.addEventListener('load', function () {
   document.body.style.visibility = 'visible';
 });
 
-// =====================
-// Validação de senhas (cadastro)
-// =====================
 function verificarSenhas() {
   const senha = document.getElementById('senha')?.value || '';
   const confirmar = document.getElementById('confirmar_senha')?.value || '';
@@ -145,9 +125,6 @@ function verificarSenhas() {
   return true;
 }
 
-// =====================
-// Efeito de exibição (lumina)
-// =====================
 window.addEventListener('load', function () {
   const lumina = document.querySelector('.lumina-container');
   if (lumina) {
@@ -156,9 +133,6 @@ window.addEventListener('load', function () {
   }
 });
 
-// =====================
-// Carrossel com botões (protegido)
-// =====================
 window.addEventListener('DOMContentLoaded', function () {
   const track = document.querySelector('.carousel-track');
   if (!track) return;
@@ -169,7 +143,7 @@ window.addEventListener('DOMContentLoaded', function () {
   const btnLeft = document.querySelector('.carousel-btn-left');
   const btnRight = document.querySelector('.carousel-btn-right');
 
-  const cardWidth = cards[0].getBoundingClientRect().width + 20; // largura + gap
+  const cardWidth = cards[0].getBoundingClientRect().width + 20;
   let currentIndex = 0;
 
   btnRight?.addEventListener('click', () => {

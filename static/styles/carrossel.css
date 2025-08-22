@@ -54,14 +54,12 @@
   gap: 20px;
 }
 
-/* Ajustes específicos para os cards do carrossel */
 #multiCardCarousel .card {
-  background-color: #ffffff;   /* fundo dos cards do carrossel */
-  color: var(--cor-roxo);      /* cor do texto padrão dentro dos cards */
+  background-color: #ffffff;  
+  color: var(--cor-roxo);      
   border: 0;
 }
 
-/* Garante que o texto dentro dos cards do carrossel siga a cor herdada */
 #multiCardCarousel .card h3 {
   font-size: 30px;
   margin-bottom: 10px;
