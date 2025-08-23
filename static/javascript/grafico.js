@@ -44,12 +44,13 @@ if (salaryEdit) {
       return;
     }
 
-    const value = parseFloat(raw);
-    if (!isNaN(value) && value >= 0) {
-      this.salary = value;
-      this.calculateTotals(false); 
-    }
-  });
+const value = parseFloat(raw);
+if (!isNaN(value) && value >= 0) {
+  const limiteSalario = 1000000;
+  this.salary = Math.min(value, limiteSalario);
+  this.calculateTotals(false); 
+}
+});
 
   salaryEdit.addEventListener('blur', () => {
     salaryEdit.value = this.formatCurrency(this.salary);

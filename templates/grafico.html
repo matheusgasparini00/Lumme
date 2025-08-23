@@ -34,13 +34,8 @@
     <span id="salary-input" class="salary-value">R$ 0,00</span>
   </div>
 </div>
-    <input 
-      type="text" 
-      id="salary-display" 
-      class="salary-box" 
-      placeholder="Digite seu salário" 
-    />
-  </div>
+<input type="text" id="salary-display" class="salary-box" placeholder="Digite seu salário" min="0" max="1000000" step="0.01"/>
+    </div>
                 <div class="circular-card">
                     <h3 class="circular-title">Despesas</h3>
                     <div class="circular-field">
@@ -73,8 +68,7 @@
                     <div class="form-group" style="width: 100%; max-width: 600px; margin: 0 auto;">
                         <input type="text" id="expense-name" class="form-input expense-input"
                             placeholder="Nome da despesa" maxlength="50" />
-                        <input type="number" id="expense-amount" class="form-input expense-input" placeholder="Valor"
-                            min="0" step="0.01" />
+                       <input type="text" id="expense-amount" class="form-input expense-input" placeholder="Valor"min="0" max="1000000" step="0.01" />
                         <button id="add-expense-btn" class="form-button" disabled>
                             Adicionar
                         </button>
