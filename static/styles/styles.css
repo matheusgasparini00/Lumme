@@ -108,8 +108,9 @@ main#content {
   color: #e6d556;
   padding: 6px 10px;
   border-radius: 6px;
-  margin-top: 6px;
+  margin-top: 5px;
 }
+
 
 .card {
   background-color: var(--cor-amarelo);

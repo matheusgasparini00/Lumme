@@ -25,7 +25,6 @@ function fetchSurplus() {
         });
 }
 
-
 function updateSurplusDisplay() {
     surplusValueEl.textContent = `R$ ${Number(currentSurplus).toFixed(2).replace('.', ',')}`;
 }

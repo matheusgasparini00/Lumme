@@ -122,39 +122,46 @@ header {
   list-style: none;
 }
 
+#side_itens {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+}
+
 .side-iten {
-  padding: 14px;
+  padding: 0;
   cursor: pointer;
   border-radius: 8px;
 }
-.side-iten:hover:not(.active),
-#logout_button:hover {
-  background-color: #f3f3f3;
-}
-.side-iten.active {
-  background-color: var(--cor-roxo);
-}
-
-#side_itens { padding: 0; }
-.side-iten { padding: 0; }
 
 .side-iten a {
   text-decoration: none;
   display: flex;
   align-items: center;
-  justify-content: flex-start; 
+  justify-content: flex-start;
   gap: 12px;
   color: #000;
-  padding: 12px;             
+  padding: 12px;
   width: 100%;
+  border-radius: 8px; 
+  transition: background-color .3s, color .3s;
 }
-.side-iten.active a {
+
+.side-iten a:hover {
+  background-color: var(--cor-roxo);
   color: #fff;
 }
+
+.side-iten a:hover i {
+  color: #fff;
+}
+
 .side-iten a i {
-  min-width: 24px;      
+  min-width: 24px;
   text-align: center;
-  font-size: 18px;      
+  font-size: 18px;
 }
 
 #logout {
