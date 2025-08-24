@@ -9,8 +9,11 @@
     color: white;
     text-align: center;
     padding: 20px 10px;
-     margin-top: clamp(24px, 6vw, 120px);
     font-size: 14px;
+    width: 100%;
+    position: fixed;   /* fixa na parte de baixo */
+    bottom: 0;
+    left: 0;
 }
 
 .footer-content {

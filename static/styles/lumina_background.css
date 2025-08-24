@@ -7,7 +7,7 @@
 .lumina-container {
   position: absolute;
   top: calc(var(--header-h) + 16px); 
-  right: 16px;                      
+  right: 2px;                      
   width: clamp(220px, 28vw, 550px);  
   aspect-ratio: 1 / 1;               
   height: auto;

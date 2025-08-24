@@ -22,7 +22,7 @@ body {
 
 .container {
     max-width: 800px;
-    margin: 0 auto;
+    margin: clamp(60px, 10vh, 100px) auto 0 auto;
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -245,7 +245,7 @@ input[type="number"] {
 
 @media (max-width: 600px) {
     .container {
-        padding: 15px;
+        padding: 80px;
     }
 
     .surplus-section {

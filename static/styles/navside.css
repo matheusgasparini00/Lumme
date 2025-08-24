@@ -58,7 +58,7 @@ header {
   left: 0;
   width: var(--sidebar-collapsed);
   height: calc(100vh - var(--header-h));
-  background-color: #fff;
+  background-color: #ffffff;
   border-radius: 0 18px 18px 0;
   display: flex;
   flex-direction: column;
@@ -254,6 +254,7 @@ header {
   padding: 10px;
   border-radius: 8px;
 }
+
 .offcanvas-body .nav-link:hover {
   background-color: var(--bs-body-bg);
 }
