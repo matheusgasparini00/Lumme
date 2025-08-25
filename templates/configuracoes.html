@@ -1,0 +1,7 @@
+<h2>Configurações</h2>
+<form method="post">
+  <label><input type="checkbox" name="notificacoes_ativas" {% if config.notificacoes_ativas %}checked{% endif %}> Ativar notificações</label><br>
+  <label><input type="checkbox" name="sons_ativos" {% if config.sons_ativos %}checked{% endif %}> Ativar sons</label><br>
+  <label><input type="checkbox" name="dois_fatores" {% if config.dois_fatores %}checked{% endif %}> Autenticação em 2 fatores</label><br>
+  <button type="submit">Salvar</button>
+</form>

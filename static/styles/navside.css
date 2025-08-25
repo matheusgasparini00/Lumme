@@ -97,6 +97,7 @@ header {
   flex-direction: column;
   width: 100%;
 }
+
 #user_infos span {
   display: block;
   white-space: nowrap;
@@ -116,13 +117,7 @@ header {
 }
 
 #side_itens {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  list-style: none;
-}
 
-#side_itens {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -132,6 +127,7 @@ header {
 
 .side-iten {
   padding: 0;
+  list-style: none; 
   cursor: pointer;
   border-radius: 8px;
 }
@@ -168,6 +164,7 @@ header {
   border-top: 1px solid #eee;
   padding: 12px;
 }
+
 #logout_button {
   border: none;
   padding: 12px;
@@ -199,6 +196,7 @@ header {
   align-items: center;
   justify-content: center;
 }
+
 #open_button_icon {
   transition: transform .3s ease;
 }
@@ -245,14 +243,17 @@ header {
   background-color: #fff;
   border-radius: 0 18px 18px 0;
 }
+
 .offcanvas-header {
   background-color: var(--cor-roxo);
   color: #fff;
 }
+
 .offcanvas-header img {
   object-fit: cover;
   border-radius: 20px;
 }
+
 .offcanvas-body .nav-link {
   display: flex;
   align-items: center;
@@ -265,10 +266,12 @@ header {
 .offcanvas-body .nav-link:hover {
   background-color: var(--bs-body-bg);
 }
+
 .offcanvas-body .nav-link.active {
   background-color: var(--cor-roxo);
   color: #fff;
 }
+
 .offcanvas-body .nav-link.active i {
   color: #fff;
 }

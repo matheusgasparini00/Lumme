@@ -6,6 +6,7 @@ from mysql.connector import pooling, Error as MySQLError
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import re
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET', 'sua_chave_secreta_aqui')
@@ -33,6 +34,11 @@ _db_pool = pooling.MySQLConnectionPool(
     pool_size=5,
     **_db_config
 )
+
+# pasta onde vão os avatares (dentro de static/uploads)
+UPLOAD_FOLDER = os.path.join(os.getcwd(), "static", "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 def conectar_banco():
     """Obtém conexão do pool e garante que está viva."""
@@ -563,6 +569,111 @@ def api_excluir_nota(note_id):
 def diario():
     return render_template('diario.html')
 
+@app.route('/perfil', methods=['GET', 'POST'])
+@login_obrigatorio
+def perfil():
+    usuario_id = session.get('usuario_id')
+
+    conn = conectar_banco()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT id, nome, sobrenome, email, data_nasc FROM usuarios WHERE id=%s", (usuario_id,))
+    usuario = cursor.fetchone()
+
+    if request.method == 'POST':
+        novo_nome = request.form.get('nome')
+        novo_sobrenome = request.form.get('sobrenome')
+        novo_email = request.form.get('email')
+        nova_senha = request.form.get('senha')
+
+        if nova_senha:
+            from werkzeug.security import generate_password_hash
+            senha_hash = generate_password_hash(nova_senha)
+            cursor.execute("""
+                UPDATE usuarios SET nome=%s, sobrenome=%s, email=%s, senha=%s WHERE id=%s
+            """, (novo_nome, novo_sobrenome, novo_email, senha_hash, usuario_id))
+        else:
+            cursor.execute("""
+                UPDATE usuarios SET nome=%s, sobrenome=%s, email=%s WHERE id=%s
+            """, (novo_nome, novo_sobrenome, novo_email, usuario_id))
+
+        conn.commit()
+
+        # Atualiza os dados na sessão
+        session['nome'] = novo_nome
+        session['sobrenome'] = novo_sobrenome
+        session['usuario'] = novo_email
+
+        flash('Perfil atualizado com sucesso!', 'sucesso')
+        return redirect(url_for('perfil'))
+
+    cursor.close()
+    conn.close()
+    return render_template('perfil.html', usuario=usuario)
+
+@app.route('/notificacoes')
+@login_obrigatorio
+def notificacoes():
+    usuario_id = session.get('usuario_id')
+    conn = conectar_banco()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT id, mensagem, url_destino, lida, criada_em
+        FROM notificacoes
+        WHERE usuario_id = %s
+        ORDER BY criada_em DESC
+    """, (usuario_id,))
+    notificacoes = cursor.fetchall()
+    cursor.close(); conn.close()
+    return render_template('notificacoes.html', notificacoes=notificacoes)
+
+@app.route('/notificacoes/<int:notif_id>/excluir', methods=['POST'])
+@login_obrigatorio
+def excluir_notificacao(notif_id):
+    usuario_id = session.get('usuario_id')
+    conn = conectar_banco()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM notificacoes WHERE id=%s AND usuario_id=%s", (notif_id, usuario_id))
+    conn.commit()
+    cursor.close(); conn.close()
+    flash("Notificação excluída!", "sucesso")
+    return redirect(url_for('notificacoes'))
+
+
+@app.route('/configuracoes', methods=['GET', 'POST'])
+@login_obrigatorio
+def configuracoes():
+    usuario_id = session.get('usuario_id')
+    conn = conectar_banco()
+    cursor = conn.cursor(dictionary=True)
+
+    if request.method == 'POST':
+        notificacoes_ativas = bool(request.form.get('notificacoes_ativas'))
+        sons_ativos = bool(request.form.get('sons_ativos'))
+        dois_fatores = bool(request.form.get('dois_fatores'))
+
+        cursor.execute("SELECT id FROM configuracoes WHERE usuario_id=%s", (usuario_id,))
+        existente = cursor.fetchone()
+        if existente:
+            cursor.execute("""
+                UPDATE configuracoes SET notificacoes_ativas=%s, sons_ativos=%s, dois_fatores=%s
+                WHERE usuario_id=%s
+            """, (notificacoes_ativas, sons_ativos, dois_fatores, usuario_id))
+        else:
+            cursor.execute("""
+                INSERT INTO configuracoes (usuario_id, notificacoes_ativas, sons_ativos, dois_fatores)
+                VALUES (%s, %s, %s, %s)
+            """, (usuario_id, notificacoes_ativas, sons_ativos, dois_fatores))
+
+        conn.commit()
+        flash("Configurações salvas!", "sucesso")
+        return redirect(url_for('configuracoes'))
+
+    cursor.execute("SELECT * FROM configuracoes WHERE usuario_id=%s", (usuario_id,))
+    config = cursor.fetchone() or {"notificacoes_ativas": 1, "sons_ativos": 1, "dois_fatores": 0}
+
+    cursor.close(); conn.close()
+    return render_template('configuracoes.html', config=config)
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -574,6 +685,3 @@ if __name__ == '__main__':
         return response
 
     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)
-
-
-    

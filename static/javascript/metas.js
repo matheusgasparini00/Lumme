@@ -272,4 +272,3 @@ function salvarSuperavitNoBanco() {
         console.error('Erro na rede ao salvar superavit:', err);
     });
 }
-

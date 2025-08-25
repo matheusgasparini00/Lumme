@@ -13,13 +13,14 @@ TABLES = {
     "usuarios": (
         """
         CREATE TABLE usuarios (
-            id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+            id INT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(255),
             sobrenome VARCHAR(255),
-            email VARCHAR(255),
+            email VARCHAR(255) UNIQUE,
             data_nasc DATE,
-            senha VARCHAR(255)
-        )
+            senha VARCHAR(255),
+            avatar VARCHAR(255) DEFAULT NULL
+        ) ENGINE=InnoDB
         """
     ),
 
@@ -32,8 +33,8 @@ TABLES = {
             despesa_total DECIMAL(10,2),
             superavit DECIMAL(10,2),
             data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-        )
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB
         """
     ),
 
@@ -45,8 +46,8 @@ TABLES = {
             nome VARCHAR(255) NOT NULL,
             valor DECIMAL(10,2) NOT NULL,
             data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-        )
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB
         """
     ),
 
@@ -59,28 +60,56 @@ TABLES = {
             valor_objetivo DECIMAL(10,2) NOT NULL,
             valor_atual DECIMAL(10,2) DEFAULT 0.00,
             data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-        )
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB
         """
     ),
 
     "diario_anotacoes": (
         """
         CREATE TABLE diario_anotacoes (
-          id BIGINT AUTO_INCREMENT PRIMARY KEY,
-          usuario_id INT NOT NULL,
-          categoria VARCHAR(60) NOT NULL,
-          titulo VARCHAR(120) NOT NULL,
-          texto TEXT NOT NULL,
-          created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-          deleted_at TIMESTAMP NULL DEFAULT NULL,
-          INDEX idx_user_cat (usuario_id, categoria),
-          FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            usuario_id INT NOT NULL,
+            categoria VARCHAR(60) NOT NULL,
+            titulo VARCHAR(120) NOT NULL,
+            texto TEXT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP NULL DEFAULT NULL,
+            INDEX idx_user_cat (usuario_id, categoria),
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        """
+    ),
+
+    "notificacoes": (
+        """
+        CREATE TABLE notificacoes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            usuario_id INT NOT NULL,
+            mensagem VARCHAR(255) NOT NULL,
+            url_destino VARCHAR(255),
+            lida BOOLEAN DEFAULT FALSE,
+            criada_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB
+        """
+    ),
+
+    "configuracoes": (
+        """
+        CREATE TABLE configuracoes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            usuario_id INT NOT NULL,
+            notificacoes_ativas BOOLEAN DEFAULT TRUE,
+            sons_ativos BOOLEAN DEFAULT TRUE,
+            dois_fatores BOOLEAN DEFAULT FALSE,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB
         """
     )
 }
+
 
 def criar_banco(cursor):
     try:
