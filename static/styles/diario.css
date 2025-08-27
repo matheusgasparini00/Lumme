@@ -236,6 +236,15 @@
   white-space: normal;
 }
 
+/* === Cores das NOTAS por categoria === */
+.note-item.cat-alimentacao { border-left-color: #D1FA58; background: #f9fbe7; }
+.note-item.cat-transporte  { border-left-color: #FA953C; background: #fff3e0; }
+.note-item.cat-lazer       { border-left-color: #FAD847; background: #fffde7; }
+.note-item.cat-saude       { border-left-color: #FF4D3C; background: #ffebee; }
+.note-item.cat-educacao    { border-left-color: #57BFEE; background: #e3f2fd; }
+.note-item.cat-outros      { border-left-color: #686763; background: #f5f5f5; }
+
+
 .note-item h4 {
   margin: 0 0 8px;
   font-size: 1.2rem;

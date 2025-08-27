@@ -1,12 +1,15 @@
 {% extends "base.html" %}
+
+{# CSS desta página #}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/perfil.css') }}">
+{% endblock %}
+
+{# Conteúdo #}
 {% block content %}
 <div class="main-content">
   <div class="perfil-container">
     <h2>Meu Perfil</h2>
-
-{% block styles %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles/perfil.css') }}">
-{% endblock %}
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -18,13 +21,18 @@
 
     <form method="post" enctype="multipart/form-data" class="perfil-form">
       <div class="perfil-avatar">
-        <img src="{% if usuario.avatar %}
-                    {{ url_for('static', filename=usuario.avatar) }}
-                  {% else %}
-                    {{ url_for('static', filename='images/avatar.png') }}
-                  {% endif %}" 
-             alt="Avatar do Usuário">
-        <input type="file" name="avatar" class="form-control mt-2">
+        <!-- Clicar na imagem abre o input de arquivo -->
+        <label for="avatar" class="avatar-label">
+          <img
+            id="avatarPreview"
+            src="{% if usuario.avatar %}
+                   {{ url_for('static', filename=usuario.avatar) }}
+                 {% else %}
+                   {{ url_for('static', filename='images/avatar.png') }}
+                 {% endif %}"
+            alt="Avatar do Usuário">
+        </label>
+        <input type="file" id="avatar" name="avatar" accept="image/*" class="form-control" hidden>
       </div>
 
       <div>
@@ -48,6 +56,11 @@
       </div>
 
       <div>
+        <label for="senha_atual">Senha Antiga</label>
+        <input type="password" id="senha_atual" name="senha_atual" placeholder="Digite sua senha atual">
+      </div>
+
+      <div>
         <label for="senha">Nova Senha</label>
         <input type="password" id="senha" name="senha" placeholder="Deixe em branco para não alterar">
       </div>
@@ -56,4 +69,9 @@
     </form>
   </div>
 </div>
+{% endblock %}
+
+{# JS desta página #}
+{% block scripts %}
+<script src="{{ url_for('static', filename='javascript/perfil.js') }}"></script>
 {% endblock %}

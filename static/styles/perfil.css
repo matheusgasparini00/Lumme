@@ -34,8 +34,8 @@
 }
 
 .perfil-avatar img {
-  width: 120px;
-  height: 120px;
+  width: 180px;
+  height: 180px;
   object-fit: cover;
   border-radius: 50%;
   border: 4px solid var(--cor-roxo);
@@ -126,4 +126,17 @@
     width: 100px;
     height: 100px;
   }
+}
+.perfil-avatar .avatar-label {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.perfil-avatar img {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.perfil-avatar img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(79,70,229,0.6);
 }

@@ -36,7 +36,7 @@ _db_pool = pooling.MySQLConnectionPool(
 )
 
 # pasta onde vão os avatares (dentro de static/uploads)
-UPLOAD_FOLDER = os.path.join(os.getcwd(), "static", "uploads")
+UPLOAD_FOLDER = os.path.join(app.root_path, "static", "uploads")  # <-- use root_path
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -576,39 +576,109 @@ def perfil():
 
     conn = conectar_banco()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT id, nome, sobrenome, email, data_nasc FROM usuarios WHERE id=%s", (usuario_id,))
+
+    # Sempre buscar tudo que o template/rota vai usar, inclusive avatar e senha (para validar a senha atual)
+    cursor.execute("SELECT id, nome, sobrenome, email, data_nasc, avatar, senha FROM usuarios WHERE id=%s", (usuario_id,))
     usuario = cursor.fetchone()
+    if not usuario:
+        cursor.close(); conn.close()
+        flash('Usuário não encontrado.', 'erro')
+        return redirect(url_for('logout'))
 
     if request.method == 'POST':
-        novo_nome = request.form.get('nome')
-        novo_sobrenome = request.form.get('sobrenome')
-        novo_email = request.form.get('email')
-        nova_senha = request.form.get('senha')
+        novo_nome      = (request.form.get('nome') or '').strip()
+        novo_sobrenome = (request.form.get('sobrenome') or '').strip()
+        novo_email     = (request.form.get('email') or '').strip()
+        data_nasc      = (request.form.get('data_nasc') or None)
+        senha_atual    = request.form.get('senha_atual') or ''   # campo "Senha Antiga"
+        nova_senha     = request.form.get('senha') or ''         # campo "Nova Senha"
 
+        # (Opcional) upload de avatar
+        avatar_rel_path = None
+        file = request.files.get('avatar')
+        if file and file.filename:
+            from werkzeug.utils import secure_filename
+            ALLOWED = {'png','jpg','jpeg','gif','webp'}
+            ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
+            if ext not in ALLOWED:
+                flash('Formato de imagem inválido. Use PNG, JPG, JPEG, GIF ou WEBP.', 'alerta')
+                cursor.close(); conn.close()
+                return redirect(url_for('perfil'))
+            fname = secure_filename(f"user{usuario_id}_{int(time.time())}.{ext}")
+            save_path = os.path.join(app.config['UPLOAD_FOLDER'], fname)
+            file.save(save_path)
+            avatar_rel_path = f"uploads/{fname}"  # caminho relativo a /static
+
+        # Validação de troca de senha (só se o usuário informou uma nova)
         if nova_senha:
-            from werkzeug.security import generate_password_hash
-            senha_hash = generate_password_hash(nova_senha)
-            cursor.execute("""
-                UPDATE usuarios SET nome=%s, sobrenome=%s, email=%s, senha=%s WHERE id=%s
-            """, (novo_nome, novo_sobrenome, novo_email, senha_hash, usuario_id))
-        else:
-            cursor.execute("""
-                UPDATE usuarios SET nome=%s, sobrenome=%s, email=%s WHERE id=%s
-            """, (novo_nome, novo_sobrenome, novo_email, usuario_id))
+            # precisa fornecer a senha atual:
+            if not senha_atual:
+                flash('Informe a senha atual para alterá-la.', 'alerta')
+                cursor.close(); conn.close()
+                return redirect(url_for('perfil'))
 
+            # confere hash
+            if not check_password_hash(usuario['senha'], senha_atual):
+                flash('Senha atual incorreta.', 'erro')
+                cursor.close(); conn.close()
+                return redirect(url_for('perfil'))
+
+            # força de senha (mesmo regex do cadastro)
+            regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$"
+            if not re.match(regex, nova_senha):
+                flash('A nova senha deve conter maiúscula, minúscula, número e símbolo (mín. 8).', 'alerta')
+                cursor.close(); conn.close()
+                return redirect(url_for('perfil'))
+
+            senha_hash = generate_password_hash(nova_senha)
+        else:
+            senha_hash = None  # não muda a senha
+
+        # (Opcional) checar se email já existe para outro usuário
+        if novo_email and novo_email != usuario['email']:
+            cursor.execute("SELECT id FROM usuarios WHERE email=%s AND id<>%s", (novo_email, usuario_id))
+            existe = cursor.fetchone()
+            if existe:
+                flash('Este e-mail já está em uso por outro usuário.', 'alerta')
+                cursor.close(); conn.close()
+                return redirect(url_for('perfil'))
+
+        # Monta UPDATE dinâmico
+        campos = ["nome=%s", "sobrenome=%s", "email=%s"]
+        valores = [novo_nome, novo_sobrenome, novo_email]
+
+        if data_nasc:
+            campos.append("data_nasc=%s")
+            valores.append(data_nasc)
+
+        if senha_hash:
+            campos.append("senha=%s")
+            valores.append(senha_hash)
+
+        if avatar_rel_path:
+            campos.append("avatar=%s")
+            valores.append(avatar_rel_path)
+
+        valores.append(usuario_id)
+        sql = f"UPDATE usuarios SET {', '.join(campos)} WHERE id=%s"
+        cursor.execute(sql, tuple(valores))
         conn.commit()
 
-        # Atualiza os dados na sessão
+        # Atualiza a sessão
         session['nome'] = novo_nome
         session['sobrenome'] = novo_sobrenome
         session['usuario'] = novo_email
 
         flash('Perfil atualizado com sucesso!', 'sucesso')
+        cursor.close(); conn.close()
         return redirect(url_for('perfil'))
 
-    cursor.close()
-    conn.close()
+    # GET
+    # Remove campo de senha antes de mandar ao template (por segurança)
+    usuario.pop('senha', None)
+    cursor.close(); conn.close()
     return render_template('perfil.html', usuario=usuario)
+
 
 @app.route('/notificacoes')
 @login_obrigatorio
