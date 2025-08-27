@@ -7,63 +7,44 @@
 {% endblock %}
 
 {% block content %}
-<div id="container">
-    <div class="flip-card">
-        <div class="flip-card-inner">
-            <div class="flip-card-front">
-                <img src="{{ url_for('static', filename='images/front-flip.jpg') }}" class="flip-card-image" alt="card front">
-            </div>
-            <div class="flip-card-back">
-                <img src="{{ url_for('static', filename='images/black-flip.jpg') }}" class="flip-card-image" alt="card back">
-            </div>
+  <div class="container">
+    <h1>Desafios Financeiros</h1>
+    <p class="subtitle">Conquiste cada etapa e veja seu crescimento financeiro!</p>
+
+    <div class="challenges-container">
+      <div class="challenge-card" id="challenge1">
+        <div class="challenge-content">
+          <p>Crie sua primeira meta</p>
         </div>
+      </div>
+      <div class="challenge-card" id="challenge2">
+        <div class="challenge-content">
+          <p>Alcance 25% do valor da meta</p>
+        </div>
+      </div>
+      <div class="challenge-card" id="challenge3">
+        <div class="challenge-content">
+          <p>Alcance 50% do valor da meta</p>
+        </div>
+      </div>
+      <div class="challenge-card" id="challenge4">
+        <div class="challenge-content">
+          <p>Alcance 75% do valor da meta</p>
+        </div>
+      </div>
+      <div class="challenge-card" id="challenge5">
+        <div class="challenge-content">
+          <p>Complete sua primeira meta</p>
+        </div>
+      </div>
     </div>
 
-    <div class="flip-card">
-        <div class="flip-card-inner">
-            <div class="flip-card-front">
-                <img src="{{ url_for('static', filename='images/flipfront2.jpg') }}" class="flip-card-image" alt="card front">
-            </div>
-            <div class="flip-card-back">
-                <img src="{{ url_for('static', filename='images/flipback2.jpg') }}" class="flip-card-image" alt="card back">
-            </div>
-        </div>
+    <div class="progress-summary">
+      <p id="progressText">Verificando seu progresso...</p>
     </div>
-
-    <div class="flip-card">
-        <div class="flip-card-inner">
-            <div class="flip-card-front">
-                <img src="{{ url_for('static', filename='images/flipfront3.jpg') }}" class="flip-card-image" alt="card front">
-            </div>
-            <div class="flip-card-back">
-                <img src="{{ url_for('static', filename='images/flipback3.jpg') }}" class="flip-card-image" alt="card back">
-            </div>
-        </div>
-    </div>
-
-    <div class="flip-card">
-        <div class="flip-card-inner">
-            <div class="flip-card-front">
-                <img src="{{ url_for('static', filename='images/flipfront4.jpg') }}" class="flip-card-image" alt="card front">
-            </div>
-            <div class="flip-card-back">
-                <img src="{{ url_for('static', filename='images/flipback4.jpg') }}" class="flip-card-image" alt="card back">
-            </div>
-        </div>
-    </div>
-
-    <div class="flip-card">
-        <div class="flip-card-inner">
-            <div class="flip-card-front">
-                <img src="{{ url_for('static', filename='images/flipfront5.jpg') }}" class="flip-card-image" alt="card front">
-            </div>
-            <div class="flip-card-back">
-                <img src="{{ url_for('static', filename='images/flipback5.jpg') }}" class="flip-card-image" alt="card back">
-            </div>
-        </div>
-    </div>
-</div>
+  </div>
 {% endblock %}
 
 {% block scripts %}
-{% endblock %}
+  <script src="{{ url_for('static', filename='javascript/desafios.js') }}"></script>
+{% endblock %}

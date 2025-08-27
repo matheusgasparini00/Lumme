@@ -1,110 +1,199 @@
 :root {
   --cor-roxo: #4f46e5;
-  --cor-amarelo: #e6d556;
+  --cor-roxo_fundo: #312aa7;
+  --cor-success: #059669;
   --bs-body-bg: #c5cbda;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-h2 {
-    margin-top: 50px;
-    text-align: center;
+body {
+  background-color: var(--bs-body-bg);
+  color: var(--cor-roxo);
+  line-height: 1.6;
 }
 
-#container {
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;  
-    align-items: center;
-    justify-content: center;
-    gap: 20px; 
-    padding: 20px; 
+.container {
+  max-width: 1100px;
+  margin: 80px auto;
+  padding: 50px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
 }
 
-.flip-card {
-    width: 200px;
+h1 {
+  text-align: center;
+  color: var(--cor-roxo_fundo);
+  margin-bottom: 20px;
+  font-size: 2.7rem;
+  font-weight: 600;
+}
+
+.subtitle {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.3rem;
+  margin-bottom: 60px;
+  font-weight: 400;
+}
+
+.challenges-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 35px;
+  justify-content: center;
+  align-items: stretch;
+}
+
+/* Cards alongados VERTICAMENTE (altura maior que largura) */
+.challenge-card {
+  width: 240px;       /* Largura moderada */
+  height: 380px;      /* Altura aumentada (esticado de cima a baixo) */
+  background: #f9fafb;
+  border: 2px dashed var(--cor-roxo);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
+  transition: all 0.4s ease;
+  position: relative;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: default;
+}
+
+.challenge-card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+  border-color: var(--cor-roxo_fundo);
+}
+
+.challenge-content p {
+  font-size: 19px;
+  color: var(--cor-roxo);
+  font-weight: 500;
+  line-height: 1.7;
+  z-index: 2;
+  position: relative;
+  max-width: 200px;
+}
+
+/* Quando o desafio é concluído */
+.challenge-card.completed {
+  border: 2px solid var(--cor-success);
+  background-color: #e8f5e8;
+}
+
+.challenge-card.completed .challenge-content p {
+  display: none;
+}
+
+.challenge-card.completed::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 18px;
+  z-index: 1;
+  filter: brightness(1.05) contrast(1.02);
+  opacity: 0.92;
+}
+
+/* Imagens de conquista (centralizadas e visíveis) */
+#challenge1.completed::after { background-image: url('/static/images/front-flip.jpg'); }
+#challenge2.completed::after { background-image: url('/static/images/flipfront5.jpg'); }
+#challenge3.completed::after { background-image: url('/static/images/flipfront4.jpg'); }
+#challenge4.completed::after { background-image: url('/static/images/flipfront3.jpg'); }
+#challenge5.completed::after { background-image: url('/static/images/flipfront2.jpg'); }
+
+.progress-summary {
+  margin-top: 60px;
+  text-align: center;
+  font-style: italic;
+  color: #6b7280;
+  font-size: 1.2rem;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsivo */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 30px;
+    margin: 20px;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+  }
+
+  .subtitle {
+    font-size: 1.15rem;
+  }
+
+  .challenges-container {
+    gap: 25px;
+  }
+
+  .challenge-card {
+    width: 220px;
     height: 350px;
-    perspective: 1000px;
+    padding: 25px;
+  }
+
+  .challenge-content p {
+    font-size: 17px;
+  }
 }
 
-.flip-card:hover .flip-card-inner {
-    transform: rotateY(-180deg)
-}
-
-.flip-card .flip-card-back {
-    transform: rotateY(-180deg)
-}
-
-.flip-card-inner {
-    position: relative;
-    transition: transform 1s;
-    transform-style: preserve-3d;
-}
-
-.flip-card-back, 
-.flip-card-front {
-    position: absolute;
-    backface-visibility: hidden;
-}
-
-.flip-card-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 30px;
-}
-
-#menu {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-}
-
-#dishes {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin-top: 32px;
-}
-
-.dish{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-radius: 20px;
-    gap: 18px;
-    width: 25%;
+@media (max-width: 480px) {
+  .container {
     padding: 20px;
-    background-color: rgb(255, 255, 255);
-    box-shadow: 0px 0px 12px 4px  rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
+    margin: 15px;
+  }
+
+  h1 {
+    font-size: 1.9rem;
+  }
+
+  .challenges-container {
+    gap: 20px;
+  }
+
+  .challenge-card {
+    width: 100%;
+    max-width: 240px;
+    height: 330px;
+    padding: 20px;
+  }
+
+  .challenge-content p {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+.progress-summary {
+  font-size: 1.1rem;
+  padding: 15px;
 }
 
-.lum-heart {
-    position: absolute;
-    background-color: rgb(184, 124, 233);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.563rem;
-    color: rgb(223, 210, 233);
-    width: 70px;
-    height: 70px;
-    right: -10px;
-    top: -10px;
-    border-radius: 0px 30px 0px 35px;
-}
-
-.dish-description {
-    color: #434343;
-    text-align: center;
 }
