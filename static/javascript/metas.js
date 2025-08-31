@@ -199,10 +199,7 @@ function deleteGoal(e) {
     if (!confirm('Tem certeza que deseja excluir esta meta?')) return;
 
     const goalId = parseInt(button.dataset.id);
-    const goal = goals.find(g => g.id === goalId);
 
-    const valorRestaurar = goal ? goal.currentAmount : 0;
-    
     fetch(`/deletar_meta/${goalId}`, {
         method: 'DELETE',
         credentials: 'same-origin'
@@ -210,11 +207,8 @@ function deleteGoal(e) {
     .then(res => res.json())
     .then(data => {
         if (data.status === 'sucesso') {
-            currentSurplus += valorRestaurar;
-            updateSurplusDisplay();
-            salvarSuperavitNoBanco();
-
             carregarMetas(); 
+
         } else {
             console.error('Erro ao deletar meta:', data.mensagem);
         }
@@ -236,7 +230,15 @@ function carregarMetas() {
                     currentAmount: parseFloat(m.currentAmount),
                     completed: parseFloat(m.currentAmount) >= parseFloat(m.targetAmount)
                 }));
+
                 renderGoals();
+
+                if (window.tracker) {
+                    window.tracker.goals = goals;
+                    window.tracker.calculateTotals();
+                    window.tracker.updateDisplay();
+                }
+
             } else {
                 console.error('Erro ao carregar metas:', data.mensagem);
             }

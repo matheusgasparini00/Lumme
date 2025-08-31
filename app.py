@@ -276,7 +276,10 @@ def obter_orcamentos():
             ORDER BY data_registro DESC
             LIMIT 1
         """, (usuario_id,))
-        orcamentos = cursor.fetchone()
+        orcamento = cursor.fetchone()
+
+        if not orcamento:
+            orcamento = {"salario": 0.0, "despesa_total": 0.0, "superavit": 0.0}
 
         cursor.execute("""
             SELECT nome AS name, valor AS amount
@@ -286,15 +289,27 @@ def obter_orcamentos():
         """, (usuario_id,))
         despesas = cursor.fetchall()
 
+        cursor.execute("""
+            SELECT COALESCE(SUM(valor_atual),0) AS total_metas
+            FROM metas
+            WHERE usuario_id = %s
+        """, (usuario_id,))
+        metas = cursor.fetchone() or {"total_metas": 0.0}
+        total_metas = float(metas.get("total_metas", 0) or 0)
+
         cursor.close()
         conexao.close()
 
-        if orcamentos is None:
-            orcamentos = {'salario': 0, 'despesa_total': 0, 'superavit': 0}
+        salario = float(orcamento.get("salario", 0) or 0)
+        despesa_total = float(orcamento.get("despesa_total", 0) or 0)
+        superavit = salario - despesa_total - total_metas
 
         return jsonify({
-            **orcamentos,
-            'despesas': despesas
+            "salario": salario,
+            "despesa_total": despesa_total,
+            "superavit": superavit,
+            "total_metas": total_metas,
+            "despesas": despesas
         })
 
     except Exception as e:
@@ -391,20 +406,8 @@ def deletar_meta(meta_id):
         conexao = conectar_banco()
         cursor = conexao.cursor()
 
-        cursor.execute("SELECT valor_atual FROM metas WHERE id = %s AND usuario_id = %s", (meta_id, usuario_id))
-        resultado = cursor.fetchone()
-
-        if resultado:
-            valor_meta = resultado[0] or 0.0
-
-            cursor.execute("""
-                UPDATE orcamentos
-                SET superavit = superavit + %s, data_registro = NOW()
-                WHERE usuario_id = %s
-            """, (valor_meta, usuario_id))
-
-            cursor.execute("DELETE FROM metas WHERE id = %s AND usuario_id = %s", (meta_id, usuario_id))
-            conexao.commit()
+        cursor.execute("DELETE FROM metas WHERE id = %s AND usuario_id = %s", (meta_id, usuario_id))
+        conexao.commit()
 
         cursor.close()
         conexao.close()
@@ -412,6 +415,7 @@ def deletar_meta(meta_id):
     except Exception as e:
         print("Erro ao deletar meta:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+
 
 @app.route('/atualizar_meta', methods=['POST'])
 @login_obrigatorio
@@ -427,15 +431,37 @@ def atualizar_meta():
     try:
         conexao = conectar_banco()
         cursor = conexao.cursor()
+
         cursor.execute("""
             UPDATE metas
             SET valor_atual = %s
             WHERE id = %s AND usuario_id = %s
         """, (valor_atual, meta_id, usuario_id))
+
+        cursor.execute("""
+            SELECT salario, despesa_total FROM orcamentos
+            WHERE usuario_id = %s
+            ORDER BY data_registro DESC
+            LIMIT 1
+        """, (usuario_id,))
+        orcamento = cursor.fetchone() or (0,0)
+        salario, despesa_total = orcamento
+
+        cursor.execute("SELECT SUM(valor_atual) FROM metas WHERE usuario_id = %s", (usuario_id,))
+        total_metas = cursor.fetchone()[0] or 0
+
+        superavit = float(salario) - float(despesa_total) - float(total_metas)
+
+        cursor.execute("""
+            UPDATE orcamentos
+            SET superavit = %s, data_registro = NOW()
+            WHERE usuario_id = %s
+        """, (superavit, usuario_id))
+
         conexao.commit()
         cursor.close()
         conexao.close()
-        return jsonify({'status': 'sucesso'})
+        return jsonify({'status': 'sucesso', 'superavit': superavit})
     except Exception as e:
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
@@ -577,7 +603,6 @@ def perfil():
     conn = conectar_banco()
     cursor = conn.cursor(dictionary=True)
 
-    # Sempre buscar tudo que o template/rota vai usar, inclusive avatar e senha (para validar a senha atual)
     cursor.execute("SELECT id, nome, sobrenome, email, data_nasc, avatar, senha FROM usuarios WHERE id=%s", (usuario_id,))
     usuario = cursor.fetchone()
     if not usuario:
@@ -590,10 +615,9 @@ def perfil():
         novo_sobrenome = (request.form.get('sobrenome') or '').strip()
         novo_email     = (request.form.get('email') or '').strip()
         data_nasc      = (request.form.get('data_nasc') or None)
-        senha_atual    = request.form.get('senha_atual') or ''   # campo "Senha Antiga"
-        nova_senha     = request.form.get('senha') or ''         # campo "Nova Senha"
+        senha_atual    = request.form.get('senha_atual') or ''   
+        nova_senha     = request.form.get('senha') or ''       
 
-        # (Opcional) upload de avatar
         avatar_rel_path = None
         file = request.files.get('avatar')
         if file and file.filename:
@@ -607,23 +631,19 @@ def perfil():
             fname = secure_filename(f"user{usuario_id}_{int(time.time())}.{ext}")
             save_path = os.path.join(app.config['UPLOAD_FOLDER'], fname)
             file.save(save_path)
-            avatar_rel_path = f"uploads/{fname}"  # caminho relativo a /static
+            avatar_rel_path = f"uploads/{fname}"  
 
-        # Validação de troca de senha (só se o usuário informou uma nova)
         if nova_senha:
-            # precisa fornecer a senha atual:
             if not senha_atual:
                 flash('Informe a senha atual para alterá-la.', 'alerta')
                 cursor.close(); conn.close()
                 return redirect(url_for('perfil'))
 
-            # confere hash
             if not check_password_hash(usuario['senha'], senha_atual):
                 flash('Senha atual incorreta.', 'erro')
                 cursor.close(); conn.close()
                 return redirect(url_for('perfil'))
 
-            # força de senha (mesmo regex do cadastro)
             regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$"
             if not re.match(regex, nova_senha):
                 flash('A nova senha deve conter maiúscula, minúscula, número e símbolo (mín. 8).', 'alerta')
@@ -632,9 +652,8 @@ def perfil():
 
             senha_hash = generate_password_hash(nova_senha)
         else:
-            senha_hash = None  # não muda a senha
+            senha_hash = None 
 
-        # (Opcional) checar se email já existe para outro usuário
         if novo_email and novo_email != usuario['email']:
             cursor.execute("SELECT id FROM usuarios WHERE email=%s AND id<>%s", (novo_email, usuario_id))
             existe = cursor.fetchone()
@@ -643,7 +662,6 @@ def perfil():
                 cursor.close(); conn.close()
                 return redirect(url_for('perfil'))
 
-        # Monta UPDATE dinâmico
         campos = ["nome=%s", "sobrenome=%s", "email=%s"]
         valores = [novo_nome, novo_sobrenome, novo_email]
 
@@ -664,7 +682,6 @@ def perfil():
         cursor.execute(sql, tuple(valores))
         conn.commit()
 
-        # Atualiza a sessão
         session['nome'] = novo_nome
         session['sobrenome'] = novo_sobrenome
         session['usuario'] = novo_email
@@ -673,8 +690,6 @@ def perfil():
         cursor.close(); conn.close()
         return redirect(url_for('perfil'))
 
-    # GET
-    # Remove campo de senha antes de mandar ao template (por segurança)
     usuario.pop('senha', None)
     cursor.close(); conn.close()
     return render_template('perfil.html', usuario=usuario)

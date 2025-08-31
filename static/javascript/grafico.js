@@ -2,7 +2,9 @@ class FinancialTracker {
   constructor() {
     this.salary = 0;
     this.expenses = [];
+    this.goals = [];       
     this.totalExpenses = 0;
+    this.totalGoals = 0;   
     this.surplus = 0;
     this.init();
   }
@@ -30,35 +32,34 @@ class FinancialTracker {
       });
     });
 
-const salaryEdit = document.getElementById('salary-display');
-if (salaryEdit) {
-  salaryEdit.addEventListener('input', (e) => {
-    const raw = e.target.value
-      .replace(/\s/g, '')
-      .replace(/R\$/i, '')
-      .replace(/\./g, '')
-      .replace(',', '.');
+    const salaryEdit = document.getElementById('salary-display');
+    if (salaryEdit) {
+      salaryEdit.addEventListener('input', (e) => {
+        const raw = e.target.value
+          .replace(/\s/g, '')
+          .replace(/R\$/i, '')
+          .replace(/\./g, '')
+          .replace(',', '.');
 
-    if (raw === '') {
-      this.salary = 0;
-      return;
+        if (raw === '') {
+          this.salary = 0;
+          return;
+        }
+
+        const value = parseFloat(raw);
+        if (!isNaN(value) && value >= 0) {
+          const limiteSalario = 1000000;
+          this.salary = Math.min(value, limiteSalario);
+          this.calculateTotals(false); 
+        }
+      });
+
+      salaryEdit.addEventListener('blur', () => {
+        salaryEdit.value = this.formatCurrency(this.salary);
+        this.calculateTotals();
+        this.updateDisplay();
+      });
     }
-
-const value = parseFloat(raw);
-if (!isNaN(value) && value >= 0) {
-  const limiteSalario = 1000000;
-  this.salary = Math.min(value, limiteSalario);
-  this.calculateTotals(false); 
-}
-});
-
-  salaryEdit.addEventListener('blur', () => {
-    salaryEdit.value = this.formatCurrency(this.salary);
-    this.calculateTotals();
-    this.updateDisplay();
-  });
-}
-
   }
 
   fetchSavedBudget() {
@@ -78,12 +79,11 @@ if (!isNaN(value) && value >= 0) {
         this.calculateTotals(false);
         this.updateDisplay();
 
-const salaryOutput = document.getElementById('salary-input');
-if (salaryOutput) salaryOutput.textContent = this.formatCurrency(this.salary);
+        const salaryOutput = document.getElementById('salary-input');
+        if (salaryOutput) salaryOutput.textContent = this.formatCurrency(this.salary);
 
-const salaryEdit = document.getElementById('salary-display');
-if (salaryEdit) salaryEdit.value = this.formatCurrency(this.salary);
-
+        const salaryEdit = document.getElementById('salary-display');
+        if (salaryEdit) salaryEdit.value = this.formatCurrency(this.salary);
       })
       .catch(err => console.error('Erro ao carregar orçamento salvo:', err));
   }
@@ -122,9 +122,12 @@ if (salaryEdit) salaryEdit.value = this.formatCurrency(this.salary);
 
   calculateTotals(updateSurplus = true) {
     this.totalExpenses = this.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    this.totalGoals = this.goals.reduce((sum, g) => sum + g.currentAmount, 0);
+
     if (updateSurplus) {
-      this.surplus = this.salary - this.totalExpenses;
+      this.surplus = this.salary - this.totalExpenses - this.totalGoals;
     }
+
     this.salvarNoServidor(this.salary, this.totalExpenses, this.surplus);
   }
 
@@ -150,11 +153,10 @@ if (salaryEdit) salaryEdit.value = this.formatCurrency(this.salary);
   }
 
   updateCircularFields() {
- const salaryDisplay = document.getElementById('salary-input');
-if (salaryDisplay) {
-  salaryDisplay.textContent = this.formatCurrency(this.salary);
-}
-
+    const salaryDisplay = document.getElementById('salary-input');
+    if (salaryDisplay) {
+      salaryDisplay.textContent = this.formatCurrency(this.salary);
+    }
 
     const expensesDisplay = document.getElementById('expenses-display');
     if (expensesDisplay) {

@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
 
-    // validações básicas
     if (!file.type.startsWith('image/')) {
       alert('Escolha um arquivo de imagem (PNG, JPG, JPEG, etc.).');
       fileInput.value = '';
@@ -22,12 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    // cria URL temporária e atualiza o preview
     const blobUrl = URL.createObjectURL(file);
     previewImg.src = blobUrl;
     previewImg.onload = () => URL.revokeObjectURL(blobUrl);
 
-    // Se quiser enviar automaticamente após escolher:
-    // fileInput.form.submit();
   });
 });
