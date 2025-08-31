@@ -54,11 +54,14 @@ class FinancialTracker {
         }
       });
 
-      salaryEdit.addEventListener('blur', () => {
-        salaryEdit.value = this.formatCurrency(this.salary);
-        this.calculateTotals();
-        this.updateDisplay();
-      });
+salaryEdit.addEventListener('blur', () => {
+  salaryEdit.value = this.formatCurrency(this.salary);
+
+  this.calculateTotals();
+
+  this.fetchSavedBudget();
+});
+
     }
   }
 

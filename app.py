@@ -212,9 +212,8 @@ def salvar_orcamentos():
         return jsonify({'status': 'erro', 'mensagem': 'Usuário não autenticado'}), 401
 
     dados = request.get_json()
-    salario = dados.get('salario')
-    despesa_total = dados.get('despesa_total')
-    superavit = dados.get('superavit')
+    salario = dados.get('salario') or 0
+    despesa_total = dados.get('despesa_total') or 0
     despesas = dados.get('despesas', [])
     usuario_id = session['usuario_id']
 
@@ -222,23 +221,26 @@ def salvar_orcamentos():
         conexao = conectar_banco()
         cursor = conexao.cursor()
 
+        cursor.execute("SELECT COALESCE(SUM(valor_atual),0) FROM metas WHERE usuario_id=%s", (usuario_id,))
+        total_metas = cursor.fetchone()[0] or 0
+
+        superavit_calc = float(salario) - float(despesa_total) - float(total_metas)
+
         cursor.execute("SELECT id FROM orcamentos WHERE usuario_id = %s", (usuario_id,))
         resultado = cursor.fetchone()
-
         if resultado:
             cursor.execute("""
                 UPDATE orcamentos
-                SET salario = %s, despesa_total = %s, superavit = %s, data_registro = NOW()
-                WHERE usuario_id = %s
-            """, (salario, despesa_total, superavit, usuario_id))
+                SET salario=%s, despesa_total=%s, superavit=%s, data_registro=NOW()
+                WHERE usuario_id=%s
+            """, (salario, despesa_total, superavit_calc, usuario_id))
         else:
             cursor.execute("""
                 INSERT INTO orcamentos (usuario_id, salario, despesa_total, superavit)
                 VALUES (%s, %s, %s, %s)
-            """, (usuario_id, salario, despesa_total, superavit))
+            """, (usuario_id, salario, despesa_total, superavit_calc))
 
         cursor.execute("DELETE FROM orcamento_despesas WHERE usuario_id = %s", (usuario_id,))
-
         for despesa in despesas:
             nome = despesa.get('name') or despesa.get('nome')
             valor = despesa.get('amount') or despesa.get('valor')
@@ -249,14 +251,14 @@ def salvar_orcamentos():
                 """, (usuario_id, nome, valor))
 
         conexao.commit()
-        cursor.close()
-        conexao.close()
+        cursor.close(); conexao.close()
 
-        return jsonify({'status': 'sucesso'})
+        return jsonify({'status': 'sucesso', 'superavit': superavit_calc})
 
     except Exception as e:
         print("Erro ao salvar orçamento:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+
 
 @app.route('/obter_orcamentos', methods=['GET'])
 def obter_orcamentos():
@@ -406,16 +408,36 @@ def deletar_meta(meta_id):
         conexao = conectar_banco()
         cursor = conexao.cursor()
 
-        cursor.execute("DELETE FROM metas WHERE id = %s AND usuario_id = %s", (meta_id, usuario_id))
-        conexao.commit()
+        cursor.execute("DELETE FROM metas WHERE id=%s AND usuario_id=%s", (meta_id, usuario_id))
 
-        cursor.close()
-        conexao.close()
-        return jsonify({'status': 'sucesso'})
+        cursor.execute("""
+            SELECT salario, despesa_total
+            FROM orcamentos
+            WHERE usuario_id=%s
+            ORDER BY data_registro DESC
+            LIMIT 1
+        """, (usuario_id,))
+        orcamento = cursor.fetchone() or (0,0)
+        salario, despesa_total = orcamento
+
+        cursor.execute("SELECT COALESCE(SUM(valor_atual),0) FROM metas WHERE usuario_id=%s", (usuario_id,))
+        total_metas = cursor.fetchone()[0] or 0
+
+        superavit = float(salario) - float(despesa_total) - float(total_metas)
+
+        cursor.execute("""
+            UPDATE orcamentos
+            SET superavit=%s, data_registro=NOW()
+            WHERE usuario_id=%s
+        """, (superavit, usuario_id))
+
+        conexao.commit()
+        cursor.close(); conexao.close()
+        return jsonify({'status': 'sucesso', 'superavit': superavit})
+
     except Exception as e:
         print("Erro ao deletar meta:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
-
 
 @app.route('/atualizar_meta', methods=['POST'])
 @login_obrigatorio
@@ -439,7 +461,8 @@ def atualizar_meta():
         """, (valor_atual, meta_id, usuario_id))
 
         cursor.execute("""
-            SELECT salario, despesa_total FROM orcamentos
+            SELECT salario, despesa_total
+            FROM orcamentos
             WHERE usuario_id = %s
             ORDER BY data_registro DESC
             LIMIT 1
@@ -447,22 +470,23 @@ def atualizar_meta():
         orcamento = cursor.fetchone() or (0,0)
         salario, despesa_total = orcamento
 
-        cursor.execute("SELECT SUM(valor_atual) FROM metas WHERE usuario_id = %s", (usuario_id,))
+        cursor.execute("SELECT COALESCE(SUM(valor_atual),0) FROM metas WHERE usuario_id=%s", (usuario_id,))
         total_metas = cursor.fetchone()[0] or 0
 
         superavit = float(salario) - float(despesa_total) - float(total_metas)
 
         cursor.execute("""
             UPDATE orcamentos
-            SET superavit = %s, data_registro = NOW()
-            WHERE usuario_id = %s
+            SET superavit=%s, data_registro=NOW()
+            WHERE usuario_id=%s
         """, (superavit, usuario_id))
 
         conexao.commit()
-        cursor.close()
-        conexao.close()
+        cursor.close(); conexao.close()
         return jsonify({'status': 'sucesso', 'superavit': superavit})
+
     except Exception as e:
+        print("Erro ao atualizar meta:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
 @app.route('/atualizar_superavit',  methods=['POST','DELETE'])
