@@ -135,6 +135,31 @@
   background-color: #3730a3;  
 }
 
+.circular-card .progress-bar {
+  width: 100%;
+  height: 0.5rem;
+  background-color: #e5e7eb;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  margin-top: 2.5rem; 
+}
+
+.circular-card .progress-text {
+  font-size: 0.875rem;
+  color: var(--cor-roxo);
+  margin-top: 0.75rem; 
+}
+
+.surplus-inner {
+  background-color: #dcfce7fd;
+  transform: scale(1.2) translateY(25px); 
+}
+
+.surplus-border {
+  border-color: #ade4c0;
+  transform: scale(1.2) translateY(25px); 
+}
+
 
 .expenses-border {
   border-color: #fecaca;
@@ -195,8 +220,10 @@
 .surplus-status {
   font-size: 0.875rem;
   font-weight: 500;
-  margin-top: 0.5rem;
+  margin-top: 4.5rem; 
+  display: block;
 }
+
 
 .status-positive {
   color: #059669;
