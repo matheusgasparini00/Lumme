@@ -32,38 +32,34 @@ class FinancialTracker {
       });
     });
 
+const addSalaryBtn = document.getElementById('add-salary-btn');
+if (addSalaryBtn) {
+  addSalaryBtn.addEventListener('click', () => {
     const salaryEdit = document.getElementById('salary-display');
-    if (salaryEdit) {
-      salaryEdit.addEventListener('input', (e) => {
-        const raw = e.target.value
-          .replace(/\s/g, '')
-          .replace(/R\$/i, '')
-          .replace(/\./g, '')
-          .replace(',', '.');
+    if (!salaryEdit) return;
 
-        if (raw === '') {
-          this.salary = 0;
-          return;
-        }
+    const raw = salaryEdit.value
+      .replace(/\s/g, '')
+      .replace(/R\$/i, '')
+      .replace(/\./g, '')
+      .replace(',', '.');
 
-        const value = parseFloat(raw);
-        if (!isNaN(value) && value >= 0) {
-          const limiteSalario = 1000000;
-          this.salary = Math.min(value, limiteSalario);
-          this.calculateTotals(false); 
-        }
-      });
-
-salaryEdit.addEventListener('blur', () => {
-  salaryEdit.value = this.formatCurrency(this.salary);
-
-  this.calculateTotals();
-
-  this.fetchSavedBudget();
-});
-
+    const value = parseFloat(raw);
+    if (isNaN(value) || value <= 0) {
+      alert("Digite um valor válido para o salário");
+      return;
     }
-  }
+
+    this.salary += value;
+
+    this.calculateTotals();
+    this.updateDisplay();
+
+    salaryEdit.value = '';
+  });
+}
+
+}
 
   fetchSavedBudget() {
     fetch('/obter_orcamentos')
