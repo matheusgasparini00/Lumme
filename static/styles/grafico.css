@@ -131,6 +131,30 @@
   text-align: center;
 }
 
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;   /* igual ao estilo do input */
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #fff;
+  max-width: 250px; /* ajuste se quiser limitar */
+}
+
+.input-wrapper input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 1rem;
+}
+
+.prefix {
+  font-weight: bold;
+  color: #444;
+  margin-right: 6px;
+  white-space: nowrap;
+}
+
 #add-salary-btn:hover {
   background-color: #3730a3;  
 }

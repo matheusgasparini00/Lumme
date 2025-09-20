@@ -1,3 +1,52 @@
+function parseBRLToNumber(str) {
+  if (typeof str !== 'string') return 0;
+  const digits = str.replace(/\D/g, ''); 
+  if (!digits) return 0;
+  return Number(digits) / 100; 
+}
+
+function formatBRL(n) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  }).format(n);
+}
+
+function setupCurrencyInputWithPrefix(input) {
+  if (!input) return;
+
+  const prefix = "R$ ";
+
+  input.addEventListener("focus", () => {
+    if (!input.value.startsWith(prefix)) {
+      input.value = prefix;
+    }
+    moveCursorToEnd(input);
+  });
+
+  // Enquanto digita: já formata como moeda com 2 casas
+  input.addEventListener("input", (e) => {
+    const num = parseBRLToNumber(e.target.value);
+    input.value = num ? formatBRL(num) : prefix;
+    moveCursorToEnd(input);
+  });
+
+  // Ao perder o foco: limpa se não tiver número
+  input.addEventListener("blur", () => {
+    if (input.value === prefix) {
+      input.value = "";
+    }
+  });
+
+  // Força cursor no fim
+  function moveCursorToEnd(el) {
+    requestAnimationFrame(() => {
+      const len = el.value.length;
+      el.setSelectionRange(len, len);
+    });
+  }
+}
+
 class FinancialTracker {
   constructor() {
     this.salary = 0;
@@ -32,34 +81,27 @@ class FinancialTracker {
       });
     });
 
-const addSalaryBtn = document.getElementById('add-salary-btn');
-if (addSalaryBtn) {
-  addSalaryBtn.addEventListener('click', () => {
-    const salaryEdit = document.getElementById('salary-display');
-    if (!salaryEdit) return;
+    const addSalaryBtn = document.getElementById('add-salary-btn');
+    if (addSalaryBtn) {
+      addSalaryBtn.addEventListener('click', () => {
+        const salaryEdit = document.getElementById('salary-display');
+        if (!salaryEdit) return;
 
-    const raw = salaryEdit.value
-      .replace(/\s/g, '')
-      .replace(/R\$/i, '')
-      .replace(/\./g, '')
-      .replace(',', '.');
+        const value = parseBRLToNumber(salaryEdit.value);
+        if (value <= 0) {
+          alert("Digite um valor válido para o salário");
+          return;
+        }
 
-    const value = parseFloat(raw);
-    if (isNaN(value) || value <= 0) {
-      alert("Digite um valor válido para o salário");
-      return;
+        this.salary += value;
+
+        this.calculateTotals();
+        this.updateDisplay();
+
+        salaryEdit.value = '';
+      });
     }
-
-    this.salary += value;
-
-    this.calculateTotals();
-    this.updateDisplay();
-
-    salaryEdit.value = '';
-  });
-}
-
-}
+  }
 
   fetchSavedBudget() {
     fetch('/obter_orcamentos')
@@ -81,8 +123,9 @@ if (addSalaryBtn) {
         const salaryOutput = document.getElementById('salary-input');
         if (salaryOutput) salaryOutput.textContent = this.formatCurrency(this.salary);
 
+        // deixa o campo de edição vazio
         const salaryEdit = document.getElementById('salary-display');
-        if (salaryEdit) salaryEdit.value = this.formatCurrency(this.salary);
+        if (salaryEdit) salaryEdit.value = '';
       })
       .catch(err => console.error('Erro ao carregar orçamento salvo:', err));
   }
@@ -92,13 +135,13 @@ if (addSalaryBtn) {
     const amountInput = document.getElementById('expense-amount');
 
     const name = nameInput.value.trim();
-    const amount = parseFloat(amountInput.value) || 0;
+    const amount = parseBRLToNumber(amountInput.value);
 
     if (name && amount > 0) {
       const expense = {
         id: Date.now().toString(),
-        name: name,
-        amount: amount,
+        name,
+        amount,
         date: this.formatDate(new Date())
       };
 
@@ -241,16 +284,13 @@ if (addSalaryBtn) {
 
     if (nameInput && amountInput && addBtn) {
       const hasName = nameInput.value.trim().length > 0;
-      const hasAmount = parseFloat(amountInput.value) > 0;
+      const hasAmount = parseBRLToNumber(amountInput.value) > 0;
       addBtn.disabled = !(hasName && hasAmount);
     }
   }
 
   formatCurrency(value) {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
+    return formatBRL(value);
   }
 
   formatDate(date) {
@@ -263,6 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const nameInput = document.getElementById('expense-name');
   const amountInput = document.getElementById('expense-amount');
+  const salaryInput = document.getElementById('salary-display');
 
   if (nameInput && amountInput) {
     [nameInput, amountInput].forEach(input => {
@@ -271,6 +312,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  // === Ativa máscara de moeda nos inputs de salário e despesa ===
+  setupCurrencyInputWithPrefix(salaryInput);
+  setupCurrencyInputWithPrefix(amountInput);
 });
 
 class ExpenseChart {
