@@ -26,7 +26,11 @@ function fetchSurplus() {
 }
 
 function updateSurplusDisplay() {
-    surplusValueEl.textContent = `R$ ${Number(currentSurplus).toFixed(2).replace('.', ',')}`;
+    surplusValueEl.textContent = currentSurplus.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2
+    });
 }
 
 addGoalBtn.addEventListener('click', () => {
