@@ -52,10 +52,9 @@ h1 {
   align-items: stretch;
 }
 
-/* Cards alongados VERTICAMENTE (altura maior que largura) */
 .challenge-card {
-  width: 240px;       /* Largura moderada */
-  height: 380px;      /* Altura aumentada (esticado de cima a baixo) */
+  width: 240px;       
+  height: 380px;      
   background: #f9fafb;
   border: 2px dashed var(--cor-roxo);
   border-radius: 18px;
@@ -87,10 +86,10 @@ h1 {
   max-width: 200px;
 }
 
-/* Quando o desafio é concluído */
 .challenge-card.completed {
-  border: 2px solid var(--cor-success);
+  border: 2px solid var(--cor-roxo_fundo);
   background-color: #e8f5e8;
+  box-shadow: 0 0 18px rgba(79, 70, 229, 0.6); 
 }
 
 .challenge-card.completed .challenge-content p {
@@ -113,12 +112,11 @@ h1 {
   opacity: 0.92;
 }
 
-/* Imagens de conquista (centralizadas e visíveis) */
-#challenge1.completed::after { background-image: url('/static/images/front-flip.jpg'); }
-#challenge2.completed::after { background-image: url('/static/images/flipfront5.jpg'); }
-#challenge3.completed::after { background-image: url('/static/images/flipfront4.jpg'); }
-#challenge4.completed::after { background-image: url('/static/images/flipfront3.jpg'); }
-#challenge5.completed::after { background-image: url('/static/images/flipfront2.jpg'); }
+#challenge1.completed::after { background-image: url('/static/images/ymir.png'); }
+#challenge2.completed::after { background-image: url('/static/images/umbra_lillith.png'); }
+#challenge3.completed::after { background-image: url('/static/images/fluffle.png'); }
+#challenge4.completed::after { background-image: url('/static/images/zarith.png'); }
+#challenge5.completed::after { background-image: url('/static/images/chery.png'); }
 
 .progress-summary {
   margin-top: 60px;
@@ -133,8 +131,6 @@ h1 {
   font-weight: 500;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
-
-/* Responsivo */
 
 @media (max-width: 768px) {
   .container {
