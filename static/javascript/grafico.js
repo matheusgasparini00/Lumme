@@ -24,21 +24,18 @@ function setupCurrencyInputWithPrefix(input) {
     moveCursorToEnd(input);
   });
 
-  // Enquanto digita: já formata como moeda com 2 casas
   input.addEventListener("input", (e) => {
     const num = parseBRLToNumber(e.target.value);
     input.value = num ? formatBRL(num) : prefix;
     moveCursorToEnd(input);
   });
 
-  // Ao perder o foco: limpa se não tiver número
   input.addEventListener("blur", () => {
     if (input.value === prefix) {
       input.value = "";
     }
   });
 
-  // Força cursor no fim
   function moveCursorToEnd(el) {
     requestAnimationFrame(() => {
       const len = el.value.length;
@@ -123,9 +120,14 @@ class FinancialTracker {
         const salaryOutput = document.getElementById('salary-input');
         if (salaryOutput) salaryOutput.textContent = this.formatCurrency(this.salary);
 
-        // deixa o campo de edição vazio
         const salaryEdit = document.getElementById('salary-display');
         if (salaryEdit) salaryEdit.value = '';
+
+        // >>> Superávit anterior <<<
+        const prevSurplusEl = document.getElementById('previous-surplus-display');
+        if (prevSurplusEl) {
+          prevSurplusEl.textContent = this.formatCurrency(data.superavit_anterior || 0);
+        }
       })
       .catch(err => console.error('Erro ao carregar orçamento salvo:', err));
   }
@@ -173,18 +175,22 @@ class FinancialTracker {
     this.salvarNoServidor(this.salary, this.totalExpenses, this.surplus);
   }
 
-  salvarNoServidor(salario, despesa_total, superavit) {
-    fetch('/salvar_orcamentos', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ salario, despesa_total, superavit, despesas: this.expenses })
+salvarNoServidor(salario, despesa_total, superavit) {
+  fetch('/salvar_orcamentos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      salario,
+      despesa_total,
+      superavit,
+      despesas: this.expenses
     })
-      .then(res => res.json())
-      .then(data => console.log('Resposta do servidor:', data))
-      .catch(err => console.error('Erro ao salvar orçamento:', err));
-  }
+  })
+  .then(res => res.json())
+  .then(data => console.log("Resposta do servidor:", data))
+  .catch(err => console.error("Erro ao salvar orçamento:", err));
+}
+
 
   updateDisplay() {
     this.updateCircularFields();
@@ -313,25 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // === Ativa máscara de moeda nos inputs de salário e despesa ===
   setupCurrencyInputWithPrefix(salaryInput);
   setupCurrencyInputWithPrefix(amountInput);
 });
-
-class ExpenseChart {
-  constructor(canvasId) {
-    const canvas = document.getElementById(canvasId);
-    this.ctx = canvas ? canvas.getContext('2d') : null;
-    this.chart = null;
-  }
-
-  updateChart(expenses) {
-    if (!this.ctx) return;
-
-    const labels = expenses.map(item => item.name);
-    const data = expenses.map(item => item.amount);
-  }
-}
 
 let chart = null;
 

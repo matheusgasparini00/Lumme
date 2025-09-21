@@ -34,18 +34,24 @@
         </div>
         <p id="progress-text" class="progress-text">0.0% do salário</p>
       </div>
-
-      <div class="circular-card">
-        <h4 class="circular-title">Superávit</h4>
-        <div class="circular-field">
-          <div class="circular-border surplus-border"></div>
-          <div class="circular-inner surplus-inner">
-            <span id="surplus-display" class="surplus-value surplus-positive">R$ 0,00</span>
-          </div>
-        </div>
-        <p id="surplus-status" class="surplus-status status-positive">Economia</p>
+  <!-- Superávit Atual + Anterior -->
+  <div class="circular-card">
+    <h4 class="circular-title">Superávit</h4>
+    <div class="circular-field">
+      <div class="circular-border surplus-border"></div>
+      <div class="circular-inner surplus-inner">
+        <span id="surplus-display" class="surplus-value surplus-positive">R$ 0,00</span>
       </div>
     </div>
+    <p id="surplus-status" class="surplus-status status-positive">Economia</p>
+
+    <!-- 🔹 Novo campo dentro do mesmo card -->
+    <p id="previous-surplus-box" class="previous-surplus">
+      Superávit Anterior <span id="previous-surplus-display">
+        R$ 0,00</span>
+    </p>
+  </div>
+</div>
 
     <div class="form-list-grid">
       <div class="form-card">

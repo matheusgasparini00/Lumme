@@ -6,6 +6,7 @@ from mysql.connector import pooling, Error as MySQLError
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import re
+from datetime import date
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -209,113 +210,219 @@ def login():
 @app.route('/salvar_orcamentos', methods=['POST'])
 def salvar_orcamentos():
     if 'usuario_id' not in session:
-        return jsonify({'status': 'erro', 'mensagem': 'Usuário não autenticado'}), 401
+        return jsonify({"error": "Usuário não autenticado"}), 401
 
-    dados = request.get_json()
-    salario = dados.get('salario') or 0
-    despesa_total = dados.get('despesa_total') or 0
-    despesas = dados.get('despesas', [])
+    data = request.get_json() or {}
     usuario_id = session['usuario_id']
+
+    salario = float(data.get('salario') or 0)
+    despesa_total = float(data.get('despesa_total') or 0)
+    superavit = float(data.get('superavit') or 0)
+    despesas = data.get('despesas', [])
+
+    # Janela do mês atual (usando relógio do Python)
+    hoje = date.today()
+    inicio_mes = date(hoje.year, hoje.month, 1)
+    if hoje.month == 12:
+        proximo_mes = date(hoje.year + 1, 1, 1)
+    else:
+        proximo_mes = date(hoje.year, hoje.month + 1, 1)
+
+    # Transformar em datetime para comparar com TIMESTAMP
+    inicio_mes_dt = datetime.combine(inicio_mes, datetime.min.time())
+    proximo_mes_dt = datetime.combine(proximo_mes, datetime.min.time())
+    agora_dt = datetime.now()
+
+    conn = conectar_banco()
+    cursor = conn.cursor()
 
     try:
-        conexao = conectar_banco()
-        cursor = conexao.cursor()
+        # Verifica se já existe um orçamento para este mês
+        cursor.execute("""
+            SELECT id
+              FROM orcamentos
+             WHERE usuario_id = %s
+               AND data_registro >= %s
+               AND data_registro < %s
+             LIMIT 1
+        """, (usuario_id, inicio_mes_dt, proximo_mes_dt))
+        existente = cursor.fetchone()
 
-        cursor.execute("SELECT COALESCE(SUM(valor_atual),0) FROM metas WHERE usuario_id=%s", (usuario_id,))
-        total_metas = cursor.fetchone()[0] or 0
-
-        superavit_calc = float(salario) - float(despesa_total) - float(total_metas)
-
-        cursor.execute("SELECT id FROM orcamentos WHERE usuario_id = %s", (usuario_id,))
-        resultado = cursor.fetchone()
-        if resultado:
+        if existente:
             cursor.execute("""
                 UPDATE orcamentos
-                SET salario=%s, despesa_total=%s, superavit=%s, data_registro=NOW()
-                WHERE usuario_id=%s
-            """, (salario, despesa_total, superavit_calc, usuario_id))
+                   SET salario = %s,
+                       despesa_total = %s,
+                       superavit = %s,
+                       data_registro = %s
+                 WHERE id = %s
+            """, (salario, despesa_total, superavit, agora_dt, existente[0]))
         else:
             cursor.execute("""
-                INSERT INTO orcamentos (usuario_id, salario, despesa_total, superavit)
-                VALUES (%s, %s, %s, %s)
-            """, (usuario_id, salario, despesa_total, superavit_calc))
+                INSERT INTO orcamentos (usuario_id, salario, despesa_total, superavit, data_registro)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (usuario_id, salario, despesa_total, superavit, agora_dt))
 
-        cursor.execute("DELETE FROM orcamento_despesas WHERE usuario_id = %s", (usuario_id,))
-        for despesa in despesas:
-            nome = despesa.get('name') or despesa.get('nome')
-            valor = despesa.get('amount') or despesa.get('valor')
-            if nome and valor is not None:
+        # Limpa apenas as despesas do mês atual e reinsere as enviadas
+        cursor.execute("""
+            DELETE FROM orcamento_despesas
+             WHERE usuario_id = %s
+               AND data_registro >= %s
+               AND data_registro < %s
+        """, (usuario_id, inicio_mes_dt, proximo_mes_dt))
+
+        for d in despesas:
+            nome = d.get('name') or d.get('nome')
+            valor = float(d.get('amount') or d.get('valor') or 0)
+            if nome and valor > 0:
                 cursor.execute("""
-                    INSERT INTO orcamento_despesas (usuario_id, nome, valor)
-                    VALUES (%s, %s, %s)
-                """, (usuario_id, nome, valor))
+                    INSERT INTO orcamento_despesas (usuario_id, nome, valor, data_registro)
+                    VALUES (%s, %s, %s, %s)
+                """, (usuario_id, nome, valor, agora_dt))
 
-        conexao.commit()
-        cursor.close(); conexao.close()
-
-        return jsonify({'status': 'sucesso', 'superavit': superavit_calc})
+        conn.commit()
+        return jsonify({"status": "sucesso"})
 
     except Exception as e:
-        print("Erro ao salvar orçamento:", e)
-        return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+        print("❌ Erro em /salvar_orcamentos:", e)
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
 
+    finally:
+        try:
+            cursor.close()
+            conn.close()
+        except:
+            pass
 
-@app.route('/obter_orcamentos', methods=['GET'])
+from datetime import date, datetime
+
+@app.route('/obter_orcamentos')
 def obter_orcamentos():
     if 'usuario_id' not in session:
-        return jsonify({'status': 'erro', 'mensagem': 'Usuário não autenticado'}), 401
+        return jsonify({"error": "Usuário não autenticado"}), 401
 
     usuario_id = session['usuario_id']
+
+    # Janela do mês atual (relógio do Python)
+    hoje = date.today()
+    inicio_mes = date(hoje.year, hoje.month, 1)
+    if hoje.month == 12:
+        proximo_mes = date(hoje.year + 1, 1, 1)
+    else:
+        proximo_mes = date(hoje.year, hoje.month + 1, 1)
+
+    inicio_mes_dt = datetime.combine(inicio_mes, datetime.min.time())
+    proximo_mes_dt = datetime.combine(proximo_mes, datetime.min.time())
+
+    conn = conectar_banco()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # Orçamento do mês atual
+        cursor.execute("""
+            SELECT salario, despesa_total, superavit, data_registro
+              FROM orcamentos
+             WHERE usuario_id = %s
+               AND data_registro >= %s
+               AND data_registro < %s
+             ORDER BY data_registro DESC
+             LIMIT 1
+        """, (usuario_id, inicio_mes_dt, proximo_mes_dt))
+        orcamento_atual = cursor.fetchone()
+
+        if not orcamento_atual:
+            orcamento_atual = {
+                "salario": 0.0,
+                "despesa_total": 0.0,
+                "superavit": 0.0,
+                "data_registro": None
+            }
+
+        # Superávit do último mês anterior (registro anterior à 1ª data do mês)
+        cursor.execute("""
+            SELECT superavit
+              FROM orcamentos
+             WHERE usuario_id = %s
+               AND data_registro < %s
+             ORDER BY data_registro DESC
+             LIMIT 1
+        """, (usuario_id, inicio_mes_dt))
+        anterior = cursor.fetchone()
+        superavit_anterior = float(anterior['superavit']) if anterior else 0.0
+
+        # Despesas do mês atual
+        cursor.execute("""
+            SELECT nome AS name, valor AS amount, data_registro
+              FROM orcamento_despesas
+             WHERE usuario_id = %s
+               AND data_registro >= %s
+               AND data_registro < %s
+             ORDER BY data_registro DESC
+        """, (usuario_id, inicio_mes_dt, proximo_mes_dt))
+        despesas = cursor.fetchall()
+
+        # Total aplicado em metas (soma do valor_atual)
+        cursor.execute("""
+            SELECT COALESCE(SUM(valor_atual), 0) AS total_metas
+              FROM metas
+             WHERE usuario_id = %s
+        """, (usuario_id,))
+        metas_row = cursor.fetchone() or {"total_metas": 0}
+        total_metas = float(metas_row.get("total_metas") or 0)
+
+        # Monta resposta
+        resposta = {
+            "salario": float(orcamento_atual.get("salario") or 0),
+            "despesa_total": float(orcamento_atual.get("despesa_total") or 0),
+            "superavit": float(orcamento_atual.get("superavit") or 0),
+            "total_metas": total_metas,
+            "superavit_anterior": superavit_anterior,
+            "despesas": [{"name": r["name"], "amount": float(r["amount"])} for r in despesas]
+        }
+
+        return jsonify(resposta)
+
+    except Exception as e:
+        print("❌ Erro em /obter_orcamentos:", e)
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        try:
+            cursor.close()
+            conn.close()
+        except:
+            pass
+    
+@app.route('/relatorio_metas')
+@login_obrigatorio
+def relatorio_metas():
+    usuario_id = session.get('usuario_id')
 
     try:
         conexao = conectar_banco()
         cursor = conexao.cursor(dictionary=True)
 
         cursor.execute("""
-            SELECT salario, despesa_total, superavit
-            FROM orcamentos
-            WHERE usuario_id = %s
-            ORDER BY data_registro DESC
-            LIMIT 1
-        """, (usuario_id,))
-        orcamento = cursor.fetchone()
-
-        if not orcamento:
-            orcamento = {"salario": 0.0, "despesa_total": 0.0, "superavit": 0.0}
-
-        cursor.execute("""
-            SELECT nome AS name, valor AS amount
-            FROM orcamento_despesas
-            WHERE usuario_id = %s
-            ORDER BY data_registro DESC
-        """, (usuario_id,))
-        despesas = cursor.fetchall()
-
-        cursor.execute("""
-            SELECT COALESCE(SUM(valor_atual),0) AS total_metas
+            SELECT 
+                DATE_FORMAT(data_criacao, '%m/%Y') AS mes_ano,
+                COUNT(*) AS total_metas,
+                SUM(CASE WHEN valor_atual >= valor_objetivo THEN 1 ELSE 0 END) AS metas_concluidas,
+                SUM(CASE WHEN valor_atual < valor_objetivo THEN 1 ELSE 0 END) AS metas_pendentes
             FROM metas
             WHERE usuario_id = %s
+            GROUP BY mes_ano
+            ORDER BY MIN(data_criacao) DESC
         """, (usuario_id,))
-        metas = cursor.fetchone() or {"total_metas": 0.0}
-        total_metas = float(metas.get("total_metas", 0) or 0)
+        relatorio = cursor.fetchall()
 
         cursor.close()
         conexao.close()
 
-        salario = float(orcamento.get("salario", 0) or 0)
-        despesa_total = float(orcamento.get("despesa_total", 0) or 0)
-        superavit = salario - despesa_total - total_metas
-
-        return jsonify({
-            "salario": salario,
-            "despesa_total": despesa_total,
-            "superavit": superavit,
-            "total_metas": total_metas,
-            "despesas": despesas
-        })
+        return jsonify(relatorio)
 
     except Exception as e:
-        print("Erro ao obter orçamento:", e)
+        print("Erro ao gerar relatório de metas:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
 @app.route('/desafios')

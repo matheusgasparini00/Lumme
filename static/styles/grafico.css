@@ -43,6 +43,10 @@
   text-align: center;
   padding: 1.5rem;
 }
+#previous-surplus-display {
+  font-weight: 600;
+  color: var(--cor-roxo);
+}
 
 .circular-title {
   font-size: 1.125rem;
@@ -165,7 +169,7 @@
   background-color: #e5e7eb;
   border-radius: 0.25rem;
   overflow: hidden;
-  margin-top: 2.5rem; 
+  margin-top: 4.5rem; 
 }
 
 .circular-card .progress-text {
