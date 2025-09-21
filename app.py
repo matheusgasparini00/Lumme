@@ -490,20 +490,41 @@ def salvar_meta():
 @login_obrigatorio
 def obter_metas():
     usuario_id = session.get('usuario_id')
+
     try:
         conexao = conectar_banco()
         cursor = conexao.cursor(dictionary=True)
+
+        # 🔹 Identifica início do mês atual
+        hoje = date.today()
+        inicio_mes = date(hoje.year, hoje.month, 1)
+
+        # 🔹 Busca metas:
+        # 1) Metas criadas neste mês (mostra todas, concluídas ou não)
+        # 2) Metas pendentes de meses anteriores (valor_atual < valor_objetivo)
         cursor.execute("""
-            SELECT id, titulo AS name, valor_objetivo AS targetAmount, valor_atual AS currentAmount
-            FROM metas
-            WHERE usuario_id = %s
-        """, (usuario_id,))
+            SELECT id,
+                   titulo AS name,
+                   valor_objetivo AS targetAmount,
+                   valor_atual AS currentAmount,
+                   data_criacao
+              FROM metas
+             WHERE usuario_id = %s
+               AND (
+                     data_criacao >= %s
+                  OR valor_atual < valor_objetivo
+               )
+             ORDER BY data_criacao DESC
+        """, (usuario_id, inicio_mes))
         metas = cursor.fetchall()
+
         cursor.close()
         conexao.close()
+
         return jsonify(metas)
+
     except Exception as e:
-        print("Erro ao obter metas:", e)
+        print("❌ Erro ao obter metas:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
 @app.route('/deletar_meta/<int:meta_id>', methods=['POST','DELETE'])
