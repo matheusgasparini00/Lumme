@@ -224,6 +224,51 @@ def login():
 
     return render_template('login.html')
 
+import re
+from decimal import Decimal, InvalidOperation
+
+SALARIO_MAX = 1_000_000
+DESPESA_MAX = 1_000_000
+DESPESA_NOME_MIN = 3
+DESPESA_NOME_MAX = 40
+
+def parse_num_brl(val):
+    """
+    Converte números vindos como float/int ou string BR/EN para float.
+    Exemplos aceitos: 1234, 1234.56, "1.234,56", "R$ 1.234,56"
+    Retorna float; levanta ValueError se não conseguir converter.
+    """
+    if val is None:
+        raise ValueError("valor ausente")
+
+    if isinstance(val, (int, float, Decimal)):
+        return float(val)
+
+    s = str(val).strip()
+    if not s:
+        raise ValueError("string vazia")
+
+    s = re.sub(r'[^\d,.\-]', '', s)
+
+    if ',' in s and '.' in s:
+
+        s = s.replace('.', '').replace(',', '.')
+    elif ',' in s and '.' not in s:
+
+        s = s.replace(',', '.')
+
+    try:
+        return float(Decimal(s))
+    except (InvalidOperation, ValueError):
+        raise ValueError(f"não foi possível converter '{val}' para número")
+
+def nome_valido(nome):
+    """Valida tamanho do nome da despesa após strip."""
+    if nome is None:
+        return False
+    n = nome.strip()
+    return DESPESA_NOME_MIN <= len(n) <= DESPESA_NOME_MAX
+
 @app.route('/salvar_orcamentos', methods=['POST'])
 def salvar_orcamentos():
     if 'usuario_id' not in session:
@@ -232,12 +277,40 @@ def salvar_orcamentos():
     data = request.get_json() or {}
     usuario_id = session['usuario_id']
 
-    salario = float(data.get('salario') or 0)
-    despesa_total = float(data.get('despesa_total') or 0)
-    superavit = float(data.get('superavit') or 0)
-    despesas = data.get('despesas', [])
+    try:
+        salario = float(data.get('salario') or 0)
+    except ValueError:
+        salario = 0.0
 
-    # Janela do mês atual (usando relógio do Python)
+    despesas = data.get('despesas', []) or []
+    superavit = float(data.get('superavit') or 0)
+
+    if salario < 0:
+        salario = 0
+    if salario > 1_000_000:
+        salario = 1_000_000
+
+    despesas_validas = []
+    despesa_total = 0.0
+
+    for d in despesas:
+        nome = (d.get('name') or d.get('nome') or "").strip()
+        try:
+            valor = float(d.get('amount') or d.get('valor') or 0)
+        except ValueError:
+            valor = 0.0
+
+        if len(nome) < 3 or len(nome) > 40:
+            continue 
+        if valor <= 0 or valor > 1_000_000:
+            continue
+
+        despesas_validas.append((nome, valor))
+        despesa_total += valor
+
+    if superavit < (salario - despesa_total - 1_000_000):
+        superavit = salario - despesa_total
+
     hoje = date.today()
     inicio_mes = date(hoje.year, hoje.month, 1)
     if hoje.month == 12:
@@ -245,7 +318,6 @@ def salvar_orcamentos():
     else:
         proximo_mes = date(hoje.year, hoje.month + 1, 1)
 
-    # Transformar em datetime para comparar com TIMESTAMP
     inicio_mes_dt = datetime.combine(inicio_mes, datetime.min.time())
     proximo_mes_dt = datetime.combine(proximo_mes, datetime.min.time())
     agora_dt = datetime.now()
@@ -254,7 +326,6 @@ def salvar_orcamentos():
     cursor = conn.cursor()
 
     try:
-        # Verifica se já existe um orçamento para este mês
         cursor.execute("""
             SELECT id
               FROM orcamentos
@@ -280,7 +351,6 @@ def salvar_orcamentos():
                 VALUES (%s, %s, %s, %s, %s)
             """, (usuario_id, salario, despesa_total, superavit, agora_dt))
 
-        # Limpa apenas as despesas do mês atual e reinsere as enviadas
         cursor.execute("""
             DELETE FROM orcamento_despesas
              WHERE usuario_id = %s
@@ -288,20 +358,16 @@ def salvar_orcamentos():
                AND data_registro < %s
         """, (usuario_id, inicio_mes_dt, proximo_mes_dt))
 
-        for d in despesas:
-            nome = d.get('name') or d.get('nome')
-            valor = float(d.get('amount') or d.get('valor') or 0)
-            if nome and valor > 0:
-                cursor.execute("""
-                    INSERT INTO orcamento_despesas (usuario_id, nome, valor, data_registro)
-                    VALUES (%s, %s, %s, %s)
-                """, (usuario_id, nome, valor, agora_dt))
+        for nome, valor in despesas_validas:
+            cursor.execute("""
+                INSERT INTO orcamento_despesas (usuario_id, nome, valor, data_registro)
+                VALUES (%s, %s, %s, %s)
+            """, (usuario_id, nome, valor, agora_dt))
 
         conn.commit()
         return jsonify({"status": "sucesso"})
 
     except Exception as e:
-        print("❌ Erro em /salvar_orcamentos:", e)
         conn.rollback()
         return jsonify({"error": str(e)}), 500
 
@@ -321,7 +387,6 @@ def obter_orcamentos():
 
     usuario_id = session['usuario_id']
 
-    # Janela do mês atual (relógio do Python)
     hoje = date.today()
     inicio_mes = date(hoje.year, hoje.month, 1)
     if hoje.month == 12:
@@ -336,7 +401,6 @@ def obter_orcamentos():
     cursor = conn.cursor(dictionary=True)
 
     try:
-        # Orçamento do mês atual
         cursor.execute("""
             SELECT salario, despesa_total, superavit, data_registro
               FROM orcamentos
@@ -356,7 +420,6 @@ def obter_orcamentos():
                 "data_registro": None
             }
 
-        # Superávit do último mês anterior (registro anterior à 1ª data do mês)
         cursor.execute("""
             SELECT superavit
               FROM orcamentos
@@ -368,7 +431,6 @@ def obter_orcamentos():
         anterior = cursor.fetchone()
         superavit_anterior = float(anterior['superavit']) if anterior else 0.0
 
-        # Despesas do mês atual
         cursor.execute("""
             SELECT nome AS name, valor AS amount, data_registro
               FROM orcamento_despesas
@@ -379,7 +441,6 @@ def obter_orcamentos():
         """, (usuario_id, inicio_mes_dt, proximo_mes_dt))
         despesas = cursor.fetchall()
 
-        # Total aplicado em metas (soma do valor_atual)
         cursor.execute("""
             SELECT COALESCE(SUM(valor_atual), 0) AS total_metas
               FROM metas
@@ -388,7 +449,6 @@ def obter_orcamentos():
         metas_row = cursor.fetchone() or {"total_metas": 0}
         total_metas = float(metas_row.get("total_metas") or 0)
 
-        # Monta resposta
         resposta = {
             "salario": float(orcamento_atual.get("salario") or 0),
             "despesa_total": float(orcamento_atual.get("despesa_total") or 0),
@@ -401,7 +461,7 @@ def obter_orcamentos():
         return jsonify(resposta)
 
     except Exception as e:
-        print("❌ Erro em /obter_orcamentos:", e)
+        print("Erro em /obter_orcamentos:", e)
         return jsonify({"error": str(e)}), 500
 
     finally:
@@ -634,33 +694,63 @@ def atualizar_meta():
         print("Erro ao atualizar meta:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
-@app.route('/atualizar_superavit',  methods=['POST','DELETE'])
+@app.route('/atualizar_superavit', methods=['POST', 'DELETE'])
 @login_obrigatorio
 def atualizar_superavit():
     usuario_id = session.get('usuario_id')
-    data = request.get_json()
-    superavit = data.get('superavit')
+    data = request.get_json() or {}
+    try:
+        superavit = float(data.get('superavit') or 0)
+    except ValueError:
+        superavit = 0.0
 
-    print("Novo superavit recebido:", superavit)
+    print("Novo superavit recebido (bruto):", superavit)
     print("Usuário logado:", usuario_id)
 
     try:
         conexao = conectar_banco()
         cursor = conexao.cursor()
+
+        cursor.execute("""
+            SELECT salario, despesa_total
+              FROM orcamentos
+             WHERE usuario_id = %s
+             ORDER BY data_registro DESC
+             LIMIT 1
+        """, (usuario_id,))
+        orcamento = cursor.fetchone() or (0, 0)
+        salario, despesa_total = orcamento
+
+        if salario < 0:
+            salario = 0
+        if salario > 1_000_000:
+            salario = 1_000_000
+        if despesa_total < 0:
+            despesa_total = 0
+
+        minimo = salario - despesa_total - 1000000
+        maximo = salario
+        if superavit < minimo:
+            superavit = minimo
+        if superavit > maximo:
+            superavit = maximo
+
         cursor.execute("""
             UPDATE orcamentos
-            SET superavit = %s, data_registro = NOW()
-            WHERE usuario_id = %s
+               SET superavit = %s, data_registro = NOW()
+             WHERE usuario_id = %s
         """, (superavit, usuario_id))
         conexao.commit()
 
-        print("Superavit salvo com sucesso no banco:", superavit)
+        print("Superávit salvo (ajustado):", superavit)
 
         cursor.close()
         conexao.close()
-        return jsonify({'status': 'sucesso'})
+        return jsonify({'status': 'sucesso', 'superavit': superavit})
+
     except Exception as e:
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+
 
 @app.route('/api/diario/notes', methods=['GET'])
 @login_obrigatorio

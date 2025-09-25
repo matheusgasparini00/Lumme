@@ -14,7 +14,6 @@ function formatBRL(n) {
 
 function setupCurrencyInputWithPrefix(input) {
   if (!input) return;
-
   const prefix = "R$ ";
 
   input.addEventListener("focus", () => {
@@ -84,17 +83,19 @@ class FinancialTracker {
         const salaryEdit = document.getElementById('salary-display');
         if (!salaryEdit) return;
 
-        const value = parseBRLToNumber(salaryEdit.value);
+        let value = parseBRLToNumber(salaryEdit.value);
+
         if (value <= 0) {
-          alert("Digite um valor válido para o salário");
+          salaryEdit.value = '';
           return;
+        }
+        if (value > 1000000) {
+          value = 1000000;
         }
 
         this.salary += value;
-
         this.calculateTotals();
         this.updateDisplay();
-
         salaryEdit.value = '';
       });
     }
@@ -113,7 +114,6 @@ class FinancialTracker {
         }));
 
         this.surplus = parseFloat(data.superavit) || 0;
-
         this.calculateTotals(false);
         this.updateDisplay();
 
@@ -123,7 +123,6 @@ class FinancialTracker {
         const salaryEdit = document.getElementById('salary-display');
         if (salaryEdit) salaryEdit.value = '';
 
-        // >>> Superávit anterior <<<
         const prevSurplusEl = document.getElementById('previous-surplus-display');
         if (prevSurplusEl) {
           prevSurplusEl.textContent = this.formatCurrency(data.superavit_anterior || 0);
@@ -139,23 +138,27 @@ class FinancialTracker {
     const name = nameInput.value.trim();
     const amount = parseBRLToNumber(amountInput.value);
 
-    if (name && amount > 0) {
-      const expense = {
-        id: Date.now().toString(),
-        name,
-        amount,
-        date: this.formatDate(new Date())
-      };
-
-      this.expenses.push(expense);
-      this.calculateTotals();
-      this.updateDisplay();
-
-      nameInput.value = '';
-      amountInput.value = '';
-
-      this.updateAddButtonState();
+    if (
+      name.length < 3 || name.length > 40 ||
+      amount <= 0 || amount > 1000000
+    ) {
+      return; 
     }
+
+    const expense = {
+      id: Date.now().toString(),
+      name,
+      amount,
+      date: this.formatDate(new Date())
+    };
+
+    this.expenses.push(expense);
+    this.calculateTotals();
+    this.updateDisplay();
+
+    nameInput.value = '';
+    amountInput.value = '';
+    this.updateAddButtonState();
   }
 
   removeExpense(id) {
@@ -167,30 +170,27 @@ class FinancialTracker {
   calculateTotals(updateSurplus = true) {
     this.totalExpenses = this.expenses.reduce((sum, expense) => sum + expense.amount, 0);
     this.totalGoals = this.goals.reduce((sum, g) => sum + g.currentAmount, 0);
-
     if (updateSurplus) {
       this.surplus = this.salary - this.totalExpenses - this.totalGoals;
     }
-
     this.salvarNoServidor(this.salary, this.totalExpenses, this.surplus);
   }
 
-salvarNoServidor(salario, despesa_total, superavit) {
-  fetch('/salvar_orcamentos', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      salario,
-      despesa_total,
-      superavit,
-      despesas: this.expenses
+  salvarNoServidor(salario, despesa_total, superavit) {
+    fetch('/salvar_orcamentos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        salario,
+        despesa_total,
+        superavit,
+        despesas: this.expenses
+      })
     })
-  })
-  .then(res => res.json())
-  .then(data => console.log("Resposta do servidor:", data))
-  .catch(err => console.error("Erro ao salvar orçamento:", err));
-}
-
+    .then(res => res.json())
+    .then(data => console.log("Resposta do servidor:", data))
+    .catch(err => console.error("Erro ao salvar orçamento:", err));
+  }
 
   updateDisplay() {
     this.updateCircularFields();
@@ -289,7 +289,7 @@ salvarNoServidor(salario, despesa_total, superavit) {
     const addBtn = document.getElementById('add-expense-btn');
 
     if (nameInput && amountInput && addBtn) {
-      const hasName = nameInput.value.trim().length > 0;
+      const hasName = nameInput.value.trim().length >= 3;
       const hasAmount = parseBRLToNumber(amountInput.value) > 0;
       addBtn.disabled = !(hasName && hasAmount);
     }
@@ -321,6 +321,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setupCurrencyInputWithPrefix(salaryInput);
   setupCurrencyInputWithPrefix(amountInput);
+
+  salaryInput.addEventListener("input", () => {
+    let value = parseBRLToNumber(salaryInput.value);
+    if (value > 1000000) {
+      salaryInput.value = formatBRL(1000000);
+    }
+  });
+
+  amountInput.addEventListener("input", () => {
+    let value = parseBRLToNumber(amountInput.value);
+    if (value > 1000000) {
+      amountInput.value = formatBRL(1000000);
+    }
+  });
+
+  nameInput.addEventListener("input", () => {
+    if (nameInput.value.length > 40) {
+      nameInput.value = nameInput.value.substring(0, 40);
+    }
+  });
 });
 
 let chart = null;
