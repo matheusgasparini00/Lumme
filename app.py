@@ -36,7 +36,6 @@ _db_pool = pooling.MySQLConnectionPool(
     **_db_config
 )
 
-# pasta onde vão os avatares (dentro de static/uploads)
 UPLOAD_FOLDER = os.path.join(app.root_path, "static", "uploads")  # <-- use root_path
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -117,6 +116,19 @@ def dbcheck():
     except Exception as e:
         return {"ok": False, "error": str(e)}, 500
 
+def validar_data_nascimento(data_str):
+    try:
+        nascimento = datetime.strptime(data_str, "%Y-%m-%d").date()
+        hoje = date.today()
+
+        idade = hoje.year - nascimento.year - (
+            (hoje.month, hoje.day) < (nascimento.month, nascimento.day)
+        )
+
+        return 12 <= idade <= 80
+    except ValueError:
+        return False
+
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
@@ -129,6 +141,11 @@ def cadastro():
 
         if not all([nome, sobrenome, email, data_nasc, senha, confirmar_senha]):
             flash('Preencha todos os campos.', 'alerta')
+            return redirect('/cadastro')
+
+        # 🔹 valida idade mínima e máxima
+        if not validar_data_nascimento(data_nasc):
+            flash('Idade inválida! O usuário deve ter entre 12 e 80 anos.', 'erro')
             return redirect('/cadastro')
 
         if senha != confirmar_senha:
