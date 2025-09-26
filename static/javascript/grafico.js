@@ -1,8 +1,8 @@
 function parseBRLToNumber(str) {
   if (typeof str !== 'string') return 0;
-  const digits = str.replace(/\D/g, ''); 
+  const digits = str.replace(/\D/g, '');
   if (!digits) return 0;
-  return Number(digits) / 100; 
+  return Number(digits) / 100;
 }
 
 function formatBRL(n) {
@@ -24,12 +24,17 @@ function setupCurrencyInputWithPrefix(input) {
   });
 
   input.addEventListener("input", (e) => {
-    const num = parseBRLToNumber(e.target.value);
+    let num = parseBRLToNumber(e.target.value);
+    if (num > 1000000) num = 1000000;
     input.value = num ? formatBRL(num) : prefix;
     moveCursorToEnd(input);
   });
 
   input.addEventListener("blur", () => {
+    const val = parseBRLToNumber(input.value);
+    if (val > 1000000) {
+      input.value = formatBRL(1000000);
+    }
     if (input.value === prefix) {
       input.value = "";
     }
@@ -47,10 +52,11 @@ class FinancialTracker {
   constructor() {
     this.salary = 0;
     this.expenses = [];
-    this.goals = [];       
+    this.goals = [];
     this.totalExpenses = 0;
-    this.totalGoals = 0;   
+    this.totalGoals = 0;
     this.surplus = 0;
+    this.editingExpenseId = null; // controla se estamos editando
     this.init();
   }
 
@@ -62,17 +68,31 @@ class FinancialTracker {
 
   bindEvents() {
     const addExpenseBtn = document.getElementById('add-expense-btn');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
     if (addExpenseBtn) {
       addExpenseBtn.addEventListener('click', () => {
-        this.addExpense();
+        if (this.editingExpenseId) {
+          this.saveExpense(this.editingExpenseId);
+        } else {
+          this.addExpense();
+        }
       });
+    }
+
+    if (cancelEditBtn) {
+      cancelEditBtn.addEventListener('click', () => this.cancelEdit());
     }
 
     const expenseInputs = document.querySelectorAll('.expense-input');
     expenseInputs.forEach(input => {
       input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-          this.addExpense();
+          if (this.editingExpenseId) {
+            this.saveExpense(this.editingExpenseId);
+          } else {
+            this.addExpense();
+          }
         }
       });
     });
@@ -84,14 +104,8 @@ class FinancialTracker {
         if (!salaryEdit) return;
 
         let value = parseBRLToNumber(salaryEdit.value);
-
-        if (value <= 0) {
-          salaryEdit.value = '';
-          return;
-        }
-        if (value > 1000000) {
-          value = 1000000;
-        }
+        if (value <= 0) return;
+        if (value > 1000000) value = 1000000;
 
         this.salary += value;
         this.calculateTotals();
@@ -138,27 +152,66 @@ class FinancialTracker {
     const name = nameInput.value.trim();
     const amount = parseBRLToNumber(amountInput.value);
 
-    if (
-      name.length < 3 || name.length > 40 ||
-      amount <= 0 || amount > 1000000
-    ) {
-      return; 
+    if (name.length >= 3 && name.length <= 40 && amount > 0 && amount <= 1000000) {
+      const expense = {
+        id: Date.now().toString(),
+        name,
+        amount,
+        date: this.formatDate(new Date())
+      };
+
+      this.expenses.push(expense);
+      this.calculateTotals();
+      this.updateDisplay();
+
+      nameInput.value = '';
+      amountInput.value = '';
+      this.updateAddButtonState();
     }
+  }
 
-    const expense = {
-      id: Date.now().toString(),
-      name,
-      amount,
-      date: this.formatDate(new Date())
-    };
+  editExpense(id) {
+    const expense = this.expenses.find(e => e.id === id);
+    if (!expense) return;
 
-    this.expenses.push(expense);
-    this.calculateTotals();
-    this.updateDisplay();
+    this.editingExpenseId = id;
+    document.getElementById('expense-name').value = expense.name;
+    document.getElementById('expense-amount').value = formatBRL(expense.amount);
 
-    nameInput.value = '';
-    amountInput.value = '';
-    this.updateAddButtonState();
+    document.getElementById('add-expense-btn').textContent = "Salvar alterações";
+    document.getElementById('cancel-edit-btn').style.display = "inline-block";
+  }
+
+  saveExpense(id) {
+    const expense = this.expenses.find(e => e.id === id);
+    if (!expense) return;
+
+    const nameEl = document.getElementById('expense-name');
+    const amountEl = document.getElementById('expense-amount');
+    const newName = nameEl.value.trim();
+    const newAmount = parseBRLToNumber(amountEl.value);
+
+    if (newName.length >= 3 && newName.length <= 40 && newAmount > 0 && newAmount <= 1000000) {
+      expense.name = newName;
+      expense.amount = newAmount;
+      this.editingExpenseId = null;
+
+      nameEl.value = '';
+      amountEl.value = '';
+      document.getElementById('add-expense-btn').textContent = "Adicionar";
+      document.getElementById('cancel-edit-btn').style.display = "none";
+
+      this.calculateTotals();
+      this.updateDisplay();
+    }
+  }
+
+  cancelEdit() {
+    this.editingExpenseId = null;
+    document.getElementById('expense-name').value = '';
+    document.getElementById('expense-amount').value = '';
+    document.getElementById('add-expense-btn').textContent = "Adicionar";
+    document.getElementById('cancel-edit-btn').style.display = "none";
   }
 
   removeExpense(id) {
@@ -186,10 +239,7 @@ class FinancialTracker {
         superavit,
         despesas: this.expenses
       })
-    })
-    .then(res => res.json())
-    .then(data => console.log("Resposta do servidor:", data))
-    .catch(err => console.error("Erro ao salvar orçamento:", err));
+    }).catch(err => console.error("Erro ao salvar orçamento:", err));
   }
 
   updateDisplay() {
@@ -202,14 +252,10 @@ class FinancialTracker {
 
   updateCircularFields() {
     const salaryDisplay = document.getElementById('salary-input');
-    if (salaryDisplay) {
-      salaryDisplay.textContent = this.formatCurrency(this.salary);
-    }
+    if (salaryDisplay) salaryDisplay.textContent = this.formatCurrency(this.salary);
 
     const expensesDisplay = document.getElementById('expenses-display');
-    if (expensesDisplay) {
-      expensesDisplay.textContent = this.formatCurrency(this.totalExpenses);
-    }
+    if (expensesDisplay) expensesDisplay.textContent = this.formatCurrency(this.totalExpenses);
 
     const progressFill = document.getElementById('progress-fill');
     const progressText = document.getElementById('progress-text');
@@ -234,9 +280,7 @@ class FinancialTracker {
     const listTitle = document.getElementById('list-title');
     const expenseContainer = document.getElementById('expense-container');
 
-    if (listTitle) {
-      listTitle.textContent = `Lista de Despesas (${this.expenses.length})`;
-    }
+    if (listTitle) listTitle.textContent = `Lista de Despesas (${this.expenses.length})`;
 
     if (expenseContainer) {
       if (this.expenses.length === 0) {
@@ -245,15 +289,18 @@ class FinancialTracker {
         expenseContainer.innerHTML = `
           <div class="expense-items">
             ${this.expenses.map(expense => `
-              <div class="expense-item">
+              <div class="expense-item" data-id="${expense.id}">
                 <div class="expense-info">
                   <h3>${expense.name}</h3>
                   <p>${expense.date}</p>
                 </div>
                 <div class="expense-actions">
                   <span class="expense-amount">${this.formatCurrency(expense.amount)}</span>
+                  <button class="edit-button" onclick="tracker.editExpense('${expense.id}')">
+                    <i class="fas fa-edit"></i>
+                  </button>
                   <button class="delete-button" onclick="tracker.removeExpense('${expense.id}')">
-                  <i class="fas fa-trash-alt"></i>
+                    <i class="fas fa-trash-alt"></i>
                   </button>
                 </div>
               </div>
@@ -266,14 +313,10 @@ class FinancialTracker {
 
   updateSummary() {
     const salaryTotal = document.getElementById('salary-total');
-    if (salaryTotal) {
-      salaryTotal.textContent = this.formatCurrency(this.salary);
-    }
+    if (salaryTotal) salaryTotal.textContent = this.formatCurrency(this.salary);
 
     const expensesTotal = document.getElementById('expenses-total');
-    if (expensesTotal) {
-      expensesTotal.textContent = this.formatCurrency(this.totalExpenses);
-    }
+    if (expensesTotal) expensesTotal.textContent = this.formatCurrency(this.totalExpenses);
 
     const balanceTotal = document.getElementById('balance-total');
     const balanceItem = document.getElementById('balance-item');
@@ -306,41 +349,18 @@ class FinancialTracker {
 
 document.addEventListener('DOMContentLoaded', () => {
   window.tracker = new FinancialTracker();
-
   const nameInput = document.getElementById('expense-name');
   const amountInput = document.getElementById('expense-amount');
   const salaryInput = document.getElementById('salary-display');
 
   if (nameInput && amountInput) {
     [nameInput, amountInput].forEach(input => {
-      input.addEventListener('input', () => {
-        window.tracker.updateAddButtonState();
-      });
+      input.addEventListener('input', () => window.tracker.updateAddButtonState());
     });
   }
 
   setupCurrencyInputWithPrefix(salaryInput);
   setupCurrencyInputWithPrefix(amountInput);
-
-  salaryInput.addEventListener("input", () => {
-    let value = parseBRLToNumber(salaryInput.value);
-    if (value > 1000000) {
-      salaryInput.value = formatBRL(1000000);
-    }
-  });
-
-  amountInput.addEventListener("input", () => {
-    let value = parseBRLToNumber(amountInput.value);
-    if (value > 1000000) {
-      amountInput.value = formatBRL(1000000);
-    }
-  });
-
-  nameInput.addEventListener("input", () => {
-    if (nameInput.value.length > 40) {
-      nameInput.value = nameInput.value.substring(0, 40);
-    }
-  });
 });
 
 let chart = null;
@@ -368,7 +388,7 @@ function atualizarGrafico(despesas) {
           backgroundColor: [
             '#A339FA','#7A2BBA','#4f46e5','#501C7A','#3e046dff',
             '#025A9D','#0386E9','#0261AA','#024B83','#01355D',
-            '#FFA90A','#FF8F1C', '#FF671C','#FF3F1C','#FF0D1D',
+            '#FFA90A','#FF8F1C','#FF671C','#FF3F1C','#FF0D1D',
             '#FF0A40','#FC4D88','#FF1CD6','#CB1CFF','#811CFF',
           ],
           borderWidth: 1
@@ -376,9 +396,7 @@ function atualizarGrafico(despesas) {
       },
       options: {
         responsive: true,
-        plugins: {
-          legend: { position: 'bottom' }
-        }
+        plugins: { legend: { position: 'bottom' } }
       }
     });
   }
@@ -387,7 +405,6 @@ function atualizarGrafico(despesas) {
 window.addEventListener('storage', (event) => {
   if (event.key === 'superavitAtualizado') {
     if (window.tracker && typeof window.tracker.fetchSavedBudget === 'function') {
-      console.log('Superavit atualizado detectado. Recarregando orçamento...');
       window.tracker.fetchSavedBudget();
     }
   }

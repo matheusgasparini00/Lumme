@@ -43,6 +43,7 @@
   text-align: center;
   padding: 1.5rem;
 }
+
 #previous-surplus-display {
   font-weight: 600;
   color: var(--cor-roxo);
@@ -117,7 +118,6 @@
 
 .salary-box:focus {
   border-color: var(--cor-amarelo, #e6d556);
-
 }
 
 #add-salary-btn {
@@ -138,11 +138,11 @@
 .input-wrapper {
   display: flex;
   align-items: center;
-  border: 1px solid #ccc;   /* igual ao estilo do input */
+  border: 1px solid #ccc; 
   border-radius: 8px;
   padding: 6px 10px;
   background: #fff;
-  max-width: 250px; /* ajuste se quiser limitar */
+  max-width: 250px;
 }
 
 .input-wrapper input {
@@ -187,7 +187,6 @@
   border-color: #ade4c0;
   transform: scale(1.2) translateY(25px); 
 }
-
 
 .expenses-border {
   border-color: #fecaca;
@@ -251,7 +250,6 @@
   margin-top: 4.5rem; 
   display: block;
 }
-
 
 .status-positive {
   color: #059669;
@@ -317,6 +315,12 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+.form-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
 .form-button {
   width: 100%;
   padding: 0.75rem;
@@ -336,6 +340,14 @@
 .form-button:disabled {
   background-color: var(--cor-roxo);
   cursor: not-allowed;
+}
+
+.form-button.cancel {
+  background-color: #ef4444;
+}
+
+.form-button.cancel:hover {
+  background-color: #b91c1c;
 }
 
 .expense-list {
@@ -403,27 +415,13 @@
 .delete-button {
   background: none;
   border: none;
-  color: #ef4444;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 0.25rem;
-  transition: color 0.2s;
-}
-
-.delete-button:hover {
-  color: var(--cor-roxo);
-}
-
-.delete-button {
-  background: none;
-  border: none;
   cursor: pointer;
   padding: 4px;
 }
 
 .delete-button i {
-  color: #e74c3c;         
-  font-size: 1.2rem; 
+  color: #e74c3c;
+  font-size: 1.2rem;
   transition: color 0.2s;
 }
 
@@ -431,33 +429,58 @@
   color: #c0392b;
 }
 
-.form-card {
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.edit-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
 }
 
-.chart-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+.edit-button i {
+  color: #4f46e5;
+  font-size: 1.2rem;
 }
 
-
-.form-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--cor-roxo);
-  margin-bottom: 1rem;
-  text-align: center;
+.edit-button i:hover {
+  color: #3730a3;
 }
 
-#expense-chart {
-  max-width: 100%;
-  height: auto;
+.save-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.save-button i {
+  color: #059669;
+  font-size: 1.2rem;
+}
+
+.save-button i:hover {
+  color: #047857;
+}
+
+.cancel-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.cancel-button i {
+  color: #dc2626;
+  font-size: 1.2rem;
+}
+
+.cancel-button i:hover {
+  color: #b91c1c;
+}
+
+.edit-input {
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  max-width: 140px;
 }

@@ -277,19 +277,17 @@ def salvar_orcamentos():
     data = request.get_json() or {}
     usuario_id = session['usuario_id']
 
+    # 🔹 Validação salário
     try:
         salario = float(data.get('salario') or 0)
     except ValueError:
         salario = 0.0
-
-    despesas = data.get('despesas', []) or []
-    superavit = float(data.get('superavit') or 0)
-
     if salario < 0:
         salario = 0
     if salario > 1_000_000:
         salario = 1_000_000
 
+    despesas = data.get('despesas', []) or []
     despesas_validas = []
     despesa_total = 0.0
 
@@ -300,16 +298,17 @@ def salvar_orcamentos():
         except ValueError:
             valor = 0.0
 
-        if len(nome) < 3 or len(nome) > 40:
-            continue 
+        # 🔹 Regras silenciosas
+        if len(nome) < 3 or len(nome) > 50:
+            continue
         if valor <= 0 or valor > 1_000_000:
             continue
 
         despesas_validas.append((nome, valor))
         despesa_total += valor
 
-    if superavit < (salario - despesa_total - 1_000_000):
-        superavit = salario - despesa_total
+    # 🔹 Superávit calculado
+    superavit = salario - despesa_total
 
     hoje = date.today()
     inicio_mes = date(hoje.year, hoje.month, 1)
@@ -317,14 +316,12 @@ def salvar_orcamentos():
         proximo_mes = date(hoje.year + 1, 1, 1)
     else:
         proximo_mes = date(hoje.year, hoje.month + 1, 1)
-
     inicio_mes_dt = datetime.combine(inicio_mes, datetime.min.time())
     proximo_mes_dt = datetime.combine(proximo_mes, datetime.min.time())
     agora_dt = datetime.now()
 
     conn = conectar_banco()
     cursor = conn.cursor()
-
     try:
         cursor.execute("""
             SELECT id
@@ -351,6 +348,7 @@ def salvar_orcamentos():
                 VALUES (%s, %s, %s, %s, %s)
             """, (usuario_id, salario, despesa_total, superavit, agora_dt))
 
+        # Apaga despesas antigas do mês e insere as válidas
         cursor.execute("""
             DELETE FROM orcamento_despesas
              WHERE usuario_id = %s
@@ -694,18 +692,16 @@ def atualizar_meta():
         print("Erro ao atualizar meta:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
-@app.route('/atualizar_superavit', methods=['POST', 'DELETE'])
+@app.route('/atualizar_superavit', methods=['POST','DELETE'])
 @login_obrigatorio
 def atualizar_superavit():
     usuario_id = session.get('usuario_id')
     data = request.get_json() or {}
+
     try:
         superavit = float(data.get('superavit') or 0)
     except ValueError:
         superavit = 0.0
-
-    print("Novo superavit recebido (bruto):", superavit)
-    print("Usuário logado:", usuario_id)
 
     try:
         conexao = conectar_banco()
@@ -718,22 +714,18 @@ def atualizar_superavit():
              ORDER BY data_registro DESC
              LIMIT 1
         """, (usuario_id,))
-        orcamento = cursor.fetchone() or (0, 0)
+        orcamento = cursor.fetchone() or (0,0)
         salario, despesa_total = orcamento
 
-        if salario < 0:
-            salario = 0
-        if salario > 1_000_000:
-            salario = 1_000_000
-        if despesa_total < 0:
-            despesa_total = 0
+        # 🔹 Limites
+        if salario < 0: salario = 0
+        if salario > 1_000_000: salario = 1_000_000
+        if despesa_total < 0: despesa_total = 0
 
-        minimo = salario - despesa_total - 1000000
+        minimo = salario - despesa_total - 1_000_000
         maximo = salario
-        if superavit < minimo:
-            superavit = minimo
-        if superavit > maximo:
-            superavit = maximo
+        if superavit < minimo: superavit = minimo
+        if superavit > maximo: superavit = maximo
 
         cursor.execute("""
             UPDATE orcamentos
@@ -742,15 +734,11 @@ def atualizar_superavit():
         """, (superavit, usuario_id))
         conexao.commit()
 
-        print("Superávit salvo (ajustado):", superavit)
-
-        cursor.close()
-        conexao.close()
+        cursor.close(); conexao.close()
         return jsonify({'status': 'sucesso', 'superavit': superavit})
 
     except Exception as e:
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
-
 
 @app.route('/api/diario/notes', methods=['GET'])
 @login_obrigatorio
