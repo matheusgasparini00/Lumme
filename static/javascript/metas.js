@@ -1,6 +1,6 @@
 let currentSurplus = 0;
 let goals = [];
-let editingGoalId = null; // controla edição
+let editingGoalId = null; 
 
 const surplusValueEl = document.getElementById('surplusValue');
 const addGoalBtn = document.getElementById('addGoalBtn');
@@ -11,7 +11,6 @@ const saveGoalBtn = document.getElementById('saveGoalBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const goalsList = document.getElementById('goalsList');
 
-// Função para formatar valores em moeda BRL
 function formatCurrency(value) {
     return value.toLocaleString("pt-BR", {
         style: "currency",
@@ -64,7 +63,6 @@ saveGoalBtn.addEventListener('click', () => {
     if (amount > 1000000) amount = 1000000;
 
     if (editingGoalId) {
-        // atualização
         const goal = goals.find(g => g.id === editingGoalId);
         if (goal) {
             goal.name = name;
@@ -86,7 +84,6 @@ saveGoalBtn.addEventListener('click', () => {
         saveGoalBtn.textContent = 'Salvar Meta';
 
     } else {
-        // criação
         fetch('/salvar_meta', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

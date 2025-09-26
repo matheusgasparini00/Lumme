@@ -143,7 +143,6 @@ def cadastro():
             flash('Preencha todos os campos.', 'alerta')
             return redirect('/cadastro')
 
-        # 🔹 valida idade mínima e máxima
         if not validar_data_nascimento(data_nasc):
             flash('Idade inválida! O usuário deve ter entre 12 e 80 anos.', 'erro')
             return redirect('/cadastro')
@@ -277,7 +276,6 @@ def salvar_orcamentos():
     data = request.get_json() or {}
     usuario_id = session['usuario_id']
 
-    # 🔹 Validação salário
     try:
         salario = float(data.get('salario') or 0)
     except ValueError:
@@ -298,7 +296,6 @@ def salvar_orcamentos():
         except ValueError:
             valor = 0.0
 
-        # 🔹 Regras silenciosas
         if len(nome) < 3 or len(nome) > 50:
             continue
         if valor <= 0 or valor > 1_000_000:
@@ -307,7 +304,6 @@ def salvar_orcamentos():
         despesas_validas.append((nome, valor))
         despesa_total += valor
 
-    # 🔹 Superávit calculado
     superavit = salario - despesa_total
 
     hoje = date.today()
@@ -348,7 +344,6 @@ def salvar_orcamentos():
                 VALUES (%s, %s, %s, %s, %s)
             """, (usuario_id, salario, despesa_total, superavit, agora_dt))
 
-        # Apaga despesas antigas do mês e insere as válidas
         cursor.execute("""
             DELETE FROM orcamento_despesas
              WHERE usuario_id = %s
@@ -543,7 +538,6 @@ def salvar_meta():
     titulo = dados.get('titulo', '').strip()
     valor_objetivo = dados.get('valor_objetivo')
 
-    # ✅ validações
     if not titulo or not valor_objetivo:
         return jsonify({'status': 'erro', 'mensagem': 'Dados incompletos'}), 400
 
@@ -667,7 +661,6 @@ def atualizar_meta():
         conexao = conectar_banco()
         cursor = conexao.cursor()
 
-        # Atualiza título/valor da meta se enviados
         if titulo is not None or valor_objetivo is not None:
             if titulo and len(titulo) > 40:
                 return jsonify({'status': 'erro', 'mensagem': 'O nome da meta deve ter no máximo 40 caracteres'}), 400
@@ -688,7 +681,6 @@ def atualizar_meta():
                 WHERE id = %s AND usuario_id = %s
             """, (titulo if titulo else None, valor_objetivo, meta_id, usuario_id))
 
-        # Atualiza valor atual se enviado
         if valor_atual is not None:
             try:
                 valor_atual = float(valor_atual)
@@ -701,7 +693,6 @@ def atualizar_meta():
                 WHERE id = %s AND usuario_id = %s
             """, (valor_atual, meta_id, usuario_id))
 
-        # Atualiza superávit
         cursor.execute("""
             SELECT salario, despesa_total
             FROM orcamentos

@@ -56,7 +56,7 @@ class FinancialTracker {
     this.totalExpenses = 0;
     this.totalGoals = 0;
     this.surplus = 0;
-    this.editingExpenseId = null; // controla se estamos editando
+    this.editingExpenseId = null; 
     this.init();
   }
 

@@ -236,7 +236,6 @@
   white-space: normal;
 }
 
-/* === Cores das NOTAS por categoria === */
 .note-item.cat-alimentacao { border-left-color: #D1FA58; background: #f9fbe7; }
 .note-item.cat-transporte  { border-left-color: #FA953C; background: #fff3e0; }
 .note-item.cat-lazer       { border-left-color: #FAD847; background: #fffde7; }

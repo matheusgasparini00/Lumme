@@ -1,4 +1,3 @@
-// Dados mockados
 const financialData = {
   '2024-06': {
     salario: 4500,
@@ -71,21 +70,17 @@ const financialData = {
   }
 };
 
-// Estado atual do mês selecionado
 let selectedMonth = '2024-06';
 
-// Função para formatar valores em moeda BRL
 function formatBRL(value) {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// Função para formatar data para "Mês Ano"
 function formatMonthYear(monthStr) {
   const date = new Date(monthStr + '-01');
   return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 }
 
-// Renderiza os botões de seleção de mês
 function renderMonthButtons() {
   const container = document.getElementById('month-buttons');
   container.innerHTML = '';
@@ -103,7 +98,6 @@ function renderMonthButtons() {
   });
 }
 
-// Renderiza o resumo financeiro
 function renderFinancialSummary() {
   const container = document.getElementById('financial-summary');
   container.innerHTML = '';
@@ -111,7 +105,6 @@ function renderFinancialSummary() {
   const data = financialData[selectedMonth];
   if (!data) return;
 
-  // Salário
   const salarioCard = document.createElement('div');
   salarioCard.className = 'col-md-4 mb-3';
   salarioCard.innerHTML = `
@@ -124,7 +117,6 @@ function renderFinancialSummary() {
     </div>
   `;
 
-  // Despesas
   const despesasCard = document.createElement('div');
   despesasCard.className = 'col-md-4 mb-3';
   despesasCard.innerHTML = `
@@ -137,7 +129,6 @@ function renderFinancialSummary() {
     </div>
   `;
 
-  // Superávit
   const superavitClass = data.superavit >= 0 ? 'superavit-positivo' : 'superavit-negativo';
   const superavitCard = document.createElement('div');
   superavitCard.className = 'col-md-4 mb-3';
@@ -156,7 +147,6 @@ function renderFinancialSummary() {
   container.appendChild(superavitCard);
 }
 
-// Renderiza as metas financeiras
 function renderFinancialGoals() {
   const container = document.getElementById('financial-goals');
   container.innerHTML = '';
@@ -205,19 +195,16 @@ function renderFinancialGoals() {
   });
 }
 
-// Renderiza tudo
 function renderAll() {
   renderMonthButtons();
   renderFinancialSummary();
   renderFinancialGoals();
 }
 
-// Inicializa a tela após o DOM estar carregado
 document.addEventListener('DOMContentLoaded', () => {
   renderAll();
 });
 
-// Após a função renderAll ou no final do arquivo JS
 
 document.addEventListener('DOMContentLoaded', () => {
   renderAll();
