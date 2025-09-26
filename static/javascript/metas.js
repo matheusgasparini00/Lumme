@@ -1,5 +1,6 @@
 let currentSurplus = 0;
 let goals = [];
+let editingGoalId = null; // controla edição
 
 const surplusValueEl = document.getElementById('surplusValue');
 const addGoalBtn = document.getElementById('addGoalBtn');
@@ -9,6 +10,15 @@ const goalAmountInput = document.getElementById('goalAmount');
 const saveGoalBtn = document.getElementById('saveGoalBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const goalsList = document.getElementById('goalsList');
+
+// Função para formatar valores em moeda BRL
+function formatCurrency(value) {
+    return value.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2
+    });
+}
 
 function fetchSurplus() {
     fetch('/obter_orcamentos', { credentials: 'same-origin'})
@@ -26,11 +36,7 @@ function fetchSurplus() {
 }
 
 function updateSurplusDisplay() {
-    surplusValueEl.textContent = currentSurplus.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-        minimumFractionDigits: 2
-    });
+    surplusValueEl.textContent = formatCurrency(currentSurplus);
 }
 
 addGoalBtn.addEventListener('click', () => {
@@ -39,6 +45,8 @@ addGoalBtn.addEventListener('click', () => {
 });
 
 cancelBtn.addEventListener('click', () => {
+    editingGoalId = null;
+    saveGoalBtn.textContent = 'Salvar Meta';
     goalForm.style.display = 'none';
     goalNameInput.value = '';
     goalAmountInput.value = '';
@@ -46,35 +54,58 @@ cancelBtn.addEventListener('click', () => {
 
 saveGoalBtn.addEventListener('click', () => {
     const name = goalNameInput.value.trim();
-    const amount = parseFloat(goalAmountInput.value);
+    let amount = parseFloat(goalAmountInput.value);
 
-    if (!name || isNaN(amount) || amount <= 0) {
-        alert('Por favor, preencha todos os campos corretamente.');
+    if (!name || name.length < 3 || name.length > 40 || isNaN(amount) || amount <= 0) {
+        alert('Preencha os campos corretamente (nome até 40 caracteres e valor positivo).');
         return;
     }
 
-    fetch('/salvar_meta', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'same-origin',
-        body: JSON.stringify({
-            titulo: name,
-            valor_objetivo: amount
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === 'sucesso') {
-            carregarMetas();
-        } else {
-            console.error('Erro ao salvar meta no banco:', data.mensagem);
+    if (amount > 1000000) amount = 1000000;
+
+    if (editingGoalId) {
+        // atualização
+        const goal = goals.find(g => g.id === editingGoalId);
+        if (goal) {
+            goal.name = name;
+            goal.targetAmount = amount;
         }
-    })
-    .catch(err => {
-        console.error('Erro de rede ao salvar meta:', err);
-    });
+
+        fetch('/atualizar_meta', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                id: editingGoalId,
+                titulo: name,
+                valor_objetivo: amount
+            })
+        }).catch(err => console.error('Erro ao atualizar meta:', err));
+
+        editingGoalId = null;
+        saveGoalBtn.textContent = 'Salvar Meta';
+
+    } else {
+        // criação
+        fetch('/salvar_meta', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                titulo: name,
+                valor_objetivo: amount
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'sucesso') {
+                carregarMetas();
+            } else {
+                console.error('Erro ao salvar meta no banco:', data.mensagem);
+            }
+        })
+        .catch(err => console.error('Erro de rede ao salvar meta:', err));
+    }
 
     goalNameInput.value = '';
     goalAmountInput.value = '';
@@ -98,8 +129,7 @@ function renderGoals() {
             <div class="goal-header">
                 <div class="goal-title">${goal.name}</div>
                 <div class="goal-amount">
-                    R$ ${goal.currentAmount.toFixed(2).replace('.', ',')} / 
-                    R$ ${goal.targetAmount.toFixed(2).replace('.', ',')}
+                    ${formatCurrency(goal.currentAmount)} / ${formatCurrency(goal.targetAmount)}
                 </div>
             </div>
             <div class="progress-container">
@@ -114,6 +144,9 @@ function renderGoals() {
                     <button class="add-funds-btn" data-id="${goal.id}">Alimentar Meta</button>
                     <button class="complete-btn" data-id="${goal.id}">Concluir</button>
                 ` : ''}
+                <button class="edit-button" data-id="${goal.id}">
+                    <i class="fas fa-edit"></i>
+                </button>
                 <button class="delete-button" data-id="${goal.id}">
                     <i class="fas fa-trash-alt"></i>
                 </button>
@@ -134,6 +167,23 @@ function renderGoals() {
     document.querySelectorAll('.delete-button').forEach(btn => {
         btn.addEventListener('click', deleteGoal);
     });
+
+    document.querySelectorAll('.edit-button').forEach(btn => {
+        btn.addEventListener('click', editGoal);
+    });
+}
+
+function editGoal(e) {
+    const goalId = parseInt(e.currentTarget.dataset.id);
+    const goal = goals.find(g => g.id === goalId);
+    if (!goal) return;
+
+    editingGoalId = goalId;
+    goalForm.style.display = 'block';
+    goalNameInput.value = goal.name;
+    goalAmountInput.value = goal.targetAmount;
+    saveGoalBtn.textContent = 'Salvar Alterações';
+    goalNameInput.focus();
 }
 
 function addFundsToGoal(e) {
@@ -164,9 +214,7 @@ function addFundsToGoal(e) {
 
     fetch('/atualizar_meta', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
         body: JSON.stringify({
             id: goal.id,
@@ -212,7 +260,6 @@ function deleteGoal(e) {
     .then(data => {
         if (data.status === 'sucesso') {
             carregarMetas(); 
-
         } else {
             console.error('Erro ao deletar meta:', data.mensagem);
         }

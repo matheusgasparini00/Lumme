@@ -279,3 +279,65 @@ input[type="number"] {
 .delete-button:hover {
   color: #d9363e;
 }
+
+.edit-button, .save-button, .cancel-edit-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 0.25rem;
+  transition: color 0.2s;
+  font-size: 1.2rem;
+}
+
+.edit-button i {
+  color: #4f46e5;
+}
+.edit-button i:hover {
+  color: #3730a3;
+}
+
+.save-button i {
+  color: #059669;
+}
+.save-button i:hover {
+  color: #047857;
+}
+
+.cancel-edit-button i {
+  color: #dc2626;
+}
+.cancel-edit-button i:hover {
+  color: #b91c1c;
+}
+
+.edit-button, .save-button, .cancel-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 0.25rem;
+  transition: color 0.2s;
+  font-size: 1.2rem;
+}
+
+.save-button i {
+  color: #059669;
+}
+.save-button i:hover {
+  color: #047857;
+}
+
+.cancel-button i {
+  color: #dc2626; 
+}
+.cancel-button i:hover {
+  color: #b91c1c;
+}
+
+.edit-button i {
+  color: var(--cor-roxo);
+}
+.edit-button i:hover {
+  color: var(--cor-roxo_fundo);
+}

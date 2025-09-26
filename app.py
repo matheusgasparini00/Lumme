@@ -540,11 +540,23 @@ def metas():
 def salvar_meta():
     usuario_id = session.get('usuario_id')
     dados = request.get_json()
-    titulo = dados.get('titulo')
+    titulo = dados.get('titulo', '').strip()
     valor_objetivo = dados.get('valor_objetivo')
 
+    # ✅ validações
     if not titulo or not valor_objetivo:
         return jsonify({'status': 'erro', 'mensagem': 'Dados incompletos'}), 400
+
+    if len(titulo) > 40:
+        return jsonify({'status': 'erro', 'mensagem': 'O nome da meta deve ter no máximo 40 caracteres'}), 400
+
+    try:
+        valor_objetivo = float(valor_objetivo)
+    except (ValueError, TypeError):
+        return jsonify({'status': 'erro', 'mensagem': 'Valor inválido para meta'}), 400
+
+    if valor_objetivo <= 0 or valor_objetivo > 1_000_000:
+        return jsonify({'status': 'erro', 'mensagem': 'O valor da meta deve estar entre 0,01 e 1.000.000'}), 400
 
     try:
         conexao = conectar_banco()
@@ -570,13 +582,9 @@ def obter_metas():
         conexao = conectar_banco()
         cursor = conexao.cursor(dictionary=True)
 
-        # 🔹 Identifica início do mês atual
         hoje = date.today()
         inicio_mes = date(hoje.year, hoje.month, 1)
 
-        # 🔹 Busca metas:
-        # 1) Metas criadas neste mês (mostra todas, concluídas ou não)
-        # 2) Metas pendentes de meses anteriores (valor_atual < valor_objetivo)
         cursor.execute("""
             SELECT id,
                    titulo AS name,
@@ -599,7 +607,7 @@ def obter_metas():
         return jsonify(metas)
 
     except Exception as e:
-        print("❌ Erro ao obter metas:", e)
+        print("Erro ao obter metas:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
 @app.route('/deletar_meta/<int:meta_id>', methods=['POST','DELETE'])
@@ -649,20 +657,51 @@ def atualizar_meta():
     dados = request.get_json()
     meta_id = dados.get('id')
     valor_atual = dados.get('valor_atual')
+    titulo = dados.get('titulo', '').strip() if 'titulo' in dados else None
+    valor_objetivo = dados.get('valor_objetivo') if 'valor_objetivo' in dados else None
 
-    if meta_id is None or valor_atual is None:
-        return jsonify({'status': 'erro', 'mensagem': 'Dados incompletos'}), 400
+    if meta_id is None:
+        return jsonify({'status': 'erro', 'mensagem': 'ID da meta não informado'}), 400
 
     try:
         conexao = conectar_banco()
         cursor = conexao.cursor()
 
-        cursor.execute("""
-            UPDATE metas
-            SET valor_atual = %s
-            WHERE id = %s AND usuario_id = %s
-        """, (valor_atual, meta_id, usuario_id))
+        # Atualiza título/valor da meta se enviados
+        if titulo is not None or valor_objetivo is not None:
+            if titulo and len(titulo) > 40:
+                return jsonify({'status': 'erro', 'mensagem': 'O nome da meta deve ter no máximo 40 caracteres'}), 400
+            
+            if valor_objetivo is not None:
+                try:
+                    valor_objetivo = float(valor_objetivo)
+                except (ValueError, TypeError):
+                    return jsonify({'status': 'erro', 'mensagem': 'Valor da meta inválido'}), 400
 
+                if valor_objetivo <= 0 or valor_objetivo > 1_000_000:
+                    return jsonify({'status': 'erro', 'mensagem': 'O valor da meta deve estar entre 0,01 e 1.000.000'}), 400
+
+            cursor.execute("""
+                UPDATE metas
+                SET titulo = COALESCE(%s, titulo),
+                    valor_objetivo = COALESCE(%s, valor_objetivo)
+                WHERE id = %s AND usuario_id = %s
+            """, (titulo if titulo else None, valor_objetivo, meta_id, usuario_id))
+
+        # Atualiza valor atual se enviado
+        if valor_atual is not None:
+            try:
+                valor_atual = float(valor_atual)
+            except (ValueError, TypeError):
+                return jsonify({'status': 'erro', 'mensagem': 'Valor atual inválido'}), 400
+
+            cursor.execute("""
+                UPDATE metas
+                SET valor_atual = %s
+                WHERE id = %s AND usuario_id = %s
+            """, (valor_atual, meta_id, usuario_id))
+
+        # Atualiza superávit
         cursor.execute("""
             SELECT salario, despesa_total
             FROM orcamentos
@@ -717,7 +756,6 @@ def atualizar_superavit():
         orcamento = cursor.fetchone() or (0,0)
         salario, despesa_total = orcamento
 
-        # 🔹 Limites
         if salario < 0: salario = 0
         if salario > 1_000_000: salario = 1_000_000
         if despesa_total < 0: despesa_total = 0
