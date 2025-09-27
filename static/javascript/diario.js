@@ -9,16 +9,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let editId = null;
 
   function slugFromCategory(cat) {
-  const map = {
-    "Alimentação": "cat-alimentacao",
-    "Transporte": "cat-transporte",
-    "Lazer": "cat-lazer",
-    "Saúde": "cat-saude",
-    "Educação": "cat-educacao",
-    "Outros": "cat-outros"
-  };
-  return map[cat] || "cat-outros";
-}
+    const map = {
+      "Alimentação": "cat-alimentacao",
+      "Transporte": "cat-transporte",
+      "Lazer": "cat-lazer",
+      "Saúde": "cat-saude",
+      "Educação": "cat-educacao",
+      "Outros": "cat-outros"
+    };
+    return map[cat] || "cat-outros";
+  }
 
   botoes.forEach(botao => {
     botao.addEventListener("click", () => {
@@ -49,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
       grupos[cat].forEach(n => {
         const note = document.createElement("div");
         note.className = `note-item ${slugFromCategory(n.categoria)}`;
-
 
         const noteTitle = document.createElement("h4");
         noteTitle.textContent = n.titulo;
@@ -142,11 +141,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   addBtn.addEventListener("click", async () => {
     const categoria = (document.getElementById("noteCategory").value || "").trim();
-    const titulo = (document.getElementById("noteTitle").value || "").trim();
-    const texto = (document.getElementById("noteContent").value || "").trim();
+    const titulo = (titleInput.value || "").trim();
+    const texto = (contentInput.value || "").trim();
 
     if (!categoria || !titulo || !texto) {
       alert("Preencha todos os campos!");
+      return;
+    }
+
+    if (titulo.length < 3 || titulo.length > 40) {
+      alert("O título deve ter entre 3 e 40 caracteres.");
+      return;
+    }
+    if (texto.length < 5 || texto.length > 100) {
+      alert("A anotação deve ter entre 5 e 100 caracteres.");
       return;
     }
 
@@ -160,9 +168,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (ok) {
-      document.getElementById("noteCategory").value = "";
-      document.getElementById("noteTitle").value = "";
-      document.getElementById("noteContent").value = "";
+      inputCategoria.value = "";
+      titleInput.value = "";
+      contentInput.value = "";
       botoes.forEach(b => b.classList.remove("selecionado"));
       editId = null;
       addBtn.textContent = "Adicionar";

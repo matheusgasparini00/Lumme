@@ -809,11 +809,11 @@ def api_criar_nota():
     data = request.get_json(silent=True) or {}
 
     categoria = (data.get('categoria') or '').strip()
-    titulo = (data.get('titulo') or '').strip()
-    texto = (data.get('texto') or '').strip()
+    titulo = (data.get('titulo') or '').strip()[:40]   
+    texto = (data.get('texto') or '').strip()[:100]    
 
     if not categoria or not titulo or not texto:
-        return jsonify({'status': 'erro', 'mensagem': 'categoria, titulo e texto são obrigatórios.'}), 400
+        return jsonify({'status': 'erro'}), 400
 
     cnx = conectar_banco()
     cur = cnx.cursor()
@@ -834,11 +834,11 @@ def api_editar_nota(note_id):
     data = request.get_json(silent=True) or {}
 
     categoria = (data.get('categoria') or '').strip()
-    titulo = (data.get('titulo') or '').strip()
-    texto = (data.get('texto') or '').strip()
+    titulo = (data.get('titulo') or '').strip()[:40]   
+    texto = (data.get('texto') or '').strip()[:100]    
 
     if not categoria or not titulo or not texto:
-        return jsonify({'status': 'erro', 'mensagem': 'categoria, titulo e texto são obrigatórios.'}), 400
+        return jsonify({'status': 'erro'}), 400
 
     cnx = conectar_banco()
     cur = cnx.cursor()
