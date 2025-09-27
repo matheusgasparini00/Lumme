@@ -137,7 +137,7 @@ function renderGoals() {
             </div>
             <div class="goal-actions">
                 ${!goal.completed ? `
-                    <input type="number" class="funds-input" id="funds-${goal.id}" placeholder="Valor" min="0" step="0.01">
+                    <input type="number" class="funds-input" id="funds-${goal.id}" placeholder="R$" min="0" step="0.01">
                     <button class="add-funds-btn" data-id="${goal.id}">Alimentar Meta</button>
                     <button class="complete-btn" data-id="${goal.id}">Concluir</button>
                 ` : ''}
