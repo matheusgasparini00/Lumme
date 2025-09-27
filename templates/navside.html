@@ -5,8 +5,8 @@
 <nav id="sidebar" class="d-none d-md-flex flex-column">
     <div id="sidebar_content">
         <div id="user" class="text-center">
-            <img src="{% if usuario and usuario.avatar %}
-                        {{ url_for('static', filename=usuario.avatar) }}
+            <img src="{% if avatar %}
+                        {{ url_for('static', filename=avatar) }}
                       {% else %}
                         {{ url_for('static', filename='images/avatar.png') }}
                       {% endif %}" 
@@ -31,10 +31,10 @@
                     <span class="item_description">Notificações</span>
                 </a>
             </li>
-                <li class="side-iten">
+            <li class="side-iten">
                 <a href="#">
                     <i class="fa-solid fa-clock-rotate-left"></i>
-                <span class="item_description">Histórico</span>
+                    <span class="item_description">Histórico</span>
                 </a>
             </li>
             <li class="side-iten">

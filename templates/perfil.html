@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
-{# CSS desta página #}
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/perfil.css') }}">
 {% endblock %}
 
-{# Conteúdo #}
 {% block content %}
 <div class="main-content">
   <div class="perfil-container">
@@ -21,15 +19,10 @@
 
     <form method="post" enctype="multipart/form-data" class="perfil-form">
       <div class="perfil-avatar">
-        <!-- Clicar na imagem abre o input de arquivo -->
         <label for="avatar" class="avatar-label">
           <img
             id="avatarPreview"
-            src="{% if usuario.avatar %}
-                   {{ url_for('static', filename=usuario.avatar) }}
-                 {% else %}
-                   {{ url_for('static', filename='images/avatar.png') }}
-                 {% endif %}"
+            src="{{ url_for('static', filename=avatar or 'images/avatar.png') }}"
             alt="Avatar do Usuário">
         </label>
         <input type="file" id="avatar" name="avatar" accept="image/*" class="form-control" hidden>

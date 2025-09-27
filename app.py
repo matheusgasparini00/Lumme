@@ -871,6 +871,14 @@ def api_excluir_nota(note_id):
 def diario():
     return render_template('diario.html')
 
+@app.context_processor
+def inject_user_info():
+    return dict(
+        nome=session.get('nome'),
+        sobrenome=session.get('sobrenome'),
+        avatar=session.get('avatar') 
+    )
+
 @app.route('/perfil', methods=['GET', 'POST'])
 @login_obrigatorio
 def perfil():
@@ -961,6 +969,8 @@ def perfil():
         session['nome'] = novo_nome
         session['sobrenome'] = novo_sobrenome
         session['usuario'] = novo_email
+        if avatar_rel_path:
+            session['avatar'] = avatar_rel_path
 
         flash('Perfil atualizado com sucesso!', 'sucesso')
         cursor.close(); conn.close()
@@ -969,7 +979,6 @@ def perfil():
     usuario.pop('senha', None)
     cursor.close(); conn.close()
     return render_template('perfil.html', usuario=usuario)
-
 
 @app.route('/notificacoes')
 @login_obrigatorio
