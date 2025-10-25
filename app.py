@@ -1008,6 +1008,14 @@ def excluir_notificacao(notif_id):
     flash("Notificação excluída!", "sucesso")
     return redirect(url_for('notificacoes'))
 
+@app.route("/historico")
+def historico():
+    return render_template(
+        "historico.html",
+        nome=session.get("nome", "Usuário"),
+        sobrenome=session.get("sobrenome", ""),
+        avatar=session.get("avatar")
+    )
 
 @app.route('/configuracoes', methods=['GET', 'POST'])
 @login_obrigatorio
