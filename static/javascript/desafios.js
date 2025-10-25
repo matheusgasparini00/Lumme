@@ -1,70 +1,80 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const challenge1 = document.getElementById('challenge1');
-  const challenge2 = document.getElementById('challenge2');
-  const challenge3 = document.getElementById('challenge3');
-  const challenge4 = document.getElementById('challenge4');
-  const challenge5 = document.getElementById('challenge5');
   const progressText = document.getElementById('progressText');
+  const cardElems = Array.from(document.querySelectorAll('.challenge-card'));
 
-  let goals = [];
+  // Ordem oficial (para contagem de 5/5)
+  const CARD_ORDER = ['META_CREATED', 'PCT_25', 'PCT_50', 'PCT_75', 'PCT_100'];
 
-  function carregarMetas() {
-    fetch('/obter_metas', { credentials: 'same-origin' })
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          goals = data.map(m => ({
-            id: m.id,
-            name: m.name,
-            targetAmount: parseFloat(m.targetAmount) || 0,
-            currentAmount: parseFloat(m.currentAmount) || 0,
-            completed: (parseFloat(m.currentAmount) || 0) >= (parseFloat(m.targetAmount) || 1)
-          }));
-          verificarDesafios();
-        } else {
-          console.error('Erro ao carregar metas:', data?.mensagem || 'Dados inválidos');
-          progressText.textContent = 'Erro ao carregar dados.';
-        }
-      })
-      .catch(err => {
-        console.error('Erro ao buscar metas:', err);
-        progressText.textContent = 'Falha ao carregar progresso.';
-      });
-  }
+  function aplicarEstadoCards(codesSet) {
+    let completedCount = 0;
 
-  function verificarDesafios() {
-    const totalGoals = goals.length;
-    const hasGoals = totalGoals > 0;
+    cardElems.forEach(el => {
+      const code = el.dataset.cardCode;
+      const done = codesSet.has(code);
+      el.classList.toggle('completed', done);
+    });
 
-    const bestGoal = hasGoals
-      ? goals.reduce((a, b) => {
-          const progressA = a.targetAmount > 0 ? a.currentAmount / a.targetAmount : 0;
-          const progressB = b.targetAmount > 0 ? b.currentAmount / b.targetAmount : 0;
-          return progressA > progressB ? a : b;
-        })
-      : null;
-
-    const progress = bestGoal ? bestGoal.currentAmount / bestGoal.targetAmount : 0;
-    const completedGoals = goals.filter(g => g.completed).length;
-
-    challenge1.classList.toggle('completed', hasGoals);
-    challenge2.classList.toggle('completed', progress >= 0.25);
-    challenge3.classList.toggle('completed', progress >= 0.5);
-    challenge4.classList.toggle('completed', progress >= 0.75);
-    challenge5.classList.toggle('completed', completedGoals > 0);
-
-    const completedCount = [
-      hasGoals,
-      progress >= 0.25,
-      progress >= 0.5,
-      progress >= 0.75,
-      completedGoals > 0
-    ].filter(Boolean).length;
-
+    completedCount = CARD_ORDER.reduce((acc, code) => acc + (codesSet.has(code) ? 1 : 0), 0);
     progressText.textContent = `🎉 Você completou ${completedCount} de 5 desafios!`;
   }
 
-  carregarMetas();
+  async function carregarCards() {
+    try {
+      const res = await fetch('/metas/cards', { credentials: 'same-origin' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const rows = await res.json();
 
-  setInterval(carregarMetas, 3000);
+      // rows: [{ meta_id, code, label, threshold_percent, unlocked_at }, ...]
+      const codes = new Set(rows.map(r => r.code));
+      aplicarEstadoCards(codes);
+    } catch (e) {
+      // Fallback: se /metas/cards falhar, usa o progresso das metas
+      console.warn('Falha em /metas/cards, usando fallback /obter_metas:', e);
+      carregarFallbackPorMetas();
+    }
+  }
+
+  async function carregarFallbackPorMetas() {
+    try {
+      const res = await fetch('/obter_metas', { credentials: 'same-origin' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      if (!Array.isArray(data)) throw new Error('Formato inválido em /obter_metas');
+
+      const goals = data.map(m => ({
+        id: m.id,
+        target: parseFloat(m.targetAmount) || 0,
+        current: parseFloat(m.currentAmount) || 0
+      }));
+
+      const hasGoals = goals.length > 0;
+      const any100 = goals.some(g => g.target > 0 && g.current >= g.target);
+
+      // Melhor progresso entre as metas
+      const best = hasGoals ? goals.reduce((a, b) => {
+        const pa = a.target > 0 ? a.current / a.target : 0;
+        const pb = b.target > 0 ? b.current / b.target : 0;
+        return pa > pb ? a : b;
+      }) : null;
+
+      const pct = best && best.target > 0 ? (best.current / best.target) * 100 : 0;
+
+      const codes = new Set();
+      if (hasGoals) codes.add('META_CREATED');
+      if (pct >= 25) codes.add('PCT_25');
+      if (pct >= 50) codes.add('PCT_50');
+      if (pct >= 75) codes.add('PCT_75');
+      if (any100) codes.add('PCT_100');
+
+      aplicarEstadoCards(codes);
+    } catch (err) {
+      console.error('Erro no fallback /obter_metas:', err);
+      progressText.textContent = 'Falha ao carregar progresso.';
+    }
+  }
+
+  // Primeira carga e polling leve (a cada 3s)
+  carregarCards();
+  setInterval(carregarCards, 3000);
 });

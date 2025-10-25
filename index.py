@@ -24,20 +24,20 @@ TABLES = {
         """
     ),
 
-"orcamentos": (
-    """
-    CREATE TABLE orcamentos (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        usuario_id INT NOT NULL,
-        salario DECIMAL(10,2),
-        despesa_total DECIMAL(10,2),
-        superavit DECIMAL(10,2),
-        data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-        INDEX idx_usuario_mes (usuario_id, data_registro)
-    ) ENGINE=InnoDB
-    """
-),
+    "orcamentos": (
+        """
+        CREATE TABLE orcamentos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            usuario_id INT NOT NULL,
+            salario DECIMAL(10,2),
+            despesa_total DECIMAL(10,2),
+            superavit DECIMAL(10,2),
+            data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+            INDEX idx_usuario_mes (usuario_id, data_registro)
+        ) ENGINE=InnoDB
+        """
+    ),
 
     "orcamento_despesas": (
         """
@@ -111,6 +111,28 @@ TABLES = {
     )
 }
 
+TABLES["card_definitions"] = """
+CREATE TABLE card_definitions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  code VARCHAR(40) NOT NULL UNIQUE,       -- ex.: META_CREATED, PCT_25, PCT_50, PCT_75, PCT_100
+  label VARCHAR(100) NOT NULL,            -- ex.: "Meta criada", "25% da meta", etc.
+  threshold_percent TINYINT NOT NULL      -- 0, 25, 50, 75, 100
+) ENGINE=InnoDB
+"""
+
+TABLES["card_unlocks"] = """
+CREATE TABLE card_unlocks (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  meta_id INT NOT NULL,
+  card_code VARCHAR(40) NOT NULL,
+  unlocked_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_unlock (user_id, meta_id, card_code),
+  FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+  FOREIGN KEY (meta_id) REFERENCES metas(id) ON DELETE CASCADE
+) ENGINE=InnoDB
+"""
+
 
 def criar_banco(cursor):
     try:
@@ -132,6 +154,35 @@ def criar_tabelas(cnx):
                 print(f"Erro ao criar a tabela '{nome}': {err}")
     cursor.close()
 
+def seed_card_definitions(cnx):
+    cur = cnx.cursor()
+    cur.execute(
+        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=%s AND table_name='card_definitions'",
+        (DB_NAME,)
+    )
+    exists = cur.fetchone()[0]
+    cur.close()
+    if not exists:
+        return
+
+    cur = cnx.cursor()
+    cur.execute("SELECT COUNT(*) FROM card_definitions")
+    count = cur.fetchone()[0]
+    if count == 0:
+        cur.executemany(
+            "INSERT INTO card_definitions (code, label, threshold_percent) VALUES (%s,%s,%s)",
+            [
+                ("META_CREATED", "Meta criada", 0),
+                ("PCT_25", "25% da meta", 25),
+                ("PCT_50", "50% da meta", 50),
+                ("PCT_75", "75% da meta", 75),
+                ("PCT_100", "100% da meta", 100),
+            ]
+        )
+        cnx.commit()
+        print("Seed de card_definitions aplicado.")
+    cur.close()
+
 def main():
     try:
         cnx = mysql.connector.connect(**config)
@@ -147,6 +198,10 @@ def main():
                 criar_tabelas(cnx)
             else:
                 print(err)
+
+        criar_tabelas(cnx)
+        seed_card_definitions(cnx)
+
         cursor.close()
         cnx.close()
 

@@ -6,8 +6,9 @@ from mysql.connector import pooling, Error as MySQLError
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import re
-from datetime import date
+from datetime import date, datetime
 from werkzeug.utils import secure_filename
+from decimal import Decimal, InvalidOperation
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET', 'sua_chave_secreta_aqui')
@@ -36,7 +37,7 @@ _db_pool = pooling.MySQLConnectionPool(
     **_db_config
 )
 
-UPLOAD_FOLDER = os.path.join(app.root_path, "static", "uploads")  # <-- use root_path
+UPLOAD_FOLDER = os.path.join(app.root_path, "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -53,6 +54,50 @@ def conectar_banco():
         conn = _db_pool.get_connection()
         conn.ping(reconnect=True, attempts=1, delay=0)
     return conn
+
+# ========= HELPERS DE CARDS/DESAFIOS =========
+
+def _register_card_unlock(conn, user_id: int, meta_id: int, card_code: str):
+    """Registra um card liberado; ignora duplicados por UNIQUE KEY."""
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            INSERT IGNORE INTO card_unlocks (user_id, meta_id, card_code)
+            VALUES (%s, %s, %s)
+        """, (user_id, meta_id, card_code))
+        conn.commit()
+    finally:
+        cur.close()
+
+def _get_threshold_code(conn, threshold_percent: int) -> str:
+    """Obtém o code (ex.: PCT_25) dado o threshold_percent."""
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT code FROM card_definitions WHERE threshold_percent=%s", (threshold_percent,))
+        row = cur.fetchone()
+        return row[0] if row else None
+    finally:
+        cur.close()
+
+def _unlock_thresholds_if_crossed(conn, user_id: int, meta_id: int, prev_pct: float, new_pct: float):
+    """
+    Verifica marcos 25/50/75/100 e registra os cards que forem ultrapassados.
+    prev_pct e new_pct são percentuais de 0..100.
+    """
+    if prev_pct is None: prev_pct = 0.0
+    if new_pct is None: new_pct = 0.0
+    if prev_pct < 0: prev_pct = 0.0
+    if new_pct < 0: new_pct = 0.0
+    if prev_pct > 100: prev_pct = 100.0
+    if new_pct > 100: new_pct = 100.0
+
+    for t in (25, 50, 75, 100):
+        if prev_pct < t <= new_pct:
+            code = _get_threshold_code(conn, t)
+            if code:
+                _register_card_unlock(conn, user_id, meta_id, code)
+
+# ========= AUTENTICAÇÃO / UTILITÁRIOS =========
 
 def login_obrigatorio(f):
     @wraps(f)
@@ -120,11 +165,9 @@ def validar_data_nascimento(data_str):
     try:
         nascimento = datetime.strptime(data_str, "%Y-%m-%d").date()
         hoje = date.today()
-
         idade = hoje.year - nascimento.year - (
             (hoje.month, hoje.day) < (nascimento.month, nascimento.day)
         )
-
         return 12 <= idade <= 80
     except ValueError:
         return False
@@ -223,9 +266,7 @@ def login():
 
     return render_template('login.html')
 
-import re
-from decimal import Decimal, InvalidOperation
-
+# ========= Regras/limites de valores =========
 SALARIO_MAX = 1_000_000
 DESPESA_MAX = 1_000_000
 DESPESA_NOME_MIN = 3
@@ -250,10 +291,8 @@ def parse_num_brl(val):
     s = re.sub(r'[^\d,.\-]', '', s)
 
     if ',' in s and '.' in s:
-
         s = s.replace('.', '').replace(',', '.')
     elif ',' in s and '.' not in s:
-
         s = s.replace(',', '.')
 
     try:
@@ -371,8 +410,6 @@ def salvar_orcamentos():
         except:
             pass
 
-from datetime import date, datetime
-
 @app.route('/obter_orcamentos')
 def obter_orcamentos():
     if 'usuario_id' not in session:
@@ -463,7 +500,7 @@ def obter_orcamentos():
             conn.close()
         except:
             pass
-    
+
 @app.route('/relatorio_metas')
 @login_obrigatorio
 def relatorio_metas():
@@ -560,9 +597,15 @@ def salvar_meta():
             VALUES (%s, %s, %s)
         """, (usuario_id, titulo, valor_objetivo))
         conexao.commit()
+
+        meta_id = cursor.lastrowid
+
+        # Libera card "meta criada" (0%)
+        _register_card_unlock(conexao, usuario_id, meta_id, "META_CREATED")
+
         cursor.close()
         conexao.close()
-        return jsonify({'status': 'sucesso'})
+        return jsonify({'status': 'sucesso', 'meta_id': meta_id})
     except Exception as e:
         print("Erro ao salvar meta:", e)
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
@@ -659,8 +702,25 @@ def atualizar_meta():
 
     try:
         conexao = conectar_banco()
-        cursor = conexao.cursor()
+        cursor = conexao.cursor(dictionary=True)
 
+        # Carrega estado anterior para calcular percentuais
+        cursor.execute("""
+            SELECT valor_atual, valor_objetivo
+              FROM metas
+             WHERE id = %s AND usuario_id = %s
+             LIMIT 1
+        """, (meta_id, usuario_id))
+        row_prev = cursor.fetchone()
+        if not row_prev:
+            cursor.close(); conexao.close()
+            return jsonify({'status': 'erro', 'mensagem': 'Meta não encontrada'}), 404
+
+        prev_val_atual = float(row_prev['valor_atual'] or 0.0)
+        prev_val_obj   = float(row_prev['valor_objetivo'] or 0.0)
+        prev_pct = (prev_val_atual / prev_val_obj * 100.0) if prev_val_obj > 0 else 0.0
+
+        # Atualizações de título/objetivo
         if titulo is not None or valor_objetivo is not None:
             if titulo and len(titulo) > 40:
                 return jsonify({'status': 'erro', 'mensagem': 'O nome da meta deve ter no máximo 40 caracteres'}), 400
@@ -676,23 +736,39 @@ def atualizar_meta():
 
             cursor.execute("""
                 UPDATE metas
-                SET titulo = COALESCE(%s, titulo),
-                    valor_objetivo = COALESCE(%s, valor_objetivo)
-                WHERE id = %s AND usuario_id = %s
+                   SET titulo = COALESCE(%s, titulo),
+                       valor_objetivo = COALESCE(%s, valor_objetivo)
+                 WHERE id = %s AND usuario_id = %s
             """, (titulo if titulo else None, valor_objetivo, meta_id, usuario_id))
 
+            if valor_objetivo is not None:
+                prev_val_obj = float(valor_objetivo)
+
+        # Atualização de valor_atual e checagem de limiares
         if valor_atual is not None:
             try:
                 valor_atual = float(valor_atual)
             except (ValueError, TypeError):
+                cursor.close(); conexao.close()
                 return jsonify({'status': 'erro', 'mensagem': 'Valor atual inválido'}), 400
 
-            cursor.execute("""
-                UPDATE metas
-                SET valor_atual = %s
-                WHERE id = %s AND usuario_id = %s
-            """, (valor_atual, meta_id, usuario_id))
+            if valor_atual < 0:
+                valor_atual = 0.0
 
+            cursor2 = conexao.cursor()
+            cursor2.execute("""
+                UPDATE metas
+                   SET valor_atual = %s
+                 WHERE id = %s AND usuario_id = %s
+            """, (valor_atual, meta_id, usuario_id))
+            cursor2.close()
+
+            new_obj = prev_val_obj if valor_objetivo is None else float(valor_objetivo)
+            new_pct = (valor_atual / new_obj * 100.0) if new_obj > 0 else 0.0
+
+            _unlock_thresholds_if_crossed(conexao, usuario_id, meta_id, prev_pct, new_pct)
+
+        # Atualiza superávit (mantido como no seu código)
         cursor.execute("""
             SELECT salario, despesa_total
             FROM orcamentos
@@ -700,19 +776,24 @@ def atualizar_meta():
             ORDER BY data_registro DESC
             LIMIT 1
         """, (usuario_id,))
-        orcamento = cursor.fetchone() or (0,0)
-        salario, despesa_total = orcamento
+        orcamento = cursor.fetchone() or {"salario": 0, "despesa_total": 0}
+        salario = orcamento.get("salario", 0)
+        despesa_total = orcamento.get("despesa_total", 0)
 
-        cursor.execute("SELECT COALESCE(SUM(valor_atual),0) FROM metas WHERE usuario_id=%s", (usuario_id,))
-        total_metas = cursor.fetchone()[0] or 0
+        cursor2 = conexao.cursor()
+        cursor2.execute("SELECT COALESCE(SUM(valor_atual),0) FROM metas WHERE usuario_id=%s", (usuario_id,))
+        total_metas = cursor2.fetchone()[0] or 0
+        cursor2.close()
 
         superavit = float(salario) - float(despesa_total) - float(total_metas)
 
-        cursor.execute("""
+        cursor3 = conexao.cursor()
+        cursor3.execute("""
             UPDATE orcamentos
             SET superavit=%s, data_registro=NOW()
             WHERE usuario_id=%s
         """, (superavit, usuario_id))
+        cursor3.close()
 
         conexao.commit()
         cursor.close(); conexao.close()
@@ -769,6 +850,7 @@ def atualizar_superavit():
     except Exception as e:
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
+# ====== API Diário (inalterada exceto imports no topo) ======
 @app.route('/api/diario/notes', methods=['GET'])
 @login_obrigatorio
 def api_listar_notas():
@@ -1051,6 +1133,57 @@ def configuracoes():
 
     cursor.close(); conn.close()
     return render_template('configuracoes.html', config=config)
+
+# ===== NOVAS ROTAS: listar cards desbloqueados =====
+@app.route('/metas/<int:meta_id>/cards')
+@login_obrigatorio
+def listar_cards_da_meta(meta_id):
+    usuario_id = session.get('usuario_id')
+    cnx = conectar_banco()
+    cur = cnx.cursor(dictionary=True)
+    try:
+        cur.execute("""
+            SELECT cu.card_code AS code,
+                   cd.label,
+                   cd.threshold_percent,
+                   cu.unlocked_at
+              FROM card_unlocks cu
+              JOIN card_definitions cd ON cd.code = cu.card_code
+             WHERE cu.user_id = %s AND cu.meta_id = %s
+             ORDER BY cd.threshold_percent ASC, cu.unlocked_at ASC
+        """, (usuario_id, meta_id))
+        rows = cur.fetchall()
+        return jsonify(rows)
+    except Exception as e:
+        return jsonify({'status':'erro','mensagem': str(e)}), 500
+    finally:
+        cur.close(); cnx.close()
+
+@app.route('/metas/cards')
+@login_obrigatorio
+def listar_cards_do_usuario():
+    """Lista todos os cards desbloqueados do usuário, agrupáveis por meta."""
+    usuario_id = session.get('usuario_id')
+    cnx = conectar_banco()
+    cur = cnx.cursor(dictionary=True)
+    try:
+        cur.execute("""
+            SELECT cu.meta_id,
+                   cu.card_code AS code,
+                   cd.label,
+                   cd.threshold_percent,
+                   cu.unlocked_at
+              FROM card_unlocks cu
+              JOIN card_definitions cd ON cd.code = cu.card_code
+             WHERE cu.user_id = %s
+             ORDER BY cu.meta_id ASC, cd.threshold_percent ASC, cu.unlocked_at ASC
+        """, (usuario_id,))
+        rows = cur.fetchall()
+        return jsonify(rows)
+    except Exception as e:
+        return jsonify({'status':'erro','mensagem': str(e)}), 500
+    finally:
+        cur.close(); cnx.close()
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
