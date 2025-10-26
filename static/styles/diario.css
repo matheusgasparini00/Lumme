@@ -1,5 +1,6 @@
 :root {
   --cor-roxo: #4f46e5;
+  --cor-roxo-escuro: #312aa7; 
   --cor-amarelo: #e6d556;
   --bs-body-bg: #c5cbda;
 }
@@ -65,29 +66,12 @@
   transition: 0.2s;
 }
 
-#botoes-categorias button:hover.aliment {
-  background-color: #D1FA58;
-}
-
-#botoes-categorias button:hover.transp {
-  background-color: #FA953C;
-}
-
-#botoes-categorias button:hover.laz {
-  background-color: #FAD847;
-}
-
-#botoes-categorias button:hover.sau {
-  background-color: #ff4d3c;
-}
-
-#botoes-categorias button:hover.edu {
-  background-color: #57BFEE;
-}
-
-#botoes-categorias button:hover.out {
-  background-color: #686763;
-}
+#botoes-categorias button:hover.aliment { background-color: #D1FA58; }
+#botoes-categorias button:hover.transp  { background-color: #FA953C; }
+#botoes-categorias button:hover.laz     { background-color: #FAD847; }
+#botoes-categorias button:hover.sau     { background-color: #ff4d3c; }
+#botoes-categorias button:hover.edu     { background-color: #57BFEE; }
+#botoes-categorias button:hover.out     { background-color: #686763; }
 
 #botoes-categorias button.selecionado {
   background-color: var(--cor-roxo);
@@ -95,42 +79,12 @@
   border-color: var(--cor-roxo);
 }
 
-#botoes-categorias button.selecionado.aliment { 
-  background-color: #D1FA58; 
-  border-color: #000000; 
-  color: #fff;
-}
-
-#botoes-categorias button.selecionado.transp { 
-  background-color: #FA953C; 
-  border-color: #000000; 
-  color: #fff; 
-}
-
-#botoes-categorias button.selecionado.laz { 
-  background-color: #FAD847; 
-  border-color: #000000; 
-  color: #fff; 
-}
-
-#botoes-categorias button.selecionado.sau { 
-  background-color: #FF4D3C; 
-  border-color: #000000; 
-  color: #fff; 
-}
-
-#botoes-categorias button.selecionado.edu { 
-  background-color: #57BFEE; 
-  border-color: #000000; 
-  color: #fff; 
-}
-
-#botoes-categorias button.selecionado.out { 
-  background-color: #686763; 
-  border-color: #000000; 
-  color: #fff; 
-}
-
+#botoes-categorias button.selecionado.aliment { background-color: #D1FA58; border-color: #000; color: #fff; }
+#botoes-categorias button.selecionado.transp  { background-color: #FA953C; border-color: #000; color: #fff; }
+#botoes-categorias button.selecionado.laz     { background-color: #FAD847; border-color: #000; color: #fff; }
+#botoes-categorias button.selecionado.sau     { background-color: #FF4D3C; border-color: #000; color: #fff; }
+#botoes-categorias button.selecionado.edu     { background-color: #57BFEE; border-color: #000; color: #fff; }
+#botoes-categorias button.selecionado.out     { background-color: #686763; border-color: #000; color: #fff; }
 
 .note-form textarea {
   resize: none;
@@ -154,7 +108,7 @@
 }
 
 .note-form button:hover {
-  background-color: var(--cor-roxo);
+  background-color: var(--cor-roxo-escuro);
 }
 
 .notes-list {
@@ -174,7 +128,6 @@
   color: #333;
 }
 
-
 .category-section {
   margin-bottom: 30px;
 }
@@ -192,35 +145,12 @@
   max-width: 100%;
 }
 
-.category-section[data-category="Alimentação"] h3 {
-  color: #D1FA58;
-  border-bottom-color: #D1FA58;
-}
-
-.category-section[data-category="Transporte"] h3 {
-  color: #FA953C;
-  border-bottom-color: #FA953C;
-}
-
-.category-section[data-category="Lazer"] h3 {
-  color: #FAD847;
-  border-bottom-color: #FAD847;
-}
-
-.category-section[data-category="Saúde"] h3 {
-  color: #FF4D3C;
-  border-bottom-color: #FF4D3C;
-}
-
-.category-section[data-category="Educação"] h3 {
-  color: #57BFEE;
-  border-bottom-color: #57BFEE;
-}
-
-.category-section[data-category="Outros"] h3 {
-  color: #686763;
-  border-bottom-color: #686763;
-}
+.category-section[data-category="Alimentação"] h3 { color: #D1FA58; border-bottom-color: #D1FA58; }
+.category-section[data-category="Transporte"] h3 { color: #FA953C; border-bottom-color: #FA953C; }
+.category-section[data-category="Lazer"] h3      { color: #FAD847; border-bottom-color: #FAD847; }
+.category-section[data-category="Saúde"] h3      { color: #FF4D3C; border-bottom-color: #FF4D3C; }
+.category-section[data-category="Educação"] h3   { color: #57BFEE; border-bottom-color: #57BFEE; }
+.category-section[data-category="Outros"] h3     { color: #686763; border-bottom-color: #686763; }
 
 .note-item {
   background: #f3f3f3;
@@ -231,8 +161,6 @@
   position: relative;
   overflow: hidden;
   word-wrap: break-word;
-  word-break: break-word;
-  overflow-wrap: break-word;
   white-space: normal;
 }
 
@@ -243,13 +171,11 @@
 .note-item.cat-educacao    { border-left-color: #57BFEE; background: #e3f2fd; }
 .note-item.cat-outros      { border-left-color: #686763; background: #f5f5f5; }
 
-
 .note-item h4 {
   margin: 0 0 8px;
   font-size: 1.2rem;
   color: #2c3e50;
   word-break: break-word;
-  overflow-wrap: break-word;
   max-width: calc(100% - 60px);
   hyphens: auto;
 }
@@ -260,62 +186,73 @@
   color: #444;
   white-space: pre-wrap;
   word-break: break-word;
-  overflow-wrap: break-word;
-  max-width: 100%;
-  overflow: hidden;
   padding-right: 60px;
 }
 
-
 .note-item button.edit-btn {
-  position: static;
-  margin: 0;
-  background-color: var(--cor-roxo);
-  color: #fff;
+  background: none;
   border: none;
-  padding: 5px 10px;
-  font-size: 0.9rem;
-  border-radius: 5px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.2s ease, transform 0.05s ease;
+}
+
+.note-item button.edit-btn i {
+  color: #4f46e5; 
+  font-size: 1.2rem;
+}
+
+.note-item button.edit-btn:hover i {
+  color: #312aa7; 
+}
+
+.note-item button.edit-btn:active {
+  transform: scale(0.95);
 }
 
 .note-item button.delete-btn {
-  background-color: transparent !important;
+  background: transparent !important;
   border: none;
-  padding: 0; 
-  color: #c0392b;
-  font-size: 1.2rem; 
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color .25s ease, transform .05s ease;
+  padding: 0;
+  color: #c0392b;
 }
 
 .note-item button.delete-btn i {
-  font-size: 1.2rem; 
+  font-size: 1.1rem;
   color: #c0392b;
 }
 
+.note-item button.delete-btn:hover {
+  background-color: rgba(192,57,43,.12);
+}
 
-.delete-btn i {
-  font-size: 20px !important;
-  color: #c0392b !important; 
-  line-height: 1; 
+.note-item button.delete-btn:active {
+  transform: translateY(1px);
 }
 
 @media (max-width: 768px) {
   .main-content {
     padding: 80px 20px 20px 20px;
   }
-  
+
   .note-wrapper {
     flex-direction: column;
     gap: 20px;
   }
-  
+
   .note-editor {
     max-width: 100%;
   }
-  
+
   @media (max-width: 480px) {
     .footer-links {
       flex-direction: column;

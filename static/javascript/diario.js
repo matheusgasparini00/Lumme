@@ -57,10 +57,12 @@ document.addEventListener("DOMContentLoaded", () => {
         noteContent.textContent = n.texto;
         noteContent.style.whiteSpace = "pre-wrap";
 
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Editar";
-        editBtn.className = "edit-btn";
-        editBtn.addEventListener("click", () => {
+          const editBtn = document.createElement("button");
+          editBtn.className = "edit-btn";
+          editBtn.innerHTML = '<i class="fas fa-edit" aria-hidden="true"></i>';
+          editBtn.setAttribute("aria-label", "Editar");
+          editBtn.title = "Editar";
+          editBtn.addEventListener("click", () => {
           inputCategoria.value = n.categoria;
           titleInput.value = n.titulo;
           contentInput.value = n.texto;

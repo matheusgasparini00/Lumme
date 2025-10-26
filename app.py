@@ -55,8 +55,6 @@ def conectar_banco():
         conn.ping(reconnect=True, attempts=1, delay=0)
     return conn
 
-# ========= HELPERS DE CARDS/DESAFIOS =========
-
 def _register_card_unlock(conn, user_id: int, meta_id: int, card_code: str):
     """Registra um card liberado; ignora duplicados por UNIQUE KEY."""
     cur = conn.cursor()
@@ -96,8 +94,6 @@ def _unlock_thresholds_if_crossed(conn, user_id: int, meta_id: int, prev_pct: fl
             code = _get_threshold_code(conn, t)
             if code:
                 _register_card_unlock(conn, user_id, meta_id, code)
-
-# ========= AUTENTICAÇÃO / UTILITÁRIOS =========
 
 def login_obrigatorio(f):
     @wraps(f)
@@ -266,7 +262,6 @@ def login():
 
     return render_template('login.html')
 
-# ========= Regras/limites de valores =========
 SALARIO_MAX = 1_000_000
 DESPESA_MAX = 1_000_000
 DESPESA_NOME_MIN = 3
@@ -600,7 +595,6 @@ def salvar_meta():
 
         meta_id = cursor.lastrowid
 
-        # Libera card "meta criada" (0%)
         _register_card_unlock(conexao, usuario_id, meta_id, "META_CREATED")
 
         cursor.close()
@@ -704,7 +698,6 @@ def atualizar_meta():
         conexao = conectar_banco()
         cursor = conexao.cursor(dictionary=True)
 
-        # Carrega estado anterior para calcular percentuais
         cursor.execute("""
             SELECT valor_atual, valor_objetivo
               FROM metas
@@ -720,7 +713,6 @@ def atualizar_meta():
         prev_val_obj   = float(row_prev['valor_objetivo'] or 0.0)
         prev_pct = (prev_val_atual / prev_val_obj * 100.0) if prev_val_obj > 0 else 0.0
 
-        # Atualizações de título/objetivo
         if titulo is not None or valor_objetivo is not None:
             if titulo and len(titulo) > 40:
                 return jsonify({'status': 'erro', 'mensagem': 'O nome da meta deve ter no máximo 40 caracteres'}), 400
@@ -744,7 +736,6 @@ def atualizar_meta():
             if valor_objetivo is not None:
                 prev_val_obj = float(valor_objetivo)
 
-        # Atualização de valor_atual e checagem de limiares
         if valor_atual is not None:
             try:
                 valor_atual = float(valor_atual)
@@ -768,7 +759,6 @@ def atualizar_meta():
 
             _unlock_thresholds_if_crossed(conexao, usuario_id, meta_id, prev_pct, new_pct)
 
-        # Atualiza superávit (mantido como no seu código)
         cursor.execute("""
             SELECT salario, despesa_total
             FROM orcamentos
@@ -850,7 +840,6 @@ def atualizar_superavit():
     except Exception as e:
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
 
-# ====== API Diário (inalterada exceto imports no topo) ======
 @app.route('/api/diario/notes', methods=['GET'])
 @login_obrigatorio
 def api_listar_notas():
@@ -1134,7 +1123,6 @@ def configuracoes():
     cursor.close(); conn.close()
     return render_template('configuracoes.html', config=config)
 
-# ===== NOVAS ROTAS: listar cards desbloqueados =====
 @app.route('/metas/<int:meta_id>/cards')
 @login_obrigatorio
 def listar_cards_da_meta(meta_id):
