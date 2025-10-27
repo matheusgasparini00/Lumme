@@ -66,7 +66,7 @@
   transition: 0.2s;
 }
 
-#botoes-categorias button:hover.aliment { background-color: #D1FA58; }
+#botoes-categorias button:hover.aliment { background-color: #a5d516; }
 #botoes-categorias button:hover.transp  { background-color: #FA953C; }
 #botoes-categorias button:hover.laz     { background-color: #FAD847; }
 #botoes-categorias button:hover.sau     { background-color: #ff4d3c; }
@@ -79,7 +79,7 @@
   border-color: var(--cor-roxo);
 }
 
-#botoes-categorias button.selecionado.aliment { background-color: #D1FA58; border-color: #000; color: #fff; }
+#botoes-categorias button.selecionado.aliment { background-color: #a5d516; border-color: #000; color: #fff; }
 #botoes-categorias button.selecionado.transp  { background-color: #FA953C; border-color: #000; color: #fff; }
 #botoes-categorias button.selecionado.laz     { background-color: #FAD847; border-color: #000; color: #fff; }
 #botoes-categorias button.selecionado.sau     { background-color: #FF4D3C; border-color: #000; color: #fff; }
@@ -145,7 +145,7 @@
   max-width: 100%;
 }
 
-.category-section[data-category="Alimentação"] h3 { color: #D1FA58; border-bottom-color: #D1FA58; }
+.category-section[data-category="Alimentação"] h3 { color: #a5d516; border-bottom-color: #D1FA58; }
 .category-section[data-category="Transporte"] h3 { color: #FA953C; border-bottom-color: #FA953C; }
 .category-section[data-category="Lazer"] h3      { color: #FAD847; border-bottom-color: #FAD847; }
 .category-section[data-category="Saúde"] h3      { color: #FF4D3C; border-bottom-color: #FF4D3C; }
@@ -164,7 +164,7 @@
   white-space: normal;
 }
 
-.note-item.cat-alimentacao { border-left-color: #D1FA58; background: #f9fbe7; }
+.note-item.cat-alimentacao { border-left-color: #a5d516; background: #f9fbe7; }
 .note-item.cat-transporte  { border-left-color: #FA953C; background: #fff3e0; }
 .note-item.cat-lazer       { border-left-color: #FAD847; background: #fffde7; }
 .note-item.cat-saude       { border-left-color: #FF4D3C; background: #ffebee; }
