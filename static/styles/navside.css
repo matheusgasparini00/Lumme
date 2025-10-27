@@ -38,6 +38,7 @@ header {
   list-style: none;
   gap: 24px;
   align-items: center;
+  font-size: 28px;
 }
 
 .navbar-nav .nav-link {

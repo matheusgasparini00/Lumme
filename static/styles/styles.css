@@ -94,10 +94,10 @@ main#content {
 
 #cta .title {
     color: var(--cor-roxo);
-    font-size: 60px;
+    font-size: 80px;
     margin-top: 50px;
     white-space: nowrap;
-    text-align: left;
+    text-align: left;
 
 }
 

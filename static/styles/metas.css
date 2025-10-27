@@ -36,6 +36,10 @@ h1 {
     font-weight: 600;
 }
 
+.container h3 {
+    color: var(--cor-roxo);
+}
+
 .surplus-section {
     display: flex;
     justify-content: space-between;

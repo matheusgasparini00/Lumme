@@ -117,7 +117,7 @@
 }
 
 .salary-box:focus {
-  border-color: var(--cor-amarelo, #e6d556);
+  border-color: var(--cor-roxo);
 }
 
 #add-salary-btn {
