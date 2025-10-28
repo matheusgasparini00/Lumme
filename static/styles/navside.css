@@ -1,3 +1,5 @@
+:root { --nav-font-size: 26px; }
+
 :root {
   --cor-roxo: #4f46e5;
   --cor-amarelo: #e6d556;
@@ -6,6 +8,8 @@
   --sidebar-collapsed: 82px;
   --sidebar-expanded: 220px;
 }
+
+.navbar #nav_list .nav-link { font-size: var(--nav-font-size) !important; }
 
 header {
   position: fixed;
@@ -38,7 +42,7 @@ header {
   list-style: none;
   gap: 24px;
   align-items: center;
-  font-size: 28px;
+  font-size: var(--nav-font-size);
 }
 
 .navbar-nav .nav-link {

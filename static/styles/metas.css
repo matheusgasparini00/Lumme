@@ -1,7 +1,7 @@
 :root {
   --cor-roxo: #4f46e5;
   --cor-amarelo: #e6d556;
-  --bs-body-bg: #c5cbda;
+  --bs-body-bg: #edeeef;
   --cor-money: #059669; 
   --cor-roxo_fundo: #312aa7;
 }
@@ -103,6 +103,16 @@ input[type="number"] {
     box-shadow: 0 0 5px var(--cor-roxo); 
     border-radius: 5px;
     font-size: 16px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button{
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
 }
 
 .form-actions {
