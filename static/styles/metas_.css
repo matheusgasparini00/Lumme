@@ -1,7 +1,7 @@
 :root {
   --cor-roxo: #4f46e5;
   --cor-amarelo: #e6d556;
-  --bs-body-bg: #c5cbda;
+  --cor-fundo1: #c5cbda;
   --cor-money: #059669; 
   --cor-roxo_fundo: #312aa7;
 }
@@ -14,7 +14,7 @@
 }
 
 body {
-    background-color: var(--bs-body-bg);
+    background-color: var(--cor-fundo1);
     color: var(--cor-roxo);
     line-height: 1.6;
     padding: 20px;
@@ -22,7 +22,7 @@ body {
 
 .container {
     max-width: 800px;
-    margin: clamp(60px, 10vh, 100px) auto 0 auto;
+    margin: 0 auto;
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -34,10 +34,6 @@ h1 {
     text-align: center;
     margin-bottom: 30px;
     font-weight: 600;
-}
-
-.container h3 {
-    color: var(--cor-roxo);
 }
 
 .surplus-section {
@@ -95,14 +91,6 @@ label {
     font-weight: 500;
 }
 
-input[type="text"]{
-    margin-left: 13px;
-}
-
-input[type="number"]{
-    margin-left: 20px;
-}
-
 input[type="text"],
 input[type="number"] {
     width: 40%;
@@ -111,16 +99,6 @@ input[type="number"] {
     box-shadow: 0 0 5px var(--cor-roxo); 
     border-radius: 5px;
     font-size: 16px;
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button{
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type=number] {
-    -moz-appearance: textfield;
 }
 
 .form-actions {
@@ -267,7 +245,7 @@ input[type=number] {
 
 @media (max-width: 600px) {
     .container {
-        padding: 80px;
+        padding: 15px;
     }
 
     .surplus-section {
@@ -300,66 +278,4 @@ input[type=number] {
 
 .delete-button:hover {
   color: #d9363e;
-}
-
-.edit-button, .save-button, .cancel-edit-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 0.25rem;
-  transition: color 0.2s;
-  font-size: 1.2rem;
-}
-
-.edit-button i {
-  color: #4f46e5;
-}
-.edit-button i:hover {
-  color: #3730a3;
-}
-
-.save-button i {
-  color: #059669;
-}
-.save-button i:hover {
-  color: #047857;
-}
-
-.cancel-edit-button i {
-  color: #dc2626;
-}
-.cancel-edit-button i:hover {
-  color: #b91c1c;
-}
-
-.edit-button, .save-button, .cancel-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 0.25rem;
-  transition: color 0.2s;
-  font-size: 1.2rem;
-}
-
-.save-button i {
-  color: #059669;
-}
-.save-button i:hover {
-  color: #047857;
-}
-
-.cancel-button i {
-  color: #dc2626; 
-}
-.cancel-button i:hover {
-  color: #b91c1c;
-}
-
-.edit-button i {
-  color: var(--cor-roxo);
-}
-.edit-button i:hover {
-  color: var(--cor-roxo_fundo);
 }
