@@ -86,31 +86,38 @@ h1 {
 }
 
 .form-group {
-    margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
 label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-}
-
-input[type="text"]{
-    margin-left: 13px;
-}
-
-input[type="number"]{
-    margin-left: 20px;
+  flex: 0 0 150px;              /* largura fixa do rótulo */
+  font-weight: 600;
+  color: #111;
 }
 
 input[type="text"],
 input[type="number"] {
-    width: 40%;
-    padding: 10px;
-    border: 1px solid var(--cor-roxo);
-    box-shadow: 0 0 5px var(--cor-roxo); 
-    border-radius: 5px;
-    font-size: 16px;
+  width: 40%;
+  padding: 10px 12px;
+  border: 2px solid var(--cor-roxo);
+  border-radius: 6px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 5px var(--cor-roxo);
+  color: #333;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  border-color: var(--cor-roxo_fundo);
+  box-shadow: 0 0 6px var(--cor-roxo_fundo);
+  outline: none;
+}
+
+::placeholder {
+  color: #777;
 }
 
 input::-webkit-outer-spin-button,
@@ -122,6 +129,7 @@ input::-webkit-inner-spin-button{
 input[type=number] {
     -moz-appearance: textfield;
 }
+
 
 .form-actions {
     display: flex;
