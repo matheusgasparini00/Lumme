@@ -53,7 +53,7 @@
   font-size: 1.125rem;
   font-weight: 600;
   color: #374151;
-  margin: 0 0 1rem 0; /* uniformiza os títulos */
+  margin: 0 0 1rem 0; 
 }
 
 .circular-field {
@@ -82,7 +82,6 @@
   justify-content: center;
 }
 
-/* Salário e Despesas: mesmo tamanho e alinhamento */
 .salary-border,
 .expenses-border {
   width: 8rem;
@@ -99,7 +98,6 @@
   transform: none !important;
 }
 
-/* Mantém o Superávit destacado */
 .surplus-border {
   border-color: #ade4c0;
   transform: scale(1.2) translateY(25px);
@@ -458,3 +456,27 @@
   font-size: 0.95rem;
   max-width: 140px;
 }
+
+:root {
+  --nav-font-size: 26px; 
+  --nav-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+#navbar { font-size: 0 !important; }
+#navbar * { font-family: var(--nav-font-family) !important; }
+
+#navbar .navbar-brand {
+  font-size: calc(var(--nav-font-size) + 2px) !important;
+  line-height: 1.2 !important;
+}
+
+#navbar .navbar-nav .nav-link,
+#nav_list .nav-link {
+  font-size: var(--nav-font-size) !important;
+  line-height: 1.2 !important;
+}
+
+#nav_list { font-size: initial !important; }
+
+
+

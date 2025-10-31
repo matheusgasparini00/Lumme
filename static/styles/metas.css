@@ -393,16 +393,12 @@ input[type=number] {
   color: var(--cor-roxo_fundo);
 }
 
-/* ---- Form meta: alinhar inputs à esquerda quando o label estiver vazio ---- */
-
-/* Layout flex sem largura fixa no input */
 .form-group {
   display: flex;
   align-items: center;
-  gap: 12px;            /* espaçamento entre label e input */
+  gap: 12px;            
 }
 
-/* Mantém largura fixa só quando houver label */
 label {
   flex: 0 0 150px;
 }
@@ -413,34 +409,43 @@ label {
   width: auto;
 }
 
-/* Se o label estiver vazio, some e o input cola à esquerda */
 .form-group label:empty {
   display: none;
 }
 
-/* Quando o label some, o input ocupa 100% sem recuo */
 .form-group label:empty + input[type="text"],
 .form-group label:empty + input[type="number"] {
   flex: 1 1 100%;
 }
 
-/* (Opcional) reduzir gap quando não houver label */
 .form-group:has(label:empty) {
   gap: 0;
 }
 
-/* Placeholders um pouco mais descritivos quando não há label */
 #goalName::placeholder {
-  content: none; /* só pra clareza: mantemos o seu placeholder */
+  content: none; 
 }
 #goalAmount::placeholder {
   content: none;
 }
 
-/* Responsivo: em telas pequenas, inputs 100% mesmo com label */
 @media (max-width: 600px) {
   label { flex: 0 0 120px; }
   .form-group input[type="text"],
   .form-group input[type="number"] { min-width: 0; }
 }
 
+header #navbar { font-size: 0 !important; } 
+
+#navbar .navbar-brand {
+  font-size: 24px !important;
+  line-height: 1.2 !important;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif !important;
+}
+
+#navbar .navbar-nav .nav-link,
+#nav_list .nav-link {
+  font-size: 22px !important;
+  line-height: 1.2 !important;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif !important;
+}

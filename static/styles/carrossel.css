@@ -4,7 +4,6 @@
   --bs-body-bg: #c5cbda;
 }
 
-/* Layout base */
 .wrapper {
   margin: 100px 0 0 0;
   position: relative;
@@ -25,7 +24,6 @@
   gap: 10px;
 }
 
-/* (Se você tiver botões próprios) */
 .carousel-btn {
   background-color: var(--cor-roxo);
   color: white;
@@ -53,17 +51,12 @@
   gap: 20px;
 }
 
-/* ===============================
-   IGUALAR ALTURAS DOS CARDS
-   =============================== */
-
-/* Faz as colunas esticarem e os cards ocuparem 100% da altura da coluna */
 #multiCardCarousel .carousel-item .row {
-  align-items: stretch; /* estica as colunas na mesma altura */
+  align-items: stretch; 
 }
 
 #multiCardCarousel .carousel-item [class*="col-"] {
-  display: flex;        /* transforma a coluna em flex */
+  display: flex;        
 }
 
 #multiCardCarousel .card {
@@ -75,16 +68,15 @@
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 
-  /* chave para padronizar tamanho */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* centraliza o conteúdo verticalmente */
+  justify-content: center; 
   align-items: center;
   gap: 8px;
 
   padding: 24px;
-  min-height: 200px;   /* altura mínima padrão para todos */
-  height: 100%;        /* ocupa a altura total da coluna */
+  min-height: 200px;   
+  height: 100%;        
   transition: transform .2s ease, box-shadow .2s ease;
 }
 
@@ -93,7 +85,6 @@
   box-shadow: 0 8px 18px rgba(0,0,0,0.12);
 }
 
-/* Tipografia */
 #multiCardCarousel .card h5 {
   font-size: 22px;
   margin: 0 0 6px 0;
@@ -110,11 +101,6 @@
   padding: 0 6px;
 }
 
-/* ===============================
-   RESPONSIVIDADE
-   =============================== */
-
-/* <= 1200px: abre um pouco o wrapper */
 @media (max-width: 1200px) {
   .wrapper {
     max-width: 88%;
@@ -122,7 +108,6 @@
   }
 }
 
-/* <= 992px (md): ocupar largura total e remover deslocamento */
 @media (max-width: 992px) {
   .wrapper {
     max-width: 100%;
@@ -131,7 +116,6 @@
     overflow: visible;
   }
 
-  /* cards um pouco mais compactos */
   #multiCardCarousel .card {
     min-height: 180px;
     padding: 20px;
@@ -145,7 +129,6 @@
   }
 }
 
-/* <= 768px (sm): cartas mais baixas + tipografia menor */
 @media (max-width: 768px) {
   #multiCardCarousel .card {
     min-height: 160px;
@@ -159,7 +142,6 @@
   }
 }
 
-/* <= 576px (xs): ocupa toda a largura; remove quaisquer limits */
 @media (max-width: 576px) {
   .wrapper {
     margin-top: 40px;

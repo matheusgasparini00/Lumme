@@ -193,3 +193,18 @@ h1 {
 }
 
 }
+
+header #navbar { font-size: 0 !important; } 
+
+#navbar .navbar-brand {
+  font-size: 24px !important;
+  line-height: 1.2 !important;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif !important;
+}
+
+#navbar .navbar-nav .nav-link,
+#nav_list .nav-link {
+  font-size: 22px !important;
+  line-height: 1.2 !important;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif !important;
+}

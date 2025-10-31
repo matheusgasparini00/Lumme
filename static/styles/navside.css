@@ -7,9 +7,6 @@
   --sidebar-expanded: 220px;
 }
 
-.navbar #nav_list .nav-link { 
-  font-size: 22px !important; }
-
 header {
   position: fixed;
   top: 0;
@@ -34,14 +31,6 @@ header {
   height: 56px;        
   width: auto;
   display: block;
-}
-
-#nav_list {
-  display: flex;
-  list-style: none;
-  gap: 24px;
-  align-items: center;
-  font-size: var(--nav-font-size);
 }
 
 .navbar-nav .nav-link {
@@ -279,3 +268,26 @@ header {
 .offcanvas-body .nav-link.active i {
   color: #fff;
 }
+
+:root{
+  --nav-font-size: 28px; 
+  --nav-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+header #navbar, #navbar { font-size: 0 !important; }
+header #navbar *, #navbar * { font-family: var(--nav-font-family) !important; }
+
+header #navbar .navbar-brand,
+#navbar .navbar-brand {
+  font-size: calc(var(--nav-font-size) + 2px) !important;
+  line-height: 1.2 !important;
+}
+
+header #navbar .navbar-nav .nav-link,
+#navbar .navbar-nav .nav-link,
+#nav_list .nav-link {
+  font-size: var(--nav-font-size) !important;
+  line-height: 1.2 !important;
+}
+
+#nav_list { font-size: initial !important; }
