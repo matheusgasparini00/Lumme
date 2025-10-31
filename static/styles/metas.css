@@ -80,6 +80,27 @@ h1 {
     animation: fadeIn 0.3s ease-in-out;
 }
 
+#goalName {
+  width: 495px;
+  flex: 0 0 495px;
+  max-width: 100%;
+}
+
+#goalAmount {
+  width: 495px;
+  flex: 0 0 495px;
+  max-width: 100%;
+}
+
+@media (max-width: 520px) {
+  #goalName,
+  #goalAmount {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+}
+
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -371,3 +392,55 @@ input[type=number] {
 .edit-button i:hover {
   color: var(--cor-roxo_fundo);
 }
+
+/* ---- Form meta: alinhar inputs à esquerda quando o label estiver vazio ---- */
+
+/* Layout flex sem largura fixa no input */
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;            /* espaçamento entre label e input */
+}
+
+/* Mantém largura fixa só quando houver label */
+label {
+  flex: 0 0 150px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+/* Se o label estiver vazio, some e o input cola à esquerda */
+.form-group label:empty {
+  display: none;
+}
+
+/* Quando o label some, o input ocupa 100% sem recuo */
+.form-group label:empty + input[type="text"],
+.form-group label:empty + input[type="number"] {
+  flex: 1 1 100%;
+}
+
+/* (Opcional) reduzir gap quando não houver label */
+.form-group:has(label:empty) {
+  gap: 0;
+}
+
+/* Placeholders um pouco mais descritivos quando não há label */
+#goalName::placeholder {
+  content: none; /* só pra clareza: mantemos o seu placeholder */
+}
+#goalAmount::placeholder {
+  content: none;
+}
+
+/* Responsivo: em telas pequenas, inputs 100% mesmo com label */
+@media (max-width: 600px) {
+  label { flex: 0 0 120px; }
+  .form-group input[type="text"],
+  .form-group input[type="number"] { min-width: 0; }
+}
+
