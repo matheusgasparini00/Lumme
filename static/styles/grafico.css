@@ -53,7 +53,7 @@
   font-size: 1.125rem;
   font-weight: 600;
   color: #374151;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem 0; /* uniformiza os títulos */
 }
 
 .circular-field {
@@ -61,6 +61,9 @@
   width: 8rem;
   height: 8rem;
   margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .circular-border {
@@ -77,6 +80,34 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Salário e Despesas: mesmo tamanho e alinhamento */
+.salary-border,
+.expenses-border {
+  width: 8rem;
+  height: 8rem;
+  border-width: 5px;
+  transform: none !important;
+}
+
+.salary-inner,
+.expenses-inner {
+  inset: 0.5rem;
+  width: calc(8rem - 1rem);
+  height: calc(8rem - 1rem);
+  transform: none !important;
+}
+
+/* Mantém o Superávit destacado */
+.surplus-border {
+  border-color: #ade4c0;
+  transform: scale(1.2) translateY(25px);
+}
+
+.surplus-inner {
+  background-color: #dcfce7fd;
+  transform: scale(1.2) translateY(25px);
 }
 
 .salary-border {
@@ -135,57 +166,8 @@
   text-align: center;
 }
 
-.input-wrapper {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc; 
-  border-radius: 8px;
-  padding: 6px 10px;
-  background: #fff;
-  max-width: 250px;
-}
-
-.input-wrapper input {
-  border: none;
-  outline: none;
-  flex: 1;
-  font-size: 1rem;
-}
-
-.prefix {
-  font-weight: bold;
-  color: #444;
-  margin-right: 6px;
-  white-space: nowrap;
-}
-
 #add-salary-btn:hover {
   background-color: #3730a3;  
-}
-
-.circular-card .progress-bar {
-  width: 100%;
-  height: 0.5rem;
-  background-color: #e5e7eb;
-  border-radius: 0.25rem;
-  overflow: hidden;
-  margin-top: 4.5rem; 
-}
-
-.circular-card .progress-text {
-  font-size: 0.875rem;
-  color: var(--cor-roxo);
-  margin-top: 0.75rem; 
-}
-
-.surplus-inner {
-  background-color: #dcfce7fd;
-  transform: scale(1.2) translateY(25px); 
-}
-
-.surplus-border {
-  border-color: #ade4c0;
-  transform: scale(1.2) translateY(25px); 
 }
 
 .expenses-border {
@@ -208,7 +190,7 @@
   background-color: #e5e7eb;
   border-radius: 0.25rem;
   overflow: hidden;
-  margin-top: 0.5rem;
+  margin-top: 4rem;
 }
 
 .progress-fill {
@@ -221,14 +203,6 @@
   font-size: 0.875rem;
   color: #6b7280;
   margin-top: 0.5rem;
-}
-
-.surplus-border {
-  border-color: #ade4c0;
-}
-
-.surplus-inner {
-  background-color: #dcfce7fd;
 }
 
 .surplus-value {
