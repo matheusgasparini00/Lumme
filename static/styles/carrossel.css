@@ -4,7 +4,8 @@
   --bs-body-bg: #c5cbda;
 }
 
-.wrapper {  
+/* Layout base */
+.wrapper {
   margin: 100px 0 0 0;
   position: relative;
   display: flex;
@@ -24,6 +25,7 @@
   gap: 10px;
 }
 
+/* (Se você tiver botões próprios) */
 .carousel-btn {
   background-color: var(--cor-roxo);
   color: white;
@@ -39,7 +41,6 @@
   z-index: 1;
 }
 
-
 .carousel-track-container {
   overflow: hidden;
   width: 66%;
@@ -52,18 +53,135 @@
   gap: 20px;
 }
 
+/* ===============================
+   IGUALAR ALTURAS DOS CARDS
+   =============================== */
+
+/* Faz as colunas esticarem e os cards ocuparem 100% da altura da coluna */
+#multiCardCarousel .carousel-item .row {
+  align-items: stretch; /* estica as colunas na mesma altura */
+}
+
+#multiCardCarousel .carousel-item [class*="col-"] {
+  display: flex;        /* transforma a coluna em flex */
+}
+
 #multiCardCarousel .card {
-  background-color: #ffffff;  
-  color: var(--cor-roxo);      
+  background-color: #ffffff;
+  min-height: 200px;
+  height: 200px;
+  color: var(--cor-roxo);
   border: 0;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
+  /* chave para padronizar tamanho */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* centraliza o conteúdo verticalmente */
+  align-items: center;
+  gap: 8px;
+
+  padding: 24px;
+  min-height: 200px;   /* altura mínima padrão para todos */
+  height: 100%;        /* ocupa a altura total da coluna */
+  transition: transform .2s ease, box-shadow .2s ease;
 }
 
-#multiCardCarousel .card h3 {
-  font-size: 30px;
-  margin-bottom: 10px;
-
+#multiCardCarousel .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
 }
+
+/* Tipografia */
+#multiCardCarousel .card h5 {
+  font-size: 22px;
+  margin: 0 0 6px 0;
+  font-weight: 600;
+  text-align: center;
+}
+
 #multiCardCarousel .card p {
-  font-size: 20px;
+  font-size: 18px;
   color: #333;
+  margin: 0;
+  text-align: center;
+  line-height: 1.4;
+  padding: 0 6px;
+}
+
+/* ===============================
+   RESPONSIVIDADE
+   =============================== */
+
+/* <= 1200px: abre um pouco o wrapper */
+@media (max-width: 1200px) {
+  .wrapper {
+    max-width: 88%;
+    transform: translateX(-40px);
+  }
+}
+
+/* <= 992px (md): ocupar largura total e remover deslocamento */
+@media (max-width: 992px) {
+  .wrapper {
+    max-width: 100%;
+    transform: none;
+    margin-top: 60px;
+    overflow: visible;
+  }
+
+  /* cards um pouco mais compactos */
+  #multiCardCarousel .card {
+    min-height: 180px;
+    padding: 20px;
+  }
+
+  #multiCardCarousel .card h5 {
+    font-size: 20px;
+  }
+  #multiCardCarousel .card p {
+    font-size: 16px;
+  }
+}
+
+/* <= 768px (sm): cartas mais baixas + tipografia menor */
+@media (max-width: 768px) {
+  #multiCardCarousel .card {
+    min-height: 160px;
+    padding: 18px;
+  }
+  #multiCardCarousel .card h5 {
+    font-size: 18px;
+  }
+  #multiCardCarousel .card p {
+    font-size: 15px;
+  }
+}
+
+/* <= 576px (xs): ocupa toda a largura; remove quaisquer limits */
+@media (max-width: 576px) {
+  .wrapper {
+    margin-top: 40px;
+    max-width: 100%;
+  }
+  #multiCardCarousel .card {
+    min-height: 140px;
+    padding: 16px;
+  }
+  #multiCardCarousel .card h5 {
+    font-size: 17px;
+  }
+  #multiCardCarousel .card p {
+    font-size: 14px;
+  }
+}
+
+#multiCardCarousel .card h5 {
+  margin-bottom: 4px;          
+  transform: translateY(-24px); 
+}
+
+#multiCardCarousel .card p {
+  margin-top: 0;               
 }
