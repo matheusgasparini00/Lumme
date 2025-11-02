@@ -82,19 +82,47 @@ def _unlock_thresholds_if_crossed(conn, user_id: int, meta_id: int, prev_pct: fl
     Verifica marcos 25/50/75/100 e registra os cards que forem ultrapassados.
     prev_pct e new_pct são percentuais de 0..100.
     """
-    if prev_pct is None: prev_pct = 0.0
-    if new_pct is None: new_pct = 0.0
-    if prev_pct < 0: prev_pct = 0.0
-    if new_pct < 0: new_pct = 0.0
-    if prev_pct > 100: prev_pct = 100.0
-    if new_pct > 100: new_pct = 100.0
+# >>> NOVO: helpers para identificar a 1ª meta (mais antiga)
+def _get_first_meta_id(conn, user_id: int):
+    """Retorna o ID da 1ª meta criada pelo usuário (mais antiga)."""
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            SELECT id
+              FROM metas
+             WHERE usuario_id = %s
+             ORDER BY data_criacao ASC, id ASC
+             LIMIT 1
+        """, (user_id,))
+        row = cur.fetchone()
+        return row[0] if row else None
+    finally:
+        cur.close()
 
-    for t in (25, 50, 75, 100):
-        if prev_pct < t <= new_pct:
-            code = _get_threshold_code(conn, t)
-            if code:
-                _register_card_unlock(conn, user_id, meta_id, code)
+def _is_first_meta(conn, user_id: int, meta_id: int) -> bool:
+    first_id = _get_first_meta_id(conn, user_id)
+    return (first_id == meta_id)
 
+def _get_second_meta_id(conn, user_id: int):
+    """Retorna o ID da 2ª meta criada pelo usuário (ordem por data_criacao, depois id)."""
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            SELECT id
+              FROM metas
+             WHERE usuario_id = %s
+             ORDER BY data_criacao ASC, id ASC
+             LIMIT 1 OFFSET 1
+        """, (user_id,))
+        row = cur.fetchone()
+        return row[0] if row else None
+    finally:
+        cur.close()
+
+def _is_second_meta(conn, user_id: int, meta_id: int) -> bool:
+    """Verdadeiro se a meta informada for a 2ª meta criada pelo usuário."""
+    second_id = _get_second_meta_id(conn, user_id)
+    return (second_id == meta_id)
 def login_obrigatorio(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -594,6 +622,7 @@ def salvar_meta():
         conexao.commit()
 
         meta_id = cursor.lastrowid
+        
 
         _register_card_unlock(conexao, usuario_id, meta_id, "META_CREATED")
 
@@ -698,6 +727,7 @@ def atualizar_meta():
         conexao = conectar_banco()
         cursor = conexao.cursor(dictionary=True)
 
+        # pega estado anterior
         cursor.execute("""
             SELECT valor_atual, valor_objetivo
               FROM metas
@@ -713,16 +743,16 @@ def atualizar_meta():
         prev_val_obj   = float(row_prev['valor_objetivo'] or 0.0)
         prev_pct = (prev_val_atual / prev_val_obj * 100.0) if prev_val_obj > 0 else 0.0
 
+        # atualiza titulo/valor_objetivo (opcional)
         if titulo is not None or valor_objetivo is not None:
             if titulo and len(titulo) > 40:
                 return jsonify({'status': 'erro', 'mensagem': 'O nome da meta deve ter no máximo 40 caracteres'}), 400
-            
+
             if valor_objetivo is not None:
                 try:
                     valor_objetivo = float(valor_objetivo)
                 except (ValueError, TypeError):
                     return jsonify({'status': 'erro', 'mensagem': 'Valor da meta inválido'}), 400
-
                 if valor_objetivo <= 0 or valor_objetivo > 1_000_000:
                     return jsonify({'status': 'erro', 'mensagem': 'O valor da meta deve estar entre 0,01 e 1.000.000'}), 400
 
@@ -734,18 +764,19 @@ def atualizar_meta():
             """, (titulo if titulo else None, valor_objetivo, meta_id, usuario_id))
 
             if valor_objetivo is not None:
-                prev_val_obj = float(valor_objetivo)
+                prev_val_obj = float(valor_objetivo)  # para o cálculo do new_pct lá embaixo
 
+        # atualiza valor_atual (opcional) e dispara unlocks
         if valor_atual is not None:
             try:
                 valor_atual = float(valor_atual)
             except (ValueError, TypeError):
                 cursor.close(); conexao.close()
                 return jsonify({'status': 'erro', 'mensagem': 'Valor atual inválido'}), 400
-
             if valor_atual < 0:
                 valor_atual = 0.0
 
+            # aplica atualização
             cursor2 = conexao.cursor()
             cursor2.execute("""
                 UPDATE metas
@@ -754,17 +785,36 @@ def atualizar_meta():
             """, (valor_atual, meta_id, usuario_id))
             cursor2.close()
 
-            new_obj = prev_val_obj if valor_objetivo is None else float(valor_objetivo)
+            # recalcula percentuais
+            new_obj = prev_val_obj
             new_pct = (valor_atual / new_obj * 100.0) if new_obj > 0 else 0.0
 
-            _unlock_thresholds_if_crossed(conexao, usuario_id, meta_id, prev_pct, new_pct)
+            # >>> AQUI VEM A SEPARAÇÃO CORRETA <<<
 
+            # 1) PCT_* (25/50/75/100) SÓ na 1ª meta
+            try:
+                if _is_first_meta(conexao, usuario_id, meta_id):
+                    _unlock_thresholds_if_crossed(conexao, usuario_id, meta_id, prev_pct, new_pct)
+            except Exception as _e:
+                print("Warn: desbloqueio PCT_* falhou:", _e)
+
+            # 2) META2_* (50/100) SÓ na 2ª meta
+            try:
+                if _is_second_meta(conexao, usuario_id, meta_id):
+                    if prev_pct < 50 <= new_pct:
+                        _register_card_unlock(conexao, usuario_id, meta_id, "META2_50")
+                    if prev_pct < 100 <= new_pct:
+                        _register_card_unlock(conexao, usuario_id, meta_id, "META2_100")
+            except Exception as _e:
+                print("Warn: desbloqueio META2_* falhou:", _e)
+
+        # reprocessa superavit
         cursor.execute("""
             SELECT salario, despesa_total
-            FROM orcamentos
-            WHERE usuario_id = %s
-            ORDER BY data_registro DESC
-            LIMIT 1
+              FROM orcamentos
+             WHERE usuario_id = %s
+             ORDER BY data_registro DESC
+             LIMIT 1
         """, (usuario_id,))
         orcamento = cursor.fetchone() or {"salario": 0, "despesa_total": 0}
         salario = orcamento.get("salario", 0)
@@ -780,8 +830,8 @@ def atualizar_meta():
         cursor3 = conexao.cursor()
         cursor3.execute("""
             UPDATE orcamentos
-            SET superavit=%s, data_registro=NOW()
-            WHERE usuario_id=%s
+               SET superavit=%s, data_registro=NOW()
+             WHERE usuario_id=%s
         """, (superavit, usuario_id))
         cursor3.close()
 

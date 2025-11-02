@@ -6,6 +6,7 @@
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* RESET GERAL */
 * {
   margin: 0;
   padding: 0;
@@ -13,12 +14,14 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* CORPO */
 body {
   background-color: var(--bs-body-bg);
   color: var(--cor-roxo);
   line-height: 1.6;
 }
 
+/* CONTAINER PRINCIPAL */
 .container {
   max-width: 1100px;
   margin: 80px auto;
@@ -28,6 +31,7 @@ body {
   box-shadow: var(--shadow);
 }
 
+/* TÍTULOS */
 h1 {
   text-align: center;
   color: var(--cor-roxo_fundo);
@@ -44,17 +48,35 @@ h1 {
   font-weight: 400;
 }
 
+/* =========================
+   GRADE DOS CARDS (GRID FIXO)
+   ========================= */
 .challenges-container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid !important;
+  grid-auto-flow: row dense;
+  grid-template-columns: repeat(4, minmax(220px, 1fr)); /* Desktop: 4 colunas fixas */
   gap: 35px;
-  justify-content: center;
-  align-items: stretch;
+  justify-items: center;
+  align-items: start;
 }
 
+/* Breakpoints previsíveis */
+@media (max-width: 1200px) {
+  .challenges-container { grid-template-columns: repeat(3, minmax(220px, 1fr)); }
+}
+@media (max-width: 900px) {
+  .challenges-container { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
+}
+@media (max-width: 520px) {
+  .challenges-container { grid-template-columns: 1fr; gap: 20px; }
+}
+
+/* CARD */
 .challenge-card {
-  width: 240px;       
-  height: 380px;      
+  /* Nenhuma largura fixa aqui: o Grid controla a coluna */
+  width: 100%;
+  max-width: 280px;     /* limita visualmente */
+  aspect-ratio: 3 / 5;  /* mantém altura consistente entre cards */
   background: #f9fafb;
   border: 2px dashed var(--cor-roxo);
   border-radius: 18px;
@@ -63,19 +85,30 @@ h1 {
   justify-content: center;
   text-align: center;
   padding: 30px;
-  transition: all 0.4s ease;
+  transition: transform .4s ease, box-shadow .4s ease, border-color .4s ease;
   position: relative;
   box-shadow: var(--shadow);
   overflow: hidden;
   cursor: default;
 }
 
+/* Garante que NENHUMA regra anterior de Flex herdada interfira */
+.challenge-card { flex: 0 0 auto !important; }
+
+/* Hover */
 .challenge-card:hover {
   transform: translateY(-10px) scale(1.03);
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
   border-color: var(--cor-roxo_fundo);
 }
 
+/* CONTEÚDO DO CARD */
+.challenge-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .challenge-content p {
   font-size: 19px;
   color: var(--cor-roxo);
@@ -84,25 +117,21 @@ h1 {
   z-index: 2;
   position: relative;
   max-width: 200px;
+  margin: 0 auto;
 }
 
+/* ESTILO DE CARD COMPLETO */
 .challenge-card.completed {
   border: 2px solid var(--cor-roxo_fundo);
   background-color: #e8f5e8;
-  box-shadow: 0 0 18px rgba(79, 70, 229, 0.6); 
+  box-shadow: 0 0 18px rgba(79, 70, 229, 0.6);
 }
-
-.challenge-card.completed .challenge-content p {
-  display: none;
-}
+.challenge-card.completed .challenge-content p { display: none; }
 
 .challenge-card.completed::after {
   content: '';
   position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+  inset: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -112,12 +141,19 @@ h1 {
   opacity: 0.92;
 }
 
+/* IMAGENS DOS DESAFIOS ORIGINAIS */
 #challenge1.completed::after { background-image: url('/static/images/ymir.png'); }
 #challenge2.completed::after { background-image: url('/static/images/umbra_lillith.png'); }
 #challenge3.completed::after { background-image: url('/static/images/fluffle.png'); }
 #challenge4.completed::after { background-image: url('/static/images/zarith.png'); }
 #challenge5.completed::after { background-image: url('/static/images/chery.png'); }
 
+/* NOVOS DESAFIOS (segunda meta) */
+#challenge6.completed::after { background-image: url('/static/images/teste_img.png'); }
+#challenge7.completed::after { background-image: url('/static/images/teste_img.png'); }
+#challenge8.completed::after { background-image: url('/static/images/teste_img.png'); }
+
+/* RESUMO DO PROGRESSO */
 .progress-summary {
   margin-top: 60px;
   text-align: center;
@@ -132,76 +168,13 @@ h1 {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 30px;
-    margin: 20px;
-  }
-
-  h1 {
-    font-size: 2.2rem;
-  }
-
-  .subtitle {
-    font-size: 1.15rem;
-  }
-
-  .challenges-container {
-    gap: 25px;
-  }
-
-  .challenge-card {
-    width: 220px;
-    height: 350px;
-    padding: 25px;
-  }
-
-  .challenge-content p {
-    font-size: 17px;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 20px;
-    margin: 15px;
-  }
-
-  h1 {
-    font-size: 1.9rem;
-  }
-
-  .challenges-container {
-    gap: 20px;
-  }
-
-  .challenge-card {
-    width: 100%;
-    max-width: 240px;
-    height: 330px;
-    padding: 20px;
-  }
-
-  .challenge-content p {
-    font-size: 16px;
-    line-height: 1.6;
-  }
-
-.progress-summary {
-  font-size: 1.1rem;
-  padding: 15px;
-}
-
-}
-
-header #navbar { font-size: 0 !important; } 
-
+/* ======== AJUSTES DE NAVBAR ======== */
+header #navbar { font-size: 0 !important; }
 #navbar .navbar-brand {
   font-size: 24px !important;
   line-height: 1.2 !important;
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif !important;
 }
-
 #navbar .navbar-nav .nav-link,
 #nav_list .nav-link {
   font-size: 22px !important;

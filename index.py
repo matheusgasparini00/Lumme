@@ -177,7 +177,11 @@ def seed_card_definitions(cnx):
                 ("PCT_50", "50% da meta", 50),
                 ("PCT_75", "75% da meta", 75),
                 ("PCT_100", "100% da meta", 100),
+                ("META2_CREATED", "Segunda meta criada", 0),
+                ("META2_50", "50% da segunda meta", 50),
+                ("META2_100", "100% da segunda meta", 100),
             ]
+
         )
         cnx.commit()
         print("Seed de card_definitions aplicado.")
