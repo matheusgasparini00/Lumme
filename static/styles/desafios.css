@@ -149,7 +149,7 @@ h1 {
 #challenge5.completed::after { background-image: url('/static/images/chery.png'); }
 
 /* NOVOS DESAFIOS (segunda meta) */
-#challenge6.completed::after { background-image: url('/static/images/teste_img.png'); }
+#challenge6.completed::after { background-image: url('/static/images/chery.png'); }
 #challenge7.completed::after { background-image: url('/static/images/teste_img.png'); }
 #challenge8.completed::after { background-image: url('/static/images/teste_img.png'); }
 
