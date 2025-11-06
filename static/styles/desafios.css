@@ -141,19 +141,16 @@ h1 {
   opacity: 0.92;
 }
 
-/* IMAGENS DOS DESAFIOS ORIGINAIS */
 #challenge1.completed::after { background-image: url('/static/images/ymir.png'); }
 #challenge2.completed::after { background-image: url('/static/images/umbra_lillith.png'); }
 #challenge3.completed::after { background-image: url('/static/images/fluffle.png'); }
 #challenge4.completed::after { background-image: url('/static/images/zarith.png'); }
 #challenge5.completed::after { background-image: url('/static/images/chery.png'); }
 
-/* NOVOS DESAFIOS (segunda meta) */
 #challenge6.completed::after { background-image: url('/static/images/chery.png'); }
 #challenge7.completed::after { background-image: url('/static/images/teste_img.png'); }
 #challenge8.completed::after { background-image: url('/static/images/teste_img.png'); }
 
-/* RESUMO DO PROGRESSO */
 .progress-summary {
   margin-top: 60px;
   text-align: center;
@@ -168,7 +165,6 @@ h1 {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-/* ======== AJUSTES DE NAVBAR ======== */
 header #navbar { font-size: 0 !important; }
 #navbar .navbar-brand {
   font-size: 24px !important;

@@ -17,14 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
     progressText.textContent = `🎉 Você completou ${completos} de ${total} desafios!`;
   }
 
-  // Normaliza e ordena metas (por created_at se existir; senão por id)
   function parseAndSortGoals(data) {
     const toNum = (v) => {
       const n = parseFloat(v);
       return Number.isFinite(n) ? n : 0;
     };
     const goals = (Array.isArray(data) ? data : []).map(m => {
-      // Suporte a diferentes nomes de campos
+
       const id = Number(m.id ?? m.meta_id ?? m.ID ?? 0);
       const target =
         toNum(m.targetAmount ?? m.target_amount ?? m.alvo ?? m.meta ?? m.valor_meta);
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return { id, target, current, createdAt };
     });
 
-    // Ordena por created_at quando possível; senão por id crescente
     goals.sort((a, b) => {
       if (a.createdAt && b.createdAt) {
         const da = new Date(a.createdAt), db = new Date(b.createdAt);
@@ -47,19 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return goals;
   }
 
-  // Calcula códigos a partir das metas (fallback/augment)
   function codesFromGoals(goals) {
   const codes = new Set();
   if (!goals.length) return codes;
 
-  // Ordenação já foi feita fora (por createdAt/id)
   const first = goals[0];
   const second = goals.length >= 2 ? goals[1] : null;
 
-  // Sempre que houver pelo menos 1 meta
   codes.add('META_CREATED');
 
-  // ---- PCT_* (GENÉRICOS) SÓ PARA A 1ª META ----
   if (first) {
     const pctFirst = first.target > 0 ? (first.current / first.target) * 100 : 0;
     if (pctFirst >= 25) codes.add('PCT_25');
@@ -68,9 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (first.target > 0 && first.current >= first.target) codes.add('PCT_100');
   }
 
-  // ---- META2_* SÓ PARA A 2ª META ----
   if (second) {
-    codes.add('META2_CREATED'); // existir a 2ª meta já desbloqueia
+    codes.add('META2_CREATED'); 
     const pctSecond = second.target > 0 ? (second.current / second.target) * 100 : 0;
     if (pctSecond >= 50) codes.add('META2_50');
     if (second.target > 0 && second.current >= second.target) codes.add('META2_100');
@@ -81,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function carregar() {
     try {
-      // Busca ambas as fontes em paralelo
       const [cardsRes, metasRes] = await Promise.allSettled([
         fetch('/metas/cards', { credentials: 'same-origin' }),
         fetch('/obter_metas', { credentials: 'same-origin' })
@@ -89,14 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const codes = new Set();
 
-      // 1) Códigos vindos do backend (/metas/cards), se disponível
       if (cardsRes.status === 'fulfilled' && cardsRes.value.ok) {
         const rows = await cardsRes.value.json();
-        // rows: [{ meta_id, code, label, threshold_percent, unlocked_at }, ...]
         rows.forEach(r => { if (r && r.code) codes.add(String(r.code)); });
       }
 
-      // 2) Augment: calcula a partir das metas e une com os existentes
       if (metasRes.status === 'fulfilled' && metasRes.value.ok) {
         const metasJson = await metasRes.value.json();
         const goals = parseAndSortGoals(metasJson);
@@ -104,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
         goalCodes.forEach(c => codes.add(c));
       }
 
-      // Se nada deu certo, mostra erro amigável
       if (codes.size === 0) {
         throw new Error('Nenhuma fonte de progresso disponível');
       }

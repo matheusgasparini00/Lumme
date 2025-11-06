@@ -11,7 +11,6 @@ const saveGoalBtn = document.getElementById('saveGoalBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const goalsList = document.getElementById('goalsList');
 
-// ---------- util de exibição ----------
 function formatCurrency(value) {
   return value.toLocaleString("pt-BR", {
     style: "currency",
@@ -20,7 +19,6 @@ function formatCurrency(value) {
   });
 }
 
-// ---------- carregar superávit ----------
 function fetchSurplus() {
   fetch('/obter_orcamentos', { credentials: 'same-origin'})
     .then(res => { if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`); return res.json(); })
@@ -35,7 +33,6 @@ function updateSurplusDisplay() {
   surplusValueEl.textContent = formatCurrency(currentSurplus);
 }
 
-// ---------- abrir/fechar form ----------
 addGoalBtn.addEventListener('click', () => {
   goalForm.style.display = 'block';
   goalNameInput.focus();
@@ -49,10 +46,6 @@ cancelBtn.addEventListener('click', () => {
   goalAmountInput.value = '';
 });
 
-// ---------- MÁSCARA DE MOEDA (R$) ----------
-/**
- * Converte string "R$ 1.234,56" para número 1234.56
- */
 function parseCurrencyToNumber(value) {
   if (!value) return 0;
   return parseFloat(
@@ -63,48 +56,34 @@ function parseCurrencyToNumber(value) {
   ) || 0;
 }
 
-/**
- * Formata input enquanto digita com padrão BR (milhar com ponto e decimais com vírgula),
- * mantendo "R$ " visível quando focado/digitando.
- */
 function formatCurrencyInput(input) {
-  // pega somente dígitos
   let digits = input.value.replace(/\D/g, '');
   if (digits === '') {
     input.value = '';
     return;
   }
-  // transforma em centavos (2 casas)
   const cents = (parseInt(digits, 10) / 100).toFixed(2);
 
-  // formata em pt-BR
   const formatted = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(cents);
 
-  // sempre mostra com prefixo R$
   input.value = `R$ ${formatted}`;
 }
 
-/**
- * Aplica máscara no input: mostra "R$ " ao focar e formata conforme digitação
- */
 function attachCurrencyMask(input) {
-  input.setAttribute('inputmode', 'numeric'); // teclado numérico no mobile
+  input.setAttribute('inputmode', 'numeric'); 
   input.addEventListener('focus', () => {
     if (input.value.trim() === '') input.value = 'R$ ';
   });
 
   input.addEventListener('input', () => {
-    // mantém apenas o que importa e re-formata
     formatCurrencyInput(input);
   });
 
   input.addEventListener('blur', () => {
-    // se vazio, limpa de vez (sem R$)
     const n = parseCurrencyToNumber(input.value);
     if (!n) input.value = '';
   });
 
-  // permite colar valores "soltos" e normaliza
   input.addEventListener('paste', (e) => {
     e.preventDefault();
     const text = (e.clipboardData || window.clipboardData).getData('text');
@@ -113,24 +92,19 @@ function attachCurrencyMask(input) {
     formatCurrencyInput(input);
   });
 
-  // bloqueia letras e símbolos invá­lidos
   input.addEventListener('keydown', (e) => {
-    // permite navegação/edição
+
     const allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','Home','End','Tab'];
     if (allowed.includes(e.key)) return;
 
-    // permite números do teclado principal e numpad
     if (/^[0-9]$/.test(e.key)) return;
 
-    // bloqueia o resto (inclui vírgula e ponto — a máscara cuida disso)
     e.preventDefault();
   });
 }
 
-// aplica no campo de criação
 attachCurrencyMask(goalAmountInput);
 
-// ---------- salvar meta ----------
 saveGoalBtn.addEventListener('click', () => {
   const name = goalNameInput.value.trim();
   let amount = parseCurrencyToNumber(goalAmountInput.value);
@@ -181,7 +155,6 @@ saveGoalBtn.addEventListener('click', () => {
   goalForm.style.display = 'none';
 });
 
-// ---------- renderização ----------
 function renderGoals() {
   goalsList.innerHTML = '';
 
@@ -239,18 +212,15 @@ function renderGoals() {
     btn.addEventListener('click', editGoal);
   });
 
-  // aplica máscara em TODOS os campos de alimentar meta recém-renderizados
   applyMaskToFundsInputs();
 }
 
-// aplica máscara aos inputs de alimentação
 function applyMaskToFundsInputs() {
   document.querySelectorAll('.funds-input').forEach(input => {
     attachCurrencyMask(input);
   });
 }
 
-// ---------- ações ----------
 function editGoal(e) {
   const goalId = parseInt(e.currentTarget.dataset.id);
   const goal = goals.find(g => g.id === goalId);
@@ -259,7 +229,6 @@ function editGoal(e) {
   editingGoalId = goalId;
   goalForm.style.display = 'block';
   goalNameInput.value = goal.name;
-  // mostra já formatado no campo
   goalAmountInput.value = `R$ ${goal.targetAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
   saveGoalBtn.textContent = 'Salvar Alterações';
   goalNameInput.focus();
@@ -308,7 +277,7 @@ function addFundsToGoal(e) {
   salvarSuperavitNoBanco();
   updateSurplusDisplay();
   renderGoals();
-  inputEl.value = ''; // limpa depois de alimentar
+  inputEl.value = '';
 }
 
 function completeGoal(e) {
@@ -340,7 +309,6 @@ function deleteGoal(e) {
   .catch(err => console.error('Erro de rede ao deletar meta:', err));
 }
 
-// ---------- carregar metas ----------
 function carregarMetas() {
   fetch('/obter_metas', { credentials: 'same-origin' })
     .then(res => res.json())
@@ -367,7 +335,6 @@ function carregarMetas() {
     .catch(err => console.error('Erro ao buscar metas:', err));
 }
 
-// ---------- persistência de superávit ----------
 function salvarSuperavitNoBanco() {
   fetch('/atualizar_superavit', {
     method: 'POST',
@@ -386,7 +353,6 @@ function salvarSuperavitNoBanco() {
   .catch(err => console.error('Erro na rede ao salvar superavit:', err));
 }
 
-// ---------- boot ----------
 document.addEventListener('DOMContentLoaded', () => {
   fetchSurplus();
   carregarMetas();

@@ -91,7 +91,6 @@ button:hover {
   text-align: center;
 }
 
-/* Celulares pequenos */
 @media (max-width: 480px) {
   .container {
     max-width: 90%; 
@@ -116,7 +115,6 @@ button:hover {
   }
 }
 
-/* Tablets */
 @media (max-width: 768px) {
   .container {
     max-width: 80%;
@@ -128,7 +126,6 @@ button:hover {
   }
 }
 
-/* Telas muito grandes */
 @media (min-width: 1200px) {
   .container {
     max-width: 45ch; 
