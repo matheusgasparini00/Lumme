@@ -6,7 +6,6 @@
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* RESET GERAL */
 * {
   margin: 0;
   padding: 0;
@@ -14,14 +13,12 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* CORPO */
 body {
   background-color: var(--bs-body-bg);
   color: var(--cor-roxo);
   line-height: 1.6;
 }
 
-/* CONTAINER PRINCIPAL */
 .container {
   max-width: 1100px;
   margin: 80px auto;
@@ -31,7 +28,6 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* TÍTULOS */
 h1 {
   text-align: center;
   color: var(--cor-roxo_fundo);
@@ -48,19 +44,15 @@ h1 {
   font-weight: 400;
 }
 
-/* =========================
-   GRADE DOS CARDS (GRID FIXO)
-   ========================= */
 .challenges-container {
   display: grid !important;
   grid-auto-flow: row dense;
-  grid-template-columns: repeat(4, minmax(220px, 1fr)); /* Desktop: 4 colunas fixas */
+  grid-template-columns: repeat(4, minmax(220px, 1fr)); 
   gap: 35px;
   justify-items: center;
   align-items: start;
 }
 
-/* Breakpoints previsíveis */
 @media (max-width: 1200px) {
   .challenges-container { grid-template-columns: repeat(3, minmax(220px, 1fr)); }
 }
@@ -71,12 +63,10 @@ h1 {
   .challenges-container { grid-template-columns: 1fr; gap: 20px; }
 }
 
-/* CARD */
 .challenge-card {
-  /* Nenhuma largura fixa aqui: o Grid controla a coluna */
   width: 100%;
-  max-width: 280px;     /* limita visualmente */
-  aspect-ratio: 3 / 5;  /* mantém altura consistente entre cards */
+  max-width: 280px;     
+  aspect-ratio: 3 / 5;  
   background: #f9fafb;
   border: 2px dashed var(--cor-roxo);
   border-radius: 18px;
@@ -92,17 +82,14 @@ h1 {
   cursor: default;
 }
 
-/* Garante que NENHUMA regra anterior de Flex herdada interfira */
 .challenge-card { flex: 0 0 auto !important; }
 
-/* Hover */
 .challenge-card:hover {
   transform: translateY(-10px) scale(1.03);
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
   border-color: var(--cor-roxo_fundo);
 }
 
-/* CONTEÚDO DO CARD */
 .challenge-content {
   width: 100%;
   display: flex;
@@ -120,7 +107,6 @@ h1 {
   margin: 0 auto;
 }
 
-/* ESTILO DE CARD COMPLETO */
 .challenge-card.completed {
   border: 2px solid var(--cor-roxo_fundo);
   background-color: #e8f5e8;

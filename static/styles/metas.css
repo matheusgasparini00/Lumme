@@ -113,7 +113,7 @@ h1 {
 }
 
 label {
-  flex: 0 0 150px;              /* largura fixa do rótulo */
+  flex: 0 0 150px;            
   font-weight: 600;
   color: #111;
 }
